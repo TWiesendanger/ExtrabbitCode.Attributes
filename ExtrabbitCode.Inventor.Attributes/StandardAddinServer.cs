@@ -1,5 +1,6 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
+using ExtrabbitCode.Inventor.Attributes.Services;
 using ExtrabbitCode.Inventor.Attributes.UI;
 using log4net;
 using System;
@@ -22,7 +23,8 @@ namespace ExtrabbitCode.Inventor.Attributes
 
         public static ApplicationEvents? InvAppEvents { get; set; }
 
-        private ButtonDefinition? _defaultButton;
+        private ButtonDefinition? _settingsButton;
+        private ButtonDefinition? _openAttributeWindow;
         private ButtonDefinition? _info;
 
         private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(StandardAddInServer));
@@ -59,6 +61,7 @@ namespace ExtrabbitCode.Inventor.Attributes
 
                 Globals.InvApp = ApplicationAddInSite.Application;
                 Globals.InvApplicationAddInSite = ApplicationAddInSite;
+                Globals.SettingsService = new SettingsService(); // TODO Write to settings file and load from it
                 UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;
                 InvAppEvents = Globals.InvApp.ApplicationEvents;
                 InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;
@@ -76,9 +79,11 @@ namespace ExtrabbitCode.Inventor.Attributes
                 ApplicationThemeManager.Apply(appTheme);
 
                 _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
-                _defaultButton = UiDefinitionHelper.CreateButton("DefaultButton", "ExtrabbitCode.Inventor.Attributes.DefaultButton", @"UI\ButtonResources\DefaultButton", themeName);
+                _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
+                _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.Window", @"UI\ButtonResources\AttributeWindow", themeName);
                 _buttonDefinitions.Add(_info);
-                _buttonDefinitions.Add(_defaultButton);
+                _buttonDefinitions.Add(_settingsButton);
+                _buttonDefinitions.Add(_openAttributeWindow);
 
                 if (FirstTime)
                 {
@@ -88,7 +93,7 @@ namespace ExtrabbitCode.Inventor.Attributes
             catch (Exception ex)
             {
                 throw new InvalidOperationException(
-                    @"Unexpected failure during activation of the add-in 'InventorTemplate'.",
+                    "Unexpected failure during activation of the add-in 'InventorTemplate'.",
                     ex
                 );
             }
@@ -246,10 +251,14 @@ namespace ExtrabbitCode.Inventor.Attributes
             Ribbon iamRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Assembly"];
             Ribbon ipnRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Presentation"];
 
-            RibbonTab tabIdw = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes", "ExtrabbitCode.Inventor.Attributes", idwRibbon);
-            RibbonTab tabIpt = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes", "ExtrabbitCode.Inventor.Attributes", iptRibbon);
-            RibbonTab tabIam = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes", "ExtrabbitCode.Inventor.Attributes", iamRibbon);
-            RibbonTab tabIpn = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes", "ExtrabbitCode.Inventor.Attributes", ipnRibbon);
+            RibbonTab tabIdw = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
+                "ExtrabbitCode.Inventor.Attributes", idwRibbon);
+            RibbonTab tabIpt = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
+                "ExtrabbitCode.Inventor.Attributes", iptRibbon);
+            RibbonTab tabIam = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
+                "ExtrabbitCode.Inventor.Attributes", iamRibbon);
+            RibbonTab tabIpn = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
+                "ExtrabbitCode.Inventor.Attributes", ipnRibbon);
             _ribbonTabs.Add(tabIdw);
             _ribbonTabs.Add(tabIpt);
             _ribbonTabs.Add(tabIam);
@@ -273,17 +282,18 @@ namespace ExtrabbitCode.Inventor.Attributes
             _ribbonPanels.Add(addinPanelIam);
             _ribbonPanels.Add(addinPanelIpn);
 
-            if (_defaultButton != null)
+            if (_settingsButton != null)
             {
-                CommandControl defaultButtonIdw = addinPanelIdw.CommandControls.AddButton(_defaultButton, true);
-                CommandControl defaultButtonIpt = addinPanelIpt.CommandControls.AddButton(_defaultButton, true);
-                CommandControl defaultButtonIam = addinPanelIam.CommandControls.AddButton(_defaultButton, true);
-                CommandControl defaultButtonIpn = addinPanelIpn.CommandControls.AddButton(_defaultButton, true);
-                _buttons.Add(defaultButtonIdw);
-                _buttons.Add(defaultButtonIpt);
-                _buttons.Add(defaultButtonIam);
-                _buttons.Add(defaultButtonIpn);
+                CommandControl settingsButtonIdw = addinPanelIdw.CommandControls.AddButton(_settingsButton, true);
+                CommandControl settingsButtonIpt = addinPanelIpt.CommandControls.AddButton(_settingsButton, true);
+                CommandControl settingsButtonIam = addinPanelIam.CommandControls.AddButton(_settingsButton, true);
+                CommandControl settingsButtonIpn = addinPanelIpn.CommandControls.AddButton(_settingsButton, true);
+                _buttons.Add(settingsButtonIdw);
+                _buttons.Add(settingsButtonIpt);
+                _buttons.Add(settingsButtonIam);
+                _buttons.Add(settingsButtonIpn);
             }
+
             if (_info != null)
             {
                 CommandControl infoButtonIdw = infoIdw.CommandControls.AddButton(_info, true);
@@ -294,6 +304,22 @@ namespace ExtrabbitCode.Inventor.Attributes
                 _buttons.Add(infoButtonIpt);
                 _buttons.Add(infoButtonIam);
                 _buttons.Add(infoButtonIpn);
+            }
+
+            if (_openAttributeWindow != null)
+            {
+                CommandControl attributeWindowButtonIdw =
+                    addinPanelIdw.CommandControls.AddButton(_openAttributeWindow, true);
+                CommandControl attributeWindowButtonIpt =
+                    addinPanelIpt.CommandControls.AddButton(_openAttributeWindow, true);
+                CommandControl attributeWindowButtonIam =
+                    addinPanelIam.CommandControls.AddButton(_openAttributeWindow, true);
+                CommandControl attributeWindowButtonIpn =
+                    addinPanelIpn.CommandControls.AddButton(_openAttributeWindow, true);
+                _buttons.Add(attributeWindowButtonIdw);
+                _buttons.Add(attributeWindowButtonIpt);
+                _buttons.Add(attributeWindowButtonIam);
+                _buttons.Add(attributeWindowButtonIpn);
             }
         }
 

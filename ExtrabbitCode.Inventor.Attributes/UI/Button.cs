@@ -44,15 +44,38 @@ namespace ExtrabbitCode.Inventor.Attributes.UI
 
             switch (Bd.InternalName)
             {
-                case "ExtrabbitCode.Inventor.Attributes.DefaultButton":
-                    Logger.Debug("Default Button was pressed.");
-                    System.Windows.Forms.MessageBox.Show(@"Default message.", @"Default title");
+                case "ExtrabbitCode.Inventor.Attributes.SettingsButton":
+                    Logger.Debug("Settings Button was pressed.");
+                    SettingsDialog settingsDialog = new();
+                    SetDialogTheme(settingsDialog);
+                    settingsDialog.ShowDialog();
                     return;
                 case "ExtrabbitCode.Inventor.Attributes.Info":
-                    Logger.Info("Templatebutton pressed");
+                    Logger.Info("Info button pressed");
                     InfoDialog infoDialog = new();
                     SetDialogTheme(infoDialog);
                     infoDialog.ShowDialog();
+                    return;
+                case "ExtrabbitCode.Inventor.Attributes.Window":
+                    Logger.Info("Attribute Window button pressed");
+
+                    DockableWindow? attributeWindow;
+                    try
+                    {
+                        attributeWindow = Globals.InvApp.UserInterfaceManager.DockableWindows["ExtrabbitCode.Inventor.Attributes.Window"];
+                    }
+#pragma warning disable CA1031
+                    catch
+#pragma warning restore CA1031
+                    {
+                        attributeWindow = Globals.InvApp.UserInterfaceManager.DockableWindows.Add("ExtrabbitCode.Inventor.Attributes.Window", "ExtrabbitCode.Inventor.Attributes.Window", "ExtrabbitCode.Inventor.Attributes");
+                    }
+
+                    attributeWindow.Visible = true;
+                    AttributeDialog attributeDialogContent = new();
+                    SetDialogTheme(attributeDialogContent);
+
+                    DockableWindowChildAdapter.AddWpfWindow(attributeWindow, attributeDialogContent);
                     return;
                 default:
                     return;
