@@ -1,0 +1,10 @@
+<Project>
+	<PropertyGroup>
+		<AppVersion>0.0.0.1</AppVersion>
+		<Version>$(AppVersion)</Version>
+		<FileVersion>$(AppVersion)</FileVersion>
+		<AssemblyVersion>$(AppVersion)</AssemblyVersion>
+		<InventorVersion>2026</InventorVersion>
+		<CopyInventorFiles>false</CopyInventorFiles>
+	</PropertyGroup>
+</Project>

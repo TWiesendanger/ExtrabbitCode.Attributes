@@ -1,0 +1,91 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<RootNamespace>ExtrabbitCode.Inventor.Attributes</RootNamespace>
+		<AssemblyName>ExtrabbitCode.Inventor.Attributes</AssemblyName>
+		<InventorVersion>$(InventorVersion)</InventorVersion>
+		<CopyInventorFiles>$(CopyInventorFiles)</CopyInventorFiles>
+		<AssemblyVersion>$(AssemblyVersion)</AssemblyVersion>
+		<Platforms>x64</Platforms>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<Nullable>enable</Nullable>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="**\*" Pack="true" PackagePath="content\" Exclude="bin\**;obj\**;.vs\**;*.user;*.suo;*.nupkg;*.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="C:\ProgramData\ExtrabbitCode\**" />
+	  <Content Remove="C:\ProgramData\ExtrabbitCode\**" />
+	  <EmbeddedResource Remove="C:\ProgramData\ExtrabbitCode\**" />
+	  <None Remove="C:\ProgramData\ExtrabbitCode\**" />
+	  <Page Remove="C:\ProgramData\ExtrabbitCode\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Remove="UI\Dialog\InfoDialog.xaml" />
+	  <Content Remove="UI\Dialog\InfoDialog.xaml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Autodesk.Inventor.Sdk" Version="1.0.3" />
+		<PackageReference Include="log4net" Version="3.2.0" />
+		<PackageReference Include="WPF-UI" Version="4.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Resources\appIcon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="log4net.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Resources\appIcon.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Resources\versionhistory.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="UI\ButtonResources\DefaultButton\16x16DarkTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\DefaultButton\16x16LightTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\DefaultButton\32x32DarkTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\DefaultButton\32x32LightTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\Info\16x16DarkTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\Info\16x16LightTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\Info\32x32DarkTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="UI\ButtonResources\Info\32x32LightTheme.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<Target Name="CustomBuild" AfterTargets="Build">
+		<Exec Command="&quot;$(ProjectDir)BuildScript.cmd&quot; &quot;$(ProjectDir)&quot; $(TargetName) &quot;$(TargetPath)&quot; &quot;$(TargetDir)&quot;" />
+	</Target>
+</Project>
