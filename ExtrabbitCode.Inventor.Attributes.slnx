@@ -2,6 +2,10 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
+  <Folder Name="/SolutionFolder/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="ExtrabbitCode.Inventor.Attributes/ExtrabbitCode.Inventor.Attributes.csproj">
     <Platform Project="x64" />
   </Project>

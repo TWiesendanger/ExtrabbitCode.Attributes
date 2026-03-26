@@ -3,6 +3,8 @@ root = true
 
 # C# files
 [*.cs]
+dotnet_diagnostic.CA1031.severity = none
+dotnet_diagnostic.CA1823.severity = none
 
 #### Core EditorConfig Options ####
 

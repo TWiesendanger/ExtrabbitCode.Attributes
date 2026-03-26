@@ -37,6 +37,8 @@
 		<Content Remove="Models\SettingsModel.cs" />
 		<Content Remove="Resources\appIcon.png" />
 		<Content Remove="Resources\versionhistory.txt" />
+		<Content Remove="Services\AttributeService.cs" />
+		<Content Remove="Services\IAttributeService.cs" />
 		<Content Remove="Services\ISettingsService.cs" />
 		<Content Remove="Services\SettingsService.cs" />
 		<Content Remove="UI\Dialog\AttributeDialog.xaml" />

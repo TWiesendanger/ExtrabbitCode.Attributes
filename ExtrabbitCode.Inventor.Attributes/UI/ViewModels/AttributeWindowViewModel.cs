@@ -1,24 +1,24 @@
 ﻿
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using ExtrabbitCode.Inventor.Attributes.Services;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
-public class AttributeWindowViewModel : INotifyPropertyChanged
+public partial class AttributeWindowViewModel : ObservableObject
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private readonly SettingsService _settingsService = Globals.SettingsService;
+    private readonly AttributeService _attributeService = Globals.AttributeService;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    [RelayCommand]
+    private void GetAllAttributes()
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        AttributeSetsEnumerator? attributeSets = _attributeService.GetAttributeSets(Globals.InvApp.ActiveDocument);
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    [RelayCommand]
+    private static void DeleteAttributes()
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
+        // TODO: Delete selected/all attributes
     }
 }

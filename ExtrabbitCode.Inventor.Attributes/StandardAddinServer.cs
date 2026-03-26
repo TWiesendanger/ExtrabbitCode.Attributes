@@ -62,6 +62,7 @@ namespace ExtrabbitCode.Inventor.Attributes
                 Globals.InvApp = ApplicationAddInSite.Application;
                 Globals.InvApplicationAddInSite = ApplicationAddInSite;
                 Globals.SettingsService = new SettingsService(); // TODO Write to settings file and load from it
+                Globals.AttributeService = new AttributeService();
                 UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;
                 InvAppEvents = Globals.InvApp.ApplicationEvents;
                 InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;
