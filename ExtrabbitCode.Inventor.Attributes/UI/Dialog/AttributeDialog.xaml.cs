@@ -1,15 +1,15 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
-using Wpf.Ui.Appearance;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 
 public partial class AttributeDialog
 {
+    private readonly AttributeWindowViewModel _viewModel;
+
     public AttributeDialog()
     {
         InitializeComponent();
-        DataContext = new AttributeWindowViewModel();
-
-        ApplicationThemeManager.Apply(this);
+        _viewModel = new AttributeWindowViewModel(Globals.SettingsService, Globals.AttributeService);
+        DataContext = _viewModel;
     }
 }

@@ -3,7 +3,6 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using Wpf.Ui.Appearance;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 
@@ -14,7 +13,7 @@ public partial class SettingsDialog
     public SettingsDialog()
     {
         InitializeComponent();
-        _viewModel = new SettingsDialogViewModel(Globals.SettingsService);
+        _viewModel = new SettingsDialogViewModel(Globals.SettingsService, Globals.AttributeLibraryService);
         DataContext = _viewModel;
 
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -23,10 +22,11 @@ public partial class SettingsDialog
         new WindowInteropHelper(this).Owner = ownerHandle;
 
 
-        ApplicationThemeManager.Apply(this);
+        //ApplicationThemeManager.Apply(this);
 
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
     }
+
 
     private void OkButton_OnClick(object sender, RoutedEventArgs e)
     {

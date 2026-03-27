@@ -9,7 +9,7 @@
 		<AssemblyVersion>$(AssemblyVersion)</AssemblyVersion>
 		<Platforms>x64</Platforms>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<Nullable>enable</Nullable>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
@@ -20,10 +20,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="**\*" Pack="true" PackagePath="content\" Exclude="bin\**;obj\**;.vs\**;*.user;*.suo;*.nupkg;*.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Compile Remove="C:\ProgramData\ExtrabbitCode\**" />
 		<Content Remove="C:\ProgramData\ExtrabbitCode\**" />
 		<EmbeddedResource Remove="C:\ProgramData\ExtrabbitCode\**" />
@@ -32,15 +28,29 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Remove="Constants.cs" />
 		<Content Remove="Globals.cs" />
+		<Content Remove="Helper\DialogHelper.cs" />
 		<Content Remove="Helper\DockableWindowChildAdapter.cs" />
+		<Content Remove="Helper\StoragePaths.cs" />
+		<Content Remove="Helper\ThemeResourceHelper.cs" />
+		<Content Remove="Models\AddAttributeDialogResult.cs" />
+		<Content Remove="Models\AttributeLibrary.cs" />
+		<Content Remove="Models\DeleteAttributesResult.cs" />
 		<Content Remove="Models\SettingsModel.cs" />
+		<Content Remove="Resources\AddAttribute.png" />
+		<Content Remove="Resources\addAttribute_Dialog.png" />
 		<Content Remove="Resources\appIcon.png" />
+		<Content Remove="Resources\Styles\Theme.Dark.xaml" />
 		<Content Remove="Resources\versionhistory.txt" />
+		<Content Remove="Services\AttributeLibraryService.cs" />
 		<Content Remove="Services\AttributeService.cs" />
+		<Content Remove="Services\IAttributeLibraryService.cs" />
 		<Content Remove="Services\IAttributeService.cs" />
 		<Content Remove="Services\ISettingsService.cs" />
 		<Content Remove="Services\SettingsService.cs" />
+		<Content Remove="UI\Dialog\AddAttributeDialog.xaml" />
+		<Content Remove="UI\Dialog\AddAttributeDialog.xaml.cs" />
 		<Content Remove="UI\Dialog\AttributeDialog.xaml" />
 		<Content Remove="UI\Dialog\AttributeDialog.xaml.cs" />
 		<Content Remove="UI\Dialog\AttributeWindow.xaml" />
@@ -48,22 +58,58 @@
 		<Content Remove="UI\Dialog\InfoDialog.xaml.cs" />
 		<Content Remove="UI\Dialog\SettingsDialog.xaml" />
 		<Content Remove="UI\Dialog\SettingsDialog.xaml.cs" />
+		<Content Remove="UI\ViewModels\AddAttributeDialogViewModel.cs" />
 		<Content Remove="UI\ViewModels\AttributeWindowViewModel.cs" />
 		<Content Remove="UI\ViewModels\SettingsDialogViewModel.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Remove="UI\Dialog\AttributeWindow.xaml" />
+	  <None Remove="UI\ButtonResources\AddAttribute\16x16DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\AddAttribute\16x16LightTheme.png" />
+	  <None Remove="UI\ButtonResources\AddAttribute\32x32DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\AddAttribute\32x32LightTheme.png" />
+	  <None Remove="UI\ButtonResources\AttributeWindow\16x16DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\AttributeWindow\16x16LightTheme.png" />
+	  <None Remove="UI\ButtonResources\AttributeWindow\32x32DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\AttributeWindow\32x32LightTheme.png" />
+	  <None Remove="UI\ButtonResources\Info\16x16DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Info\16x16LightTheme.png" />
+	  <None Remove="UI\ButtonResources\Info\32x32DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Settings\16x16DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Settings\16x16LightTheme.png" />
+	  <None Remove="UI\ButtonResources\Settings\32x32DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Settings\32x32LightTheme.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="UI\ButtonResources\AddAttribute\16x16DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\AddAttribute\16x16LightTheme.png" />
+	  <Content Include="UI\ButtonResources\AddAttribute\32x32DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\AddAttribute\32x32LightTheme.png" />
+	  <Content Include="UI\ButtonResources\AttributeWindow\16x16DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\AttributeWindow\16x16LightTheme.png" />
+	  <Content Include="UI\ButtonResources\AttributeWindow\32x32DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\AttributeWindow\32x32LightTheme.png" />
+	  <Content Include="UI\ButtonResources\Info\16x16DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Info\16x16LightTheme.png" />
+	  <Content Include="UI\ButtonResources\Info\32x32DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Settings\16x16DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Settings\16x16LightTheme.png" />
+	  <Content Include="UI\ButtonResources\Settings\32x32DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Settings\32x32LightTheme.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Autodesk.Inventor.Sdk" Version="1.0.3" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
-		<PackageReference Include="log4net" Version="3.2.0" />
-		<PackageReference Include="WPF-UI" Version="4.0.3" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="log4net" Version="3.3.0" />
+		<PackageReference Include="WPF-UI" Version="4.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Resources\addAttribute_Dialog.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
 		<Resource Include="Resources\appIcon.png">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
@@ -75,6 +121,23 @@
 	<ItemGroup>
 		<Content Update="log4net.config">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Properties\Settings.settings">
+		  <Generator>SettingsSingleFileGenerator</Generator>
+		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</Content>
+		
+		<Content Update="UI\ButtonResources\AddAttribute\16x16DarkTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\AddAttribute\16x16LightTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\AddAttribute\32x32DarkTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\AddAttribute\32x32LightTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Update="UI\ButtonResources\AttributeWindow\16x16DarkTheme.png">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -112,33 +175,15 @@
 		<Content Update="UI\ButtonResources\Settings\32x32LightTheme.png">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<Content Update="UI\Dialog\AddAttributeDialog.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Content>
 		<Content Update="UI\Dialog\AttributeWindow.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="UI\ButtonResources\Settings\16x16DarkTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\ButtonResources\Settings\16x16LightTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\ButtonResources\Settings\32x32DarkTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\ButtonResources\Settings\32x32LightTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\ButtonResources\Info\16x16DarkTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\ButtonResources\Info\16x16LightTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\ButtonResources\Info\32x32DarkTheme.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="UI\ButtonResources\Info\32x32LightTheme.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

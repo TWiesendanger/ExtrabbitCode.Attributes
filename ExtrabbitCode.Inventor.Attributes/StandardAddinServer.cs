@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Windows.Media;
 using Wpf.Ui.Appearance;
+using Color = Inventor.Color;
 
 namespace ExtrabbitCode.Inventor.Attributes
 {
@@ -25,6 +27,7 @@ namespace ExtrabbitCode.Inventor.Attributes
 
         private ButtonDefinition? _settingsButton;
         private ButtonDefinition? _openAttributeWindow;
+        private ButtonDefinition? _addAttributeToObject;
         private ButtonDefinition? _info;
 
         private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(StandardAddInServer));
@@ -61,8 +64,9 @@ namespace ExtrabbitCode.Inventor.Attributes
 
                 Globals.InvApp = ApplicationAddInSite.Application;
                 Globals.InvApplicationAddInSite = ApplicationAddInSite;
-                Globals.SettingsService = new SettingsService(); // TODO Write to settings file and load from it
+                Globals.SettingsService = new SettingsService(StoragePaths.SettingsFile);
                 Globals.AttributeService = new AttributeService();
+                Globals.AttributeLibraryService = new AttributeLibraryService(StoragePaths.AttributeLibraryFile);
                 UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;
                 InvAppEvents = Globals.InvApp.ApplicationEvents;
                 InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;
@@ -70,6 +74,7 @@ namespace ExtrabbitCode.Inventor.Attributes
                 ThemeManager themeManager = Globals.InvApp.ThemeManager;
                 Globals.ActiveTheme = themeManager.ActiveTheme;
                 string themeName = Globals.ActiveTheme.Name;
+                ThemeResourceHelper.ApplyInventorThemeResources();
                 Logger.Debug("Inventor ThemeManager ActiveTheme: " + themeName);
 
                 ApplicationTheme appTheme = themeName == InventorThemeConstants.LightTheme
@@ -82,9 +87,11 @@ namespace ExtrabbitCode.Inventor.Attributes
                 _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
                 _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
                 _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.Window", @"UI\ButtonResources\AttributeWindow", themeName);
+                _addAttributeToObject = UiDefinitionHelper.CreateButton("Add attribute", "ExtrabbitCode.Inventor.Attributes.AddAttribute", @"UI\ButtonResources\AddAttribute", themeName);
                 _buttonDefinitions.Add(_info);
                 _buttonDefinitions.Add(_settingsButton);
                 _buttonDefinitions.Add(_openAttributeWindow);
+                _buttonDefinitions.Add(_addAttributeToObject);
 
                 if (FirstTime)
                 {
@@ -252,14 +259,14 @@ namespace ExtrabbitCode.Inventor.Attributes
             Ribbon iamRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Assembly"];
             Ribbon ipnRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Presentation"];
 
-            RibbonTab tabIdw = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
-                "ExtrabbitCode.Inventor.Attributes", idwRibbon);
-            RibbonTab tabIpt = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
-                "ExtrabbitCode.Inventor.Attributes", iptRibbon);
-            RibbonTab tabIam = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
-                "ExtrabbitCode.Inventor.Attributes", iamRibbon);
-            RibbonTab tabIpn = UiDefinitionHelper.SetupTab("ExtrabbitCode.Inventor.Attributes",
-                "ExtrabbitCode.Inventor.Attributes", ipnRibbon);
+            RibbonTab tabIdw = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+                Constants.AddinFolder, idwRibbon);
+            RibbonTab tabIpt = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+                Constants.AddinFolder, iptRibbon);
+            RibbonTab tabIam = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+                Constants.AddinFolder, iamRibbon);
+            RibbonTab tabIpn = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+                Constants.AddinFolder, ipnRibbon);
             _ribbonTabs.Add(tabIdw);
             _ribbonTabs.Add(tabIpt);
             _ribbonTabs.Add(tabIam);
@@ -322,6 +329,22 @@ namespace ExtrabbitCode.Inventor.Attributes
                 _buttons.Add(attributeWindowButtonIam);
                 _buttons.Add(attributeWindowButtonIpn);
             }
+
+            if (_addAttributeToObject != null)
+            {
+                CommandControl attributeWindowButtonIdw =
+                    addinPanelIdw.CommandControls.AddButton(_addAttributeToObject, true);
+                CommandControl attributeWindowButtonIpt =
+                    addinPanelIpt.CommandControls.AddButton(_addAttributeToObject, true);
+                CommandControl attributeWindowButtonIam =
+                    addinPanelIam.CommandControls.AddButton(_addAttributeToObject, true);
+                CommandControl attributeWindowButtonIpn =
+                    addinPanelIpn.CommandControls.AddButton(_addAttributeToObject, true);
+                _buttons.Add(attributeWindowButtonIdw);
+                _buttons.Add(attributeWindowButtonIpt);
+                _buttons.Add(attributeWindowButtonIam);
+                _buttons.Add(attributeWindowButtonIpn);
+            }
         }
 
         private void UiEventsOnResetRibbonInterface(NameValueMap context)
@@ -336,6 +359,7 @@ namespace ExtrabbitCode.Inventor.Attributes
                 ThemeManager themeManager = Globals.InvApp.ThemeManager;
                 Theme activeTheme = themeManager.ActiveTheme;
                 string theme = activeTheme.Name;
+                ThemeResourceHelper.ApplyInventorThemeResources();
 
                 if (Globals.ActiveTheme.Name != theme) //check if theme has changed
                 {

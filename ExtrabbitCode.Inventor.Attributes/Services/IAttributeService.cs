@@ -1,102 +1,71 @@
+using ExtrabbitCode.Inventor.Attributes.Models;
 using System.Collections.Generic;
+using ValueTypeEnum = Inventor.ValueTypeEnum;
 
 namespace ExtrabbitCode.Inventor.Attributes.Services;
 
-/// <summary>
-/// Service for managing Inventor attributes.
-/// </summary>
 public interface IAttributeService
 {
-    /// <summary>
-    /// Gets all attribute sets from the specified document.
-    /// </summary>
-    /// <param name="document">The Inventor document.</param>
-    /// <returns>A collection of attribute sets.</returns>
-    AttributeSetsEnumerator? GetAttributeSets(Document? document);
+    AttributeManager? GetAttributeManager(Document? document);
 
-    /// <summary>
-    /// Gets a specific attribute set by name from the specified document.
-    /// </summary>
-    /// <param name="document">The Inventor document.</param>
-    /// <param name="attributeSetName">The name of the attribute set.</param>
-    /// <returns>The attribute set if found, otherwise null.</returns>
-    InventorAttributeSet? GetAttributeSet(Document? document, string attributeSetName);
+    AttributeSetsEnumerator? FindAttributeSets(
+        Document? document,
+        string? attributeSetName = null);
 
-    /// <summary>
-    /// Creates a new attribute set in the specified document.
-    /// </summary>
-    /// <param name="document">The Inventor document.</param>
-    /// <param name="attributeSetName">The name of the attribute set to create.</param>
-    /// <returns>The created attribute set.</returns>
-    InventorAttributeSet CreateAttributeSet(Document? document, string attributeSetName);
+    IEnumerable<InventorAttributeSet> GetAttributeSets(object? inventorObject);
 
-    /// <summary>
-    /// Deletes an attribute set from the specified document.
-    /// </summary>
-    /// <param name="document">The Inventor document.</param>
-    /// <param name="attributeSetName">The name of the attribute set to delete.</param>
-    /// <returns>True if the attribute set was deleted, otherwise false.</returns>
-    bool DeleteAttributeSet(Document? document, string attributeSetName);
+    InventorAttributeSet? GetAttributeSet(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName);
 
-    /// <summary>
-    /// Gets all attributes from a specific attribute set.
-    /// </summary>
-    /// <param name="attributeSet">The attribute set.</param>
-    /// <returns>A collection of attributes.</returns>
-    IEnumerable<InventorAttribute> GetAttributes(InventorAttributeSet? attributeSet);
+    InventorAttributeSet? GetOrCreateAttributeSet(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName);
 
-    /// <summary>
-    /// Gets a specific attribute by name from the specified attribute set.
-    /// </summary>
-    /// <param name="attributeSet">The attribute set.</param>
-    /// <param name="attributeName">The name of the attribute.</param>
-    /// <returns>The attribute if found, otherwise null.</returns>
-    InventorAttribute? GetAttribute(InventorAttributeSet? attributeSet, string attributeName);
+    bool DeleteAttributeSet(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName);
 
-    /// <summary>
-    /// Adds a new attribute to the specified attribute set.
-    /// </summary>
-    /// <param name="attributeSet">The attribute set.</param>
-    /// <param name="attributeName">The name of the attribute.</param>
-    /// <param name="value">The value of the attribute.</param>
-    /// <returns>The created attribute.</returns>
-    InventorAttribute? AddAttribute(InventorAttributeSet? attributeSet, string attributeName, object? value);
+    IEnumerable<InventorAttribute> GetAttributes(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName);
 
-    /// <summary>
-    /// Updates the value of an existing attribute.
-    /// </summary>
-    /// <param name="attribute">The attribute to update.</param>
-    /// <param name="value">The new value.</param>
-    /// <returns>True if the attribute was updated, otherwise false.</returns>
-    bool UpdateAttributeValue(InventorAttribute? attribute, object value);
+    InventorAttribute? GetAttribute(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName);
 
-    /// <summary>
-    /// Deletes an attribute from its attribute set.
-    /// </summary>
-    /// <param name="attribute">The attribute to delete.</param>
-    /// <returns>True if the attribute was deleted, otherwise false.</returns>
-    bool DeleteAttribute(InventorAttribute? attribute);
+    InventorAttribute? AddOrUpdateAttribute(object? inventorObject,
+        string attributeSetName,
+        string attributeName,
+        ValueTypeEnum valueType,
+        object value);
 
-    /// <summary>
-    /// Deletes all attributes from the specified attribute set.
-    /// </summary>
-    /// <param name="attributeSet">The attribute set.</param>
-    /// <returns>The number of attributes deleted.</returns>
-    int DeleteAllAttributes(InventorAttributeSet? attributeSet);
+    bool UpdateAttributeValue(InventorAttribute? attribute, object? value);
 
-    /// <summary>
-    /// Checks if an attribute set exists in the specified document.
-    /// </summary>
-    /// <param name="document">The Inventor document.</param>
-    /// <param name="attributeSetName">The name of the attribute set.</param>
-    /// <returns>True if the attribute set exists, otherwise false.</returns>
-    bool AttributeSetExists(Document? document, string attributeSetName);
+    bool DeleteAttribute(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName);
 
-    /// <summary>
-    /// Checks if an attribute exists in the specified attribute set.
-    /// </summary>
-    /// <param name="attributeSet">The attribute set.</param>
-    /// <param name="attributeName">The name of the attribute.</param>
-    /// <returns>True if the attribute exists, otherwise false.</returns>
-    bool AttributeExists(InventorAttributeSet? attributeSet, string attributeName);
+    DeleteAttributesResult DeleteAllAttributes(ObjectCollection? inventorObjectCollection);
+
+    bool AttributeSetExists(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName);
+
+    bool AttributeExists(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName);
+
+    ObjectCollection? GetObjectsWithAttributes(Document? document);
 }

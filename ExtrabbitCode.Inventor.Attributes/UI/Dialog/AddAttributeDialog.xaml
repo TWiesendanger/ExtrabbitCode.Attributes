@@ -1,0 +1,133 @@
+﻿<ui:FluentWindow
+    x:Class="ExtrabbitCode.Inventor.Attributes.UI.Dialog.AddAttributeDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Add Attribute"
+    Width="650"
+    Height="800"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <ui:FluentWindow.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:FluentWindow.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar
+            Grid.Row="0"
+            Title="Add Attribute"
+            CanMaximize="False"
+            ShowMaximize="False"
+            ShowMinimize="False">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon
+                    Source="pack://application:,,,/ExtrabbitCode.Inventor.Attributes;component/Resources/addAttribute_Dialog.png" />
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Attribute Set Name" />
+
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="1"
+                IsEditable="True"
+                IsTextSearchEnabled="True"
+                ItemsSource="{Binding AttributeSetNameLibrary}"
+                StaysOpenOnEdit="True"
+                Text="{Binding AttributeSetName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True, Mode=TwoWay}" />
+
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Attribute Name" />
+
+            <TextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                Text="{Binding AttributeName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Value Type" />
+
+            <ComboBox
+                Grid.Row="4"
+                Grid.Column="1"
+                ItemsSource="{Binding ValueTypes}"
+                SelectedItem="{Binding SelectedValueType}" />
+
+            <TextBlock
+                Grid.Row="6"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Value" />
+
+            <Grid Grid.Row="6" Grid.Column="1">
+                <TextBox
+                    Text="{Binding AttributeValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                    Visibility="{Binding IsTextValueType, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <ComboBox
+                    ItemsSource="{Binding BooleanValues}"
+                    SelectedItem="{Binding SelectedBooleanValue, UpdateSourceTrigger=PropertyChanged}"
+                    Visibility="{Binding IsBooleanType, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
+        </Grid>
+
+        <StackPanel
+            Grid.Row="4"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <ui:Button
+                x:Name="CancelButton"
+                Width="90"
+                Margin="0,0,8,0"
+                Content="Cancel"
+                IsCancel="True" />
+
+            <ui:Button
+                x:Name="OkButton"
+                Width="90"
+                Content="OK"
+                IsDefault="True"
+                IsEnabled="{Binding CanSubmit}"
+                Command="{Binding AddAttributeCommand}" />
+        </StackPanel>
+    </Grid>
+</ui:FluentWindow>

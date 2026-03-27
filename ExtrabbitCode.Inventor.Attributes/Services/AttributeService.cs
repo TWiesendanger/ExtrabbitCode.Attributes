@@ -1,87 +1,218 @@
 using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Models;
 using log4net;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using ValueTypeEnum = Inventor.ValueTypeEnum;
 
 namespace ExtrabbitCode.Inventor.Attributes.Services;
 
 /// <summary>
-/// Service for managing Inventor attributes.
+/// Service for managing Inventor attributes on documents and persistent objects.
 /// </summary>
 public sealed class AttributeService : IAttributeService
 {
-    private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(AttributeService));
+    private static readonly ILog Logger = LogManagerAddin.GetLogger(
+        typeof(AttributeService));
 
-    public AttributeSetsEnumerator? GetAttributeSets(Document? document)
+    public AttributeManager? GetAttributeManager(Document? document)
     {
         if (document == null)
         {
-            Logger.Warn("Cannot get attribute sets from null document.");
+            Logger.Warn("Cannot get AttributeManager from null document.");
             return null;
         }
 
         try
         {
-            AttributeManager? attributeManager = document.AttributeManager;
-            AttributeSetsEnumerator? attributeSets = attributeManager.FindAttributeSets();
-            return attributeSets;
+            return document.AttributeManager;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error getting attribute sets from document: {ex.Message}", ex);
+            Logger.Error(
+                $"Error getting AttributeManager: {ex.Message}",
+                ex);
             return null;
         }
     }
 
-    public InventorAttributeSet? GetAttributeSet(Document? document, string attributeSetName)
+    public AttributeSetsEnumerator? FindAttributeSets(
+        Document? document,
+        string? attributeSetName = null)
     {
-        if (document == null || string.IsNullOrWhiteSpace(attributeSetName))
+        if (document == null)
         {
-            Logger.Warn("Cannot get attribute set: document or attribute set name is null.");
+            Logger.Warn("Cannot find attribute sets in null document.");
             return null;
         }
 
         try
         {
-            InventorAttributeSets? inventorAttributeSets = document.AttributeSets;
-            foreach (InventorAttributeSet inventorAttributeSet in inventorAttributeSets)
+            AttributeManager? attributeManager = GetAttributeManager(document);
+            if (attributeManager == null)
             {
-                if (inventorAttributeSet.Name.Equals(attributeSetName, StringComparison.OrdinalIgnoreCase))
+                return null;
+            }
+
+            return string.IsNullOrWhiteSpace(attributeSetName)
+                ? attributeManager.FindAttributeSets()
+                : attributeManager.FindAttributeSets(attributeSetName);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(
+                $"Error finding attribute sets: {ex.Message}",
+                ex);
+            return null;
+        }
+    }
+
+    public IEnumerable<InventorAttributeSet> GetAttributeSets(object? inventorObject)
+    {
+        if (inventorObject == null)
+        {
+            Logger.Warn("Cannot get attribute sets from null inventor object.");
+            return [];
+        }
+
+        try
+        {
+            InventorAttributeSets? attributeSets = TryGetAttributeSets(inventorObject);
+            if (attributeSets == null)
+            {
+                Logger.Warn("Inventor object does not expose AttributeSets.");
+                return [];
+            }
+
+            List<InventorAttributeSet> result = [];
+            foreach (InventorAttributeSet attributeSet in attributeSets)
+            {
+                result.Add(attributeSet);
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(
+                $"Error getting attribute sets from inventor object: {ex.Message}",
+                ex);
+            return [];
+        }
+    }
+
+    public InventorAttributeSet? GetAttributeSet(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName)
+    {
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName))
+        {
+            Logger.Warn(
+                "Cannot get attribute set: document, inventor object, or attribute set name is null.");
+            return null;
+        }
+
+        try
+        {
+            foreach (InventorAttributeSet attributeSet in GetAttributeSets(inventorObject))
+            {
+                if (attributeSet.Name.Equals(
+                    attributeSetName,
+                    StringComparison.OrdinalIgnoreCase))
                 {
-                    return inventorAttributeSet;
+                    return attributeSet;
                 }
             }
 
-            Logger.Debug($"Attribute set '{attributeSetName}' not found in document.");
+            Logger.Debug(
+                $"Attribute set '{attributeSetName}' not found on inventor object.");
             return null;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error getting attribute set '{attributeSetName}': {ex.Message}", ex);
+            Logger.Error(
+                $"Error getting attribute set '{attributeSetName}': {ex.Message}",
+                ex);
             return null;
         }
     }
 
-    public InventorAttributeSet CreateAttributeSet(Document? document, string attributeSetName)
+    public InventorAttributeSet? GetOrCreateAttributeSet(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName)
     {
-        throw new NotImplementedException();
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName))
+        {
+            Logger.Warn(
+                "Cannot get or create attribute set: document, inventor object, or attribute set name is null.");
+            return null;
+        }
+
+        try
+        {
+            TransientObjects transientObjects = Globals.InvApp.TransientObjects;
+            ObjectCollection objects = transientObjects.CreateObjectCollection();
+            objects.Add(inventorObject);
+
+            AttributeManager? attributeManager = GetAttributeManager(document);
+            if (attributeManager == null)
+            {
+                return null;
+            }
+
+            AttributeSetsEnumerator openedSets =
+                attributeManager.OpenAttributeSets(objects, attributeSetName);
+
+            if (openedSets.Count < 1)
+            {
+                Logger.Warn(
+                    $"OpenAttributeSets returned no results for '{attributeSetName}'.");
+                return null;
+            }
+
+            return openedSets[1] as InventorAttributeSet;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(
+                $"Error getting or creating attribute set '{attributeSetName}': {ex.Message}",
+                ex);
+            return null;
+        }
     }
 
-    public bool DeleteAttributeSet(Document? document, string attributeSetName)
+    public bool DeleteAttributeSet(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName)
     {
-        if (document == null || string.IsNullOrWhiteSpace(attributeSetName))
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName))
         {
-            Logger.Warn("Cannot delete attribute set: document or attribute set name is null.");
+            Logger.Warn(
+                "Cannot delete attribute set: document, inventor object, or attribute set name is null.");
             return false;
         }
 
         try
         {
-            InventorAttributeSet? attributeSet = GetAttributeSet(document, attributeSetName);
+            InventorAttributeSet? attributeSet = GetAttributeSet(
+                document,
+                inventorObject,
+                attributeSetName);
+
             if (attributeSet == null)
             {
-                Logger.Debug($"Attribute set '{attributeSetName}' does not exist.");
+                Logger.Debug(
+                    $"Attribute set '{attributeSetName}' does not exist.");
                 return false;
             }
 
@@ -91,87 +222,168 @@ public sealed class AttributeService : IAttributeService
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error deleting attribute set '{attributeSetName}': {ex.Message}", ex);
+            Logger.Error(
+                $"Error deleting attribute set '{attributeSetName}': {ex.Message}",
+                ex);
             return false;
         }
     }
 
-    public IEnumerable<InventorAttribute> GetAttributes(InventorAttributeSet? attributeSet)
+    public IEnumerable<InventorAttribute> GetAttributes(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName)
     {
-        if (attributeSet == null)
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName))
         {
-            Logger.Warn("Cannot get attributes from null attribute set.");
+            Logger.Warn(
+                "Cannot get attributes: document, inventor object, or attribute set name is null.");
             return [];
         }
 
         try
         {
+            InventorAttributeSet? attributeSet = GetAttributeSet(
+                document,
+                inventorObject,
+                attributeSetName);
+
+            if (attributeSet == null)
+            {
+                return [];
+            }
+
             List<InventorAttribute> attributes = [];
             foreach (InventorAttribute attribute in attributeSet)
             {
                 attributes.Add(attribute);
             }
+
             return attributes;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error getting attributes from attribute set '{attributeSet.Name}': {ex.Message}", ex);
+            Logger.Error(
+                $"Error getting attributes from '{attributeSetName}': {ex.Message}",
+                ex);
             return [];
         }
     }
 
-    public InventorAttribute? GetAttribute(InventorAttributeSet? attributeSet, string attributeName)
+    public InventorAttribute? GetAttribute(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName)
     {
-        if (attributeSet == null || string.IsNullOrWhiteSpace(attributeName))
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName) ||
+            string.IsNullOrWhiteSpace(attributeName))
         {
-            Logger.Warn("Cannot get attribute: attribute set or attribute name is null.");
+            Logger.Warn(
+                "Cannot get attribute: document, inventor object, attribute set name, or attribute name is null.");
             return null;
         }
 
         try
         {
+            InventorAttributeSet? attributeSet = GetAttributeSet(
+                document,
+                inventorObject,
+                attributeSetName);
+
+            if (attributeSet == null)
+            {
+                Logger.Debug(
+                    $"Attribute set '{attributeSetName}' was not found.");
+                return null;
+            }
+
             foreach (InventorAttribute attribute in attributeSet)
             {
-                if (attribute.Name.Equals(attributeName, StringComparison.OrdinalIgnoreCase))
+                if (attribute.Name.Equals(
+                    attributeName,
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     return attribute;
                 }
             }
 
-            Logger.Debug($"Attribute '{attributeName}' not found in attribute set '{attributeSet.Name}'.");
+            Logger.Debug(
+                $"Attribute '{attributeName}' not found in set '{attributeSetName}'.");
             return null;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error getting attribute '{attributeName}': {ex.Message}", ex);
+            Logger.Error(
+                $"Error getting attribute '{attributeName}': {ex.Message}",
+                ex);
             return null;
         }
     }
 
-    public InventorAttribute? AddAttribute(InventorAttributeSet? attributeSet, string attributeName, object? value)
+    public InventorAttribute? AddOrUpdateAttribute(
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName,
+        ValueTypeEnum valueType,
+        object value)
     {
-        if (attributeSet == null || string.IsNullOrWhiteSpace(attributeName) || value == null)
+        if (inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName) ||
+            string.IsNullOrWhiteSpace(attributeName) ||
+            value == null)
         {
-            Logger.Warn("Cannot add attribute: attribute set, attribute name, or value is null.");
+            Logger.Warn(
+                "Cannot add or update attribute: document, inventor object, names, or value is null.");
             return null;
         }
 
         try
         {
-            InventorAttribute? existingAttribute = GetAttribute(attributeSet, attributeName);
-            if (existingAttribute != null)
+            InventorAttributeSet? attributeSet = GetOrCreateAttributeSet(
+                Globals.InvApp.ActiveDocument,
+                inventorObject,
+                attributeSetName);
+
+            if (attributeSet == null)
             {
-                Logger.Info($"Attribute '{attributeName}' already exists in attribute set '{attributeSet.Name}'.");
-                return existingAttribute;
+                Logger.Warn(
+                    $"Could not get or create attribute set '{attributeSetName}'.");
+                return null;
             }
 
-            InventorAttribute? attribute = attributeSet.Add(attributeName, ValueTypeEnum.kStringType, value);
-            Logger.Info($"Added attribute '{attributeName}' to attribute set '{attributeSet.Name}'.");
-            return attribute;
+            foreach (InventorAttribute existingAttribute in attributeSet)
+            {
+                if (existingAttribute.Name.Equals(
+                    attributeName,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    existingAttribute.Value = value;
+
+                    Logger.Info(
+                        $"Updated attribute '{attributeName}' in set '{attributeSetName}'.");
+                    return existingAttribute;
+                }
+            }
+
+            InventorAttribute newAttribute = attributeSet.Add(
+                attributeName,
+                valueType,
+                value);
+
+            Logger.Info(
+                $"Added attribute '{attributeName}' to set '{attributeSetName}'.");
+            return newAttribute;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error adding attribute '{attributeName}': {ex.Message}", ex);
+            Logger.Error(
+                $"Error adding or updating attribute '{attributeName}': {ex.Message}",
+                ex);
             return null;
         }
     }
@@ -180,7 +392,7 @@ public sealed class AttributeService : IAttributeService
     {
         if (attribute == null || value == null)
         {
-            Logger.Warn("Cannot update attribute: attribute or value is null.");
+            Logger.Warn("Cannot update attribute value: attribute or value is null.");
             return false;
         }
 
@@ -192,81 +404,216 @@ public sealed class AttributeService : IAttributeService
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error updating attribute '{attribute.Name}': {ex.Message}", ex);
+            Logger.Error(
+                $"Error updating attribute '{attribute.Name}': {ex.Message}",
+                ex);
             return false;
         }
     }
 
-    public bool DeleteAttribute(InventorAttribute? attribute)
+    public bool DeleteAttribute(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName)
     {
-        if (attribute == null)
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName) ||
+            string.IsNullOrWhiteSpace(attributeName))
         {
-            Logger.Warn("Cannot delete null attribute.");
+            Logger.Warn(
+                "Cannot delete attribute: document, inventor object, attribute set name, or attribute name is null.");
             return false;
         }
 
         try
         {
-            string? attributeName = attribute.Name;
+            InventorAttribute? attribute = GetAttribute(
+                document,
+                inventorObject,
+                attributeSetName,
+                attributeName);
+
+            if (attribute == null)
+            {
+                Logger.Debug(
+                    $"Attribute '{attributeName}' not found in set '{attributeSetName}'.");
+                return false;
+            }
+
             attribute.Delete();
-            Logger.Info($"Deleted attribute '{attributeName}'.");
+            Logger.Info(
+                $"Deleted attribute '{attributeName}' from set '{attributeSetName}'.");
             return true;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error deleting attribute: {ex.Message}", ex);
+            Logger.Error(
+                $"Error deleting attribute '{attributeName}': {ex.Message}",
+                ex);
             return false;
         }
     }
 
-    public int DeleteAllAttributes(InventorAttributeSet? attributeSet)
+    public DeleteAttributesResult DeleteAllAttributes(ObjectCollection? inventorObjectCollection)
     {
-        if (attributeSet == null)
+        if (inventorObjectCollection == null || inventorObjectCollection.Count == 0)
         {
-            Logger.Warn("Cannot delete attributes from null attribute set.");
-            return 0;
+            Logger.Warn(
+                "Cannot delete all attributes: inventor object collection is null or empty.");
+            return new DeleteAttributesResult(0, 0, 0, 0);
         }
+
+        int affectedObjects = 0;
+        int deletedAttributes = 0;
+        int deletedAttributeSets = 0;
+        int failedObjects = 0;
 
         try
         {
-            List<InventorAttribute> attributes = [.. GetAttributes(attributeSet)];
-            int count = 0;
-
-            foreach (InventorAttribute attribute in attributes)
+            foreach (object inventorObject in inventorObjectCollection)
             {
-                if (DeleteAttribute(attribute))
+                try
                 {
-                    count++;
+                    InventorAttributeSets? attributeSets =
+                        TryGetAttributeSets(inventorObject);
+
+                    if (attributeSets == null || attributeSets.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    affectedObjects++;
+
+                    List<InventorAttributeSet> attributeSetsToDelete = [];
+                    attributeSetsToDelete.AddRange(attributeSets.Cast<InventorAttributeSet>());
+
+                    foreach (InventorAttributeSet attributeSet in attributeSetsToDelete)
+                    {
+                        List<InventorAttribute> attributesToDelete = [];
+                        attributesToDelete.AddRange(attributeSet.Cast<InventorAttribute>());
+
+                        foreach (InventorAttribute attribute in attributesToDelete)
+                        {
+                            attribute.Delete();
+                            deletedAttributes++;
+                        }
+
+                        attributeSet.Delete();
+                        deletedAttributeSets++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    failedObjects++;
+
+                    Logger.Error(
+                        $"Error deleting attributes from selected object: {ex.Message}",
+                        ex);
                 }
             }
 
-            Logger.Info($"Deleted {count} attributes from attribute set '{attributeSet.Name}'.");
-            return count;
+            Logger.Info(
+                $"Deleted {deletedAttributes} attribute(s) and {deletedAttributeSets} attribute set(s) from {affectedObjects} object(s). Failed objects: {failedObjects}.");
+
+            return new DeleteAttributesResult(
+                AffectedObjects: affectedObjects,
+                DeletedAttributes: deletedAttributes,
+                DeletedAttributeSets: deletedAttributeSets,
+                FailedObjects: failedObjects);
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error deleting all attributes from attribute set '{attributeSet.Name}': {ex.Message}", ex);
-            return 0;
+            Logger.Error(
+                $"Error deleting all attributes from object collection: {ex.Message}",
+                ex);
+
+            return new DeleteAttributesResult(
+                AffectedObjects: affectedObjects,
+                DeletedAttributes: deletedAttributes,
+                DeletedAttributeSets: deletedAttributeSets,
+                FailedObjects: failedObjects);
         }
     }
 
-    public bool AttributeSetExists(Document? document, string attributeSetName)
+    public ObjectCollection? GetObjectsWithAttributes(Document? document)
     {
-        if (document == null || string.IsNullOrWhiteSpace(attributeSetName))
+        try
+        {
+            AttributeManager? attributeManager = GetAttributeManager(Globals.InvApp.ActiveDocument);
+            ObjectCollection? objects = attributeManager?.FindObjects();
+
+            ObjectCollection objectCollection =
+                Globals.InvApp.TransientObjects.CreateObjectCollection();
+
+            if (objects == null)
+            {
+                return objectCollection;
+            }
+
+            foreach (object inventorObject in objects)
+            {
+                objectCollection.Add(inventorObject);
+            }
+
+            return objectCollection;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(
+                $"Error getting objects with attributes: {ex.Message}",
+                ex);
+            return null;
+        }
+    }
+
+    public bool AttributeSetExists(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName)
+    {
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName))
         {
             return false;
         }
 
-        return GetAttributeSet(document, attributeSetName) != null;
+        return GetAttributeSet(document, inventorObject, attributeSetName) != null;
     }
 
-    public bool AttributeExists(InventorAttributeSet? attributeSet, string attributeName)
+    public bool AttributeExists(
+        Document? document,
+        object? inventorObject,
+        string attributeSetName,
+        string attributeName)
     {
-        if (attributeSet == null || string.IsNullOrWhiteSpace(attributeName))
+        if (document == null ||
+            inventorObject == null ||
+            string.IsNullOrWhiteSpace(attributeSetName) ||
+            string.IsNullOrWhiteSpace(attributeName))
         {
             return false;
         }
 
-        return GetAttribute(attributeSet, attributeName) != null;
+        return GetAttribute(
+            document,
+            inventorObject,
+            attributeSetName,
+            attributeName) != null;
+    }
+
+    private static InventorAttributeSets? TryGetAttributeSets(object inventorObject)
+    {
+        try
+        {
+            dynamic dynObject = inventorObject;
+            return dynObject.AttributeSets as InventorAttributeSets;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

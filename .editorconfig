@@ -5,6 +5,7 @@ root = true
 [*.cs]
 dotnet_diagnostic.CA1031.severity = none
 dotnet_diagnostic.CA1823.severity = none
+dotnet_diagnostic.CS9113.severity = warning # unused parameter in primary constructor
 
 #### Core EditorConfig Options ####
 

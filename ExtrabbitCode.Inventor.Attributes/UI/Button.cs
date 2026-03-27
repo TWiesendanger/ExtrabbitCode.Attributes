@@ -2,10 +2,7 @@
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 using log4net;
-using System;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using Wpf.Ui.Appearance;
 
 
 namespace ExtrabbitCode.Inventor.Attributes.UI
@@ -47,13 +44,25 @@ namespace ExtrabbitCode.Inventor.Attributes.UI
                 case "ExtrabbitCode.Inventor.Attributes.SettingsButton":
                     Logger.Debug("Settings Button was pressed.");
                     SettingsDialog settingsDialog = new();
-                    SetDialogTheme(settingsDialog);
+                    DialogHelper.SetDialogTheme(settingsDialog);
                     settingsDialog.ShowDialog();
                     return;
+
+                case "ExtrabbitCode.Inventor.Attributes.AddAttribute":
+                    Logger.Debug("Add Attribute Button was pressed.");
+                    if (!DialogHelper.CanOpenAddAttributeDialog())
+                    {
+                        return;
+                    }
+                    AddAttributeDialog addAttributeDialog = new();
+                    DialogHelper.SetDialogTheme(addAttributeDialog);
+                    addAttributeDialog.ShowDialog();
+                    return;
+
                 case "ExtrabbitCode.Inventor.Attributes.Info":
                     Logger.Info("Info button pressed");
                     InfoDialog infoDialog = new();
-                    SetDialogTheme(infoDialog);
+                    DialogHelper.SetDialogTheme(infoDialog);
                     infoDialog.ShowDialog();
                     return;
                 case "ExtrabbitCode.Inventor.Attributes.Window":
@@ -64,32 +73,28 @@ namespace ExtrabbitCode.Inventor.Attributes.UI
                     {
                         attributeWindow = Globals.InvApp.UserInterfaceManager.DockableWindows["ExtrabbitCode.Inventor.Attributes.Window"];
                     }
-#pragma warning disable CA1031
                     catch
-#pragma warning restore CA1031
                     {
                         attributeWindow = Globals.InvApp.UserInterfaceManager.DockableWindows.Add("ExtrabbitCode.Inventor.Attributes.Window", "ExtrabbitCode.Inventor.Attributes.Window", "ExtrabbitCode.Inventor.Attributes");
                     }
 
+                    attributeWindow.SetMinimumSize(800, 650);
+                    attributeWindow.DockingState = DockingStateEnum.kDockLastKnown;
                     attributeWindow.Visible = true;
+                    if (!attributeWindow.IsCustomized)
+                    {
+                        attributeWindow.DockingState = DockingStateEnum.kDockLeft;
+                        attributeWindow.Width = 650;
+                        attributeWindow.Height = 850;
+                    }
                     AttributeDialog attributeDialogContent = new();
-                    SetDialogTheme(attributeDialogContent);
+                    DialogHelper.SetDialogTheme(attributeDialogContent);
 
                     DockableWindowChildAdapter.AddWpfWindow(attributeWindow, attributeDialogContent);
                     return;
                 default:
                     return;
             }
-        }
-
-        private static void SetDialogTheme(Window dialog)
-        {
-            ApplicationTheme theme = Globals.ActiveTheme.Name == InventorThemeConstants.LightTheme
-                ? ApplicationTheme.Light
-                : ApplicationTheme.Dark;
-
-            ApplicationThemeManager.Apply(dialog);
-            ApplicationThemeManager.Apply(theme);
         }
     }
 }

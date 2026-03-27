@@ -3,57 +3,137 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:ExtrabbitCode.Inventor.Attributes.UI.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="Attribute Dialog"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    Title="Attributes"
+    FontFamily="{DynamicResource InvFontFamily}"
+    FontSize="{DynamicResource InvFontSizeNormal}"
+    Background="{DynamicResource InvWindowBackgroundBrush}"
+    Foreground="{DynamicResource InvForegroundBrush}"
+    d:DesignHeight="600"
+    d:DesignWidth="900"
     mc:Ignorable="d">
 
-    <Window.DataContext>
-        <local:AttributeWindowViewModel />
-    </Window.DataContext>
+    <ui:FluentWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Shared.xaml" />
+                <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Light.xaml" />
+                <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ui:FluentWindow.Resources>
 
-    <Grid Margin="12">
+    <Grid Background="{DynamicResource InvWindowBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel
+        <Border
+            Margin="5"
+            Padding="10"
             Grid.Row="0"
-            Margin="0,0,0,12"
-            Orientation="Horizontal">
-            <ui:Button
-                x:Name="GetAllAttributesButton"
-                Width="140"
-                Height="32"
-                Margin="0,0,8,0"
-                Command="{Binding GetAllAttributesCommand}"
-                Content="Get All Attributes" />
+            Background="{DynamicResource InvToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource InvToolbarBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource InvCornerRadius}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <ui:Button
-                x:Name="DeleteAttributesButton"
-                Width="140"
-                Height="32"
-                Command="{Binding DeleteAttributesCommand}"
-                Content="Delete Attributes" />
-        </StackPanel>
+                <ui:Button
+                    Grid.Column="0"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Background="{DynamicResource InvAccentBrush}"
+                    Command="{Binding AddAttributeCommand}"
+                    Icon="{ui:SymbolIcon Add24}"
+                    Appearance="Transparent"
+                    ToolTip="Add Attribute" />
 
-        <Grid Grid.Row="1">
-            <Border
-                Background="#FFF5F5F5"
-                BorderBrush="#FFD0D0D0"
-                BorderThickness="1"
-                CornerRadius="4">
+                <ui:SplitButton
+                    Grid.Column="2"
+                    Width="80"
+                    Height="{DynamicResource InvControlHeight}"
+                    Appearance="Dark"
+                    Command="{Binding DeleteSelectedCommand}"
+                    Icon="{ui:SymbolIcon Delete24}"
+                    ToolTip="Delete">
+                    <ui:SplitButton.Flyout>
+                        <ContextMenu
+                            Background="{DynamicResource InvPanelBackgroundBrush}"
+                            FontFamily="{DynamicResource InvFontFamily}"
+                            FontSize="{DynamicResource InvFontSizeNormal}"
+                            DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                            <MenuItem
+                                Header="Delete Selection"
+                                Command="{Binding DeleteSelectedCommand}" />
+                            <MenuItem
+                                Header="Delete All"
+                                Command="{Binding DeleteAllCommand}" />
+                        </ContextMenu>
+                    </ui:SplitButton.Flyout>
+                </ui:SplitButton>
+
+                <ui:Button
+                    Grid.Column="4"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding GetAllAttributesCommand}"
+                    Icon="{ui:SymbolIcon ArrowClockwise24}"
+                    ToolTip="Refresh" />
+
+                <ui:TextBox
+                    Grid.Column="6"
+                    VerticalAlignment="Center"
+                    Height="{DynamicResource InvControlHeight}"
+                    Icon="{ui:SymbolIcon Search12}"
+                    IconPlacement="Right"
+                    FontFamily="{DynamicResource InvFontFamily}"
+                    FontSize="{DynamicResource InvFontSizeNormal}"
+                    PlaceholderText="Search ..."
+                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="Search attribute sets or attributes" />
+
+                <ui:Button
+                    Grid.Column="8"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding OpenSettingsCommand}"
+                    Icon="{ui:SymbolIcon Settings24}"
+                    ToolTip="Settings" />
+            </Grid>
+        </Border>
+
+        <Border
+            Margin="5"
+            Padding="10"
+            Grid.Row="2"
+            Background="{DynamicResource InvPanelBackgroundBrush}"
+            BorderBrush="{DynamicResource InvPanelBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource InvCornerRadius}">
+            <Grid>
                 <TextBlock
-                    Margin="12"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Foreground="Gray"
-                    Text="Content goes here" />
-            </Border>
-        </Grid>
+                    Foreground="{DynamicResource InvMutedForegroundBrush}"
+                    Opacity="0.7"
+                    Text="Attribute tree goes here" />
+            </Grid>
+        </Border>
     </Grid>
 </ui:FluentWindow>

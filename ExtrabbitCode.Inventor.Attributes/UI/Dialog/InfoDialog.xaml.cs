@@ -3,7 +3,6 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using Wpf.Ui.Appearance;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 
@@ -20,7 +19,7 @@ public partial class InfoDialog
         new WindowInteropHelper(this).Owner = ownerHandle;
 
 
-        ApplicationThemeManager.Apply(this);
+        //ApplicationThemeManager.Apply(this);
 
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
     }

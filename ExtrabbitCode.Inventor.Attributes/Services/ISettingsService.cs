@@ -4,8 +4,6 @@ namespace ExtrabbitCode.Inventor.Attributes.Services;
 
 public interface ISettingsService
 {
-    SettingsModel Current { get; }
-
     SettingsModel GetCopy();
 
     void Update(SettingsModel settings);

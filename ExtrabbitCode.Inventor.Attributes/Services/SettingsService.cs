@@ -1,22 +1,40 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Models;
 using System;
+using System.IO;
+using System.Text.Json;
+using File = System.IO.File;
+using Path = System.IO.Path;
 
 namespace ExtrabbitCode.Inventor.Attributes.Services;
 
 public sealed class SettingsService : ISettingsService
 {
-    public SettingsModel Current { get; private set; } = new();
+    private readonly string _filePath;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private SettingsModel _settings;
+
+    public SettingsService(string filePath)
+    {
+        _filePath = filePath;
+        _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        _settings = Load();
+    }
 
     public SettingsModel GetCopy()
     {
         return new SettingsModel
         {
+            ShowConfirmationMessages = _settings.ShowConfirmationMessages,
             ShowWarningOnSingleAttributeDelete =
-                Current.ShowWarningOnSingleAttributeDelete,
+                _settings.ShowWarningOnSingleAttributeDelete,
             ShowWarningOnDeleteAllAttributes =
-                Current.ShowWarningOnDeleteAllAttributes,
+                _settings.ShowWarningOnDeleteAllAttributes,
             UpdateAttributesOnDocumentSwitch =
-                Current.UpdateAttributesOnDocumentSwitch
+                _settings.UpdateAttributesOnDocumentSwitch
         };
     }
 
@@ -24,8 +42,9 @@ public sealed class SettingsService : ISettingsService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        Current = new SettingsModel
+        _settings = new SettingsModel
         {
+            ShowConfirmationMessages = settings.ShowConfirmationMessages,
             ShowWarningOnSingleAttributeDelete =
                 settings.ShowWarningOnSingleAttributeDelete,
             ShowWarningOnDeleteAllAttributes =
@@ -33,5 +52,65 @@ public sealed class SettingsService : ISettingsService
             UpdateAttributesOnDocumentSwitch =
                 settings.UpdateAttributesOnDocumentSwitch
         };
+
+        Save();
+    }
+
+    public void Save()
+    {
+        EnsureStorageExists();
+
+        string json = JsonSerializer.Serialize(
+            _settings,
+            _jsonSerializerOptions);
+
+        File.WriteAllText(_filePath, json);
+    }
+
+    private SettingsModel Load()
+    {
+        EnsureStorageExists();
+
+        try
+        {
+            string json = File.ReadAllText(_filePath);
+
+            return JsonSerializer.Deserialize<SettingsModel>(json) ??
+                   new SettingsModel();
+        }
+        catch
+        {
+            SettingsModel defaultSettings = new();
+            string json = JsonSerializer.Serialize(
+                defaultSettings,
+                _jsonSerializerOptions);
+
+            File.WriteAllText(_filePath, json);
+
+            return defaultSettings;
+        }
+    }
+
+    private void EnsureStorageExists()
+    {
+        string? directoryPath = Path.GetDirectoryName(_filePath);
+
+        if (!string.IsNullOrWhiteSpace(directoryPath) &&
+            !Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        if (File.Exists(_filePath))
+        {
+            return;
+        }
+
+        SettingsModel defaultSettings = new();
+        string json = JsonSerializer.Serialize(
+            defaultSettings,
+            _jsonSerializerOptions);
+
+        File.WriteAllText(_filePath, json);
     }
 }
