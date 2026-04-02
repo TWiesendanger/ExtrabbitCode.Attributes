@@ -1,4 +1,5 @@
 using ExtrabbitCode.Inventor.Attributes.Models;
+using ExtrabbitCode.Inventor.Attributes.Services.AttributeModels;
 using System.Collections.Generic;
 using ValueTypeEnum = Inventor.ValueTypeEnum;
 
@@ -7,6 +8,8 @@ namespace ExtrabbitCode.Inventor.Attributes.Services;
 public interface IAttributeService
 {
     AttributeManager? GetAttributeManager(Document? document);
+
+    AttributeDocumentInfo? GetAttributeTree(Document? document);
 
     AttributeSetsEnumerator? FindAttributeSets(
         Document? document,

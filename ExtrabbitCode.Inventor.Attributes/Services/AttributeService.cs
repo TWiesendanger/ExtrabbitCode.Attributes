@@ -1,5 +1,6 @@
 using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
+using ExtrabbitCode.Inventor.Attributes.Services.AttributeModels;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,77 @@ public sealed class AttributeService : IAttributeService
             Logger.Error(
                 $"Error getting AttributeManager: {ex.Message}",
                 ex);
+            return null;
+        }
+    }
+
+    public AttributeDocumentInfo? GetAttributeTree(Document? document)
+    {
+        if (document is null)
+        {
+            Logger.Warn("Cannot get attribute tree: document is null.");
+            return null;
+        }
+
+        try
+        {
+            ObjectCollection? objectsWithAttributes = GetObjectsWithAttributes(document);
+            if (objectsWithAttributes == null)
+            {
+                return new AttributeDocumentInfo
+                {
+                    DocumentName = document.DisplayName
+                };
+            }
+
+            AttributeDocumentInfo result = new()
+            {
+                DocumentName = document.DisplayName
+            };
+
+            foreach (object inventorObject in objectsWithAttributes)
+            {
+                InventorAttributeSets? attributeSets = TryGetAttributeSets(inventorObject);
+                if (attributeSets == null || attributeSets.Count == 0)
+                {
+                    continue;
+                }
+
+                AttributeOwnerInfo ownerInfo = new()
+                {
+                    DisplayName = GetObjectDisplayName(inventorObject),
+                    ObjectType = inventorObject.GetType().Name,
+                    OwnerObject = inventorObject
+                };
+
+                foreach (InventorAttributeSet attributeSet in attributeSets)
+                {
+                    AttributeSetInfo attributeSetInfo = new()
+                    {
+                        Name = attributeSet.Name
+                    };
+
+                    foreach (InventorAttribute attribute in attributeSet)
+                    {
+                        attributeSetInfo.Attributes.Add(new AttributeInfo
+                        {
+                            Name = attribute.Name,
+                            ValueType = attribute.ValueType,
+                            Value = attribute.Value?.ToString() ?? string.Empty
+                        });
+                    }
+
+                    ownerInfo.AttributeSets.Add(attributeSetInfo);
+                }
+
+                result.Owners.Add(ownerInfo);
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error getting attribute tree: {ex.Message}", ex);
             return null;
         }
     }
@@ -95,9 +167,7 @@ public sealed class AttributeService : IAttributeService
         }
         catch (Exception ex)
         {
-            Logger.Error(
-                $"Error getting attribute sets from inventor object: {ex.Message}",
-                ex);
+            Logger.Error($"Error getting attribute sets from inventor object: {ex.Message}", ex);
             return [];
         }
     }
@@ -615,5 +685,29 @@ public sealed class AttributeService : IAttributeService
         {
             return null;
         }
+    }
+
+    private static string GetObjectDisplayName(object inventorObject)
+    {
+        try
+        {
+            if (inventorObject is Document document)
+            {
+                return document.DisplayName;
+            }
+
+            ObjectTypeEnum objectType = GetInventorObjectType(inventorObject);
+            return objectType.ToString();
+        }
+        catch
+        {
+            return "Unknown Inventor Object";
+        }
+    }
+
+    private static ObjectTypeEnum GetInventorObjectType(object inventorObject)
+    {
+        dynamic dynObject = inventorObject;
+        return (ObjectTypeEnum)dynObject.Type;
     }
 }

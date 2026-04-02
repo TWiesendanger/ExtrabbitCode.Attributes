@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:uiModels="clr-namespace:ExtrabbitCode.Inventor.Attributes.Models"
+    xmlns:converter="clr-namespace:ExtrabbitCode.Inventor.Attributes.Helper.Converter"
     Title="Attributes"
     FontFamily="{DynamicResource InvFontFamily}"
     FontSize="{DynamicResource InvFontSizeNormal}"
@@ -21,6 +23,8 @@
                 <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Light.xaml" />
                 <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Dark.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <converter:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         </ResourceDictionary>
     </ui:FluentWindow.Resources>
 
@@ -119,20 +123,68 @@
         </Border>
 
         <Border
+            Grid.Row="2"
             Margin="5"
             Padding="10"
-            Grid.Row="2"
             Background="{DynamicResource InvPanelBackgroundBrush}"
             BorderBrush="{DynamicResource InvPanelBorderBrush}"
             BorderThickness="1"
             CornerRadius="{DynamicResource InvCornerRadius}">
             <Grid>
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource InvMutedForegroundBrush}"
-                    Opacity="0.7"
-                    Text="Attribute tree goes here" />
+                <TreeView
+                    x:Name="AttributeTreeView"
+                    Margin="4"
+                    Tag="{Binding}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="{DynamicResource InvForegroundBrush}"
+                    ItemsSource="{Binding AttributeTree}">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate
+                            DataType="{x:Type uiModels:AttributeTreeNode}"
+                            ItemsSource="{Binding Children}">
+                            <Grid Tag="{Binding}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu
+                                        Background="{DynamicResource InvPanelBackgroundBrush}"
+                                        Foreground="{DynamicResource InvForegroundBrush}">
+                                        <MenuItem
+                                            Header="Edit"
+                                            Command="{Binding DataContext.EditNodeCommand, Source={x:Reference AttributeTreeView}}"
+                                            CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+
+                                        <MenuItem
+                                            Header="Delete"
+                                            Command="{Binding DataContext.DeleteNodeCommand, Source={x:Reference AttributeTreeView}}"
+                                            CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image
+                                    Grid.Column="0"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0,2,6,0"
+                                    VerticalAlignment="Top"
+                                    Source="{Binding IconSource}"
+                                    Visibility="{Binding IconSource, Converter={StaticResource NullToVisibilityConverter}}" />
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock
+                                        Margin="6,0,0,0"
+                                        Foreground="{DynamicResource InvMutedForegroundBrush}"
+                                        Text="{Binding Value}" />
+                                </StackPanel>
+                            </Grid>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
             </Grid>
         </Border>
     </Grid>

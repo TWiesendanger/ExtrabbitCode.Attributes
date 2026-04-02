@@ -1,5 +1,4 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Helper;
-using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 using log4net;
 using System.Runtime.CompilerServices;

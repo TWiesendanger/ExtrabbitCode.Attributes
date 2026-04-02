@@ -4,8 +4,11 @@ using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
+using ExtrabbitCode.Inventor.Attributes.Services.AttributeModels;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+// ReSharper disable InconsistentNaming
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
@@ -14,6 +17,11 @@ public partial class AttributeWindowViewModel(SettingsService settingsService, A
 {
     [ObservableProperty]
     private string searchText = string.Empty;
+
+    public ObservableCollection<AttributeTreeNode> AttributeTree { get; } = [];
+
+    [ObservableProperty]
+    private AttributeTreeNode? selectedNode;
 
     [RelayCommand]
     private static void AddAttribute()
@@ -135,8 +143,116 @@ public partial class AttributeWindowViewModel(SettingsService settingsService, A
     }
 
     [RelayCommand]
-    private static void GetAllAttributes()
+    private void GetAllAttributes()
     {
+        Document? document = Globals.InvApp?.ActiveDocument;
+        if (document == null)
+        {
+            DialogHelper.ShowInfoMessage(
+                "Refresh Attributes",
+                "No active Inventor document found.");
+            return;
+        }
+
+        AttributeDocumentInfo? tree = attributeService.GetAttributeTree(document);
+        if (tree == null)
+        {
+            return;
+        }
+
+        AttributeTree.Clear();
+
+        AttributeTreeNode documentNode = new()
+        {
+            Name = tree.DocumentName,
+            NodeType = NodeType.Document,
+            IsExpanded = true,
+            IconSource = AttributeTreeIconProvider.GetDocumentIcon(document)
+        };
+
+        foreach (AttributeOwnerInfo owner in tree.Owners)
+        {
+            AttributeTreeNode ownerNode = new()
+            {
+                Name = owner.DisplayName,
+                Value = owner.ObjectType,
+                NodeType = NodeType.Owner,
+                IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Owner),
+                OwnerObject = owner.OwnerObject
+            };
+
+            foreach (AttributeSetInfo attributeSet in owner.AttributeSets)
+            {
+                AttributeTreeNode setNode = new()
+                {
+                    Name = attributeSet.Name,
+                    NodeType = NodeType.AttributeSet,
+                    OwnerObject = owner.OwnerObject,
+                    AttributeSetName = attributeSet.Name,
+                    IconSource = AttributeTreeIconProvider.GetIcon(NodeType.AttributeSet)
+                };
+
+                foreach (AttributeInfo attribute in attributeSet.Attributes)
+                {
+                    setNode.Children.Add(new AttributeTreeNode
+                    {
+                        Name = attribute.Name,
+                        Value = $"{attribute.ValueType}: {attribute.Value}",
+                        NodeType = NodeType.Attribute,
+                        OwnerObject = owner.OwnerObject,
+                        AttributeSetName = attributeSet.Name,
+                        AttributeName = attribute.Name,
+                        IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Attribute)
+                    });
+                }
+
+                ownerNode.Children.Add(setNode);
+            }
+
+            documentNode.Children.Add(ownerNode);
+        }
+
+        AttributeTree.Add(documentNode);
+    }
+
+    [RelayCommand]
+    private void DeleteNode(AttributeTreeNode? node)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        switch (node.NodeType)
+        {
+            case NodeType.Attribute:
+                DeleteAttributeNode(node);
+                break;
+
+            case NodeType.AttributeSet:
+                DeleteAttributeSetNode(node);
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private void EditNode(AttributeTreeNode? node)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        switch (node.NodeType)
+        {
+            case NodeType.Attribute:
+                //EditAttributeNode(node);
+                break;
+
+            case NodeType.AttributeSet:
+                //EditAttributeSetNode(node);
+                break;
+        }
     }
 
     [RelayCommand]
@@ -160,5 +276,45 @@ public partial class AttributeWindowViewModel(SettingsService settingsService, A
         }
 
         return selectedObjects;
+    }
+
+    private void DeleteAttributeNode(AttributeTreeNode node)
+    {
+        if (node.OwnerObject == null ||
+            string.IsNullOrWhiteSpace(node.AttributeSetName) ||
+            string.IsNullOrWhiteSpace(node.AttributeName))
+        {
+            return;
+        }
+
+        bool deleted = attributeService.DeleteAttribute(
+            Globals.InvApp.ActiveDocument,
+            node.OwnerObject,
+            node.AttributeSetName,
+            node.AttributeName);
+
+        if (deleted)
+        {
+            GetAllAttributes();
+        }
+    }
+
+    private void DeleteAttributeSetNode(AttributeTreeNode node)
+    {
+        if (node.OwnerObject == null ||
+            string.IsNullOrWhiteSpace(node.AttributeSetName))
+        {
+            return;
+        }
+
+        bool deleted = attributeService.DeleteAttributeSet(
+            Globals.InvApp.ActiveDocument,
+            node.OwnerObject,
+            node.AttributeSetName);
+
+        if (deleted)
+        {
+            GetAllAttributes();
+        }
     }
 }

@@ -64,6 +64,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\assembly.png" />
+	  <None Remove="Resources\Attribute.png" />
+	  <None Remove="Resources\AttributeSet.png" />
+	  <None Remove="Resources\drawing.png" />
+	  <None Remove="Resources\other.png" />
+	  <None Remove="Resources\part.png" />
+	  <None Remove="Resources\presentation.png" />
 	  <None Remove="UI\ButtonResources\AddAttribute\16x16DarkTheme.png" />
 	  <None Remove="UI\ButtonResources\AddAttribute\16x16LightTheme.png" />
 	  <None Remove="UI\ButtonResources\AddAttribute\32x32DarkTheme.png" />
@@ -111,6 +118,27 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
 		<Resource Include="Resources\appIcon.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\assembly.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\Attribute.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\AttributeSet.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\drawing.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\other.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\part.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\presentation.png">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
 		<Resource Include="Resources\versionhistory.txt">
