@@ -3,8 +3,8 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 using Color = System.Windows.Media.Color;
 using UiMessageBox = Wpf.Ui.Controls.MessageBox;
 
@@ -12,6 +12,22 @@ namespace ExtrabbitCode.Inventor.Attributes.Helper;
 
 static class DialogHelper
 {
+    public static (bool IsValid, string? Message) ValidateSingleSelectionForAddAttribute()
+    {
+        Document? activeDocument = Globals.InvApp?.ActiveDocument;
+        if (activeDocument == null)
+        {
+            return (false, "No active Inventor document found.");
+        }
+
+        if (activeDocument.SelectSet.Count != 1)
+        {
+            return (false, "Please select exactly one object before adding an attribute.");
+        }
+
+        return (true, null);
+    }
+
     public static bool CanOpenAddAttributeDialog()
     {
         Document activeDocument = Globals.InvApp.ActiveDocument;
@@ -105,6 +121,24 @@ static class DialogHelper
         Wpf.Ui.Controls.MessageBoxResult result = await messageBox.ShowDialogAsync().ConfigureAwait(true);
 
         return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
+    }
+
+    public static async Task ShowSnackbarAsync(
+        SnackbarPresenter presenter,
+        string title,
+        string content,
+        ControlAppearance appearance = ControlAppearance.Secondary)
+    {
+        Snackbar snackbar = new(presenter)
+        {
+            Title = title,
+            Content = content,
+            Appearance = appearance,
+            IsCloseButtonEnabled = true,
+            Timeout = TimeSpan.FromSeconds(3)
+        };
+
+        await snackbar.ShowAsync().ConfigureAwait(false);
     }
 
     public static void SetDialogTheme(Window dialog)

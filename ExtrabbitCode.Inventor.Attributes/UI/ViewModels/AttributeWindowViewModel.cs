@@ -1,4 +1,4 @@
-﻿
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Helper;
@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
 /// <inheritdoc/>
-public partial class AttributeWindowViewModel(SettingsService settingsService, AttributeService attributeService) : ObservableObject
+public partial class AttributeWindowViewModel(SettingsService settingsService,
+    AttributeService attributeService,
+    UserNotificationService userNotificationService) : ObservableObject
 {
     [ObservableProperty]
     private string searchText = string.Empty;

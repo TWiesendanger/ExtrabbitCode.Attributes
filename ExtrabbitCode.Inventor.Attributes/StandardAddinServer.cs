@@ -1,4 +1,4 @@
-﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
 using ExtrabbitCode.Inventor.Attributes.UI;
@@ -67,6 +67,7 @@ namespace ExtrabbitCode.Inventor.Attributes
                 Globals.SettingsService = new SettingsService(StoragePaths.SettingsFile);
                 Globals.AttributeService = new AttributeService();
                 Globals.AttributeLibraryService = new AttributeLibraryService(StoragePaths.AttributeLibraryFile);
+                Globals.UserNotificationService = new UserNotificationService();
                 UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;
                 InvAppEvents = Globals.InvApp.ApplicationEvents;
                 InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;

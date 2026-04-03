@@ -1,4 +1,4 @@
-﻿using ExtrabbitCode.Inventor.Attributes.Services;
+using ExtrabbitCode.Inventor.Attributes.Services;
 using System;
 
 namespace ExtrabbitCode.Inventor.Attributes;
@@ -12,6 +12,7 @@ public static class Globals
     public static SettingsService SettingsService { get; set; } = null!;
     public static AttributeService AttributeService { get; set; } = null!;
     public static AttributeLibraryService AttributeLibraryService { get; set; } = null!;
+    public static UserNotificationService UserNotificationService { get; set; } = null!;
 
     public const string AddInClientId = "2b75e9c2-a980-4760-8687-67966594c181";
 
