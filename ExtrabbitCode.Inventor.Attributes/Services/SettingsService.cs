@@ -50,7 +50,9 @@ public sealed class SettingsService : ISettingsService
             ShowWarningOnDeleteAllAttributes =
                 settings.ShowWarningOnDeleteAllAttributes,
             UpdateAttributesOnDocumentSwitch =
-                settings.UpdateAttributesOnDocumentSwitch
+                settings.UpdateAttributesOnDocumentSwitch,
+            DeleteAutodeskDefaultAttributeSets =
+                settings.DeleteAutodeskDefaultAttributeSets
         };
 
         Save();

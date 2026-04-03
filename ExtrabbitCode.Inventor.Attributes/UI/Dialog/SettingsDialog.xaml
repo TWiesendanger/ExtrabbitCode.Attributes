@@ -1,4 +1,4 @@
-﻿<ui:FluentWindow
+<ui:FluentWindow
     x:Class="ExtrabbitCode.Inventor.Attributes.UI.Dialog.SettingsDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -243,6 +243,35 @@
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     IsChecked="{Binding UpdateAttributesOnDocumentSwitch, Mode=TwoWay}" />
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource SettingsRowBorderStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock
+                                        FontWeight="SemiBold"
+                                        Text="Delete Autodesk default attribute sets" />
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        Opacity="0.8"
+                                        Text="Allows Delete All to remove Autodesk/internal attribute sets." />
+                                    <TextBlock
+                                        Margin="0,6,0,0"
+                                        Foreground="Orange"
+                                        FontWeight="SemiBold"
+                                        Text="Warning: This can destroy internal iLogic rules and other Autodesk-managed data." />
+                                </StackPanel>
+
+                                <CheckBox
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding DeleteAutodeskDefaultAttributeSets, Mode=TwoWay}" />
                             </Grid>
                         </Border>
                     </StackPanel>

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
@@ -32,6 +32,9 @@ public partial class SettingsDialogViewModel : ObservableObject
     [ObservableProperty]
     private bool updateAttributesOnDocumentSwitch;
 
+    [ObservableProperty]
+    private bool deleteAutodeskDefaultAttributeSets;
+
     public SettingsDialogViewModel(SettingsService settingsService, AttributeLibraryService attributeLibraryService)
     {
         _settingsService = settingsService;
@@ -45,6 +48,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         ShowWarningOnDeleteAllAttributes = settings.ShowWarningOnDeleteAllAttributes;
         UpdateAttributesOnDocumentSwitch = settings.UpdateAttributesOnDocumentSwitch;
         ShowConfirmationMessages = settings.ShowConfirmationMessages;
+        DeleteAutodeskDefaultAttributeSets = settings.DeleteAutodeskDefaultAttributeSets;
     }
 
     [RelayCommand]

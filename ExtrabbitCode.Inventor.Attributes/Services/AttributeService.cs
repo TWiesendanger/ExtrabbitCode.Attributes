@@ -526,7 +526,7 @@ public sealed class AttributeService : IAttributeService
         }
     }
 
-    public DeleteAttributesResult DeleteAllAttributes(ObjectCollection? inventorObjectCollection)
+    public DeleteAttributesResult DeleteAllAttributes(ObjectCollection? inventorObjectCollection, bool deleteAutodeskDefaultAttributeSets)
     {
         if (inventorObjectCollection == null || inventorObjectCollection.Count == 0)
         {
@@ -561,6 +561,12 @@ public sealed class AttributeService : IAttributeService
 
                     foreach (InventorAttributeSet attributeSet in attributeSetsToDelete)
                     {
+                        if (!deleteAutodeskDefaultAttributeSets &&
+                            IsAutodeskDefaultAttributeSet(attributeSet.Name))
+                        {
+                            continue;
+                        }
+
                         List<InventorAttribute> attributesToDelete = [];
                         attributesToDelete.AddRange(attributeSet.Cast<InventorAttribute>());
 
@@ -709,5 +715,26 @@ public sealed class AttributeService : IAttributeService
     {
         dynamic dynObject = inventorObject;
         return (ObjectTypeEnum)dynObject.Type;
+    }
+
+    private static bool IsAutodeskDefaultAttributeSet(string attributeSetName)
+    {
+        if (string.IsNullOrWhiteSpace(attributeSetName))
+        {
+            return false;
+        }
+
+        return attributeSetName.Equals(
+                   "iLogicRuleListSet",
+                   StringComparison.OrdinalIgnoreCase) ||
+               attributeSetName.Equals(
+                   "iLogicDocumentRuleOptions",
+                   StringComparison.OrdinalIgnoreCase) ||
+               attributeSetName.Equals(
+                   "iLogicDocumentLanguageAttSet",
+                   StringComparison.OrdinalIgnoreCase) ||
+               attributeSetName.StartsWith(
+                   "iLogicRule_",
+                   StringComparison.OrdinalIgnoreCase);
     }
 }

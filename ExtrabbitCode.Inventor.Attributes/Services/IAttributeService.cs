@@ -57,7 +57,7 @@ public interface IAttributeService
         string attributeSetName,
         string attributeName);
 
-    DeleteAttributesResult DeleteAllAttributes(ObjectCollection? inventorObjectCollection);
+    DeleteAttributesResult DeleteAllAttributes(ObjectCollection? inventorObjectCollection, bool deleteAutodeskDefaultAttributeSets);
 
     bool AttributeSetExists(
         Document? document,
