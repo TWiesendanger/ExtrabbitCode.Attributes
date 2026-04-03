@@ -202,13 +202,16 @@ public partial class AttributeWindowViewModel(SettingsService settingsService, A
                         OwnerObject = owner.OwnerObject,
                         AttributeSetName = attributeSet.Name,
                         AttributeName = attribute.Name,
-                        IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Attribute)
+                        IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Attribute),
+                        Parent = setNode
                     });
                 }
 
+                setNode.Parent = ownerNode;
                 ownerNode.Children.Add(setNode);
             }
 
+            ownerNode.Parent = documentNode;
             documentNode.Children.Add(ownerNode);
         }
 
@@ -293,10 +296,15 @@ public partial class AttributeWindowViewModel(SettingsService settingsService, A
             node.AttributeSetName,
             node.AttributeName);
 
-        if (deleted)
+        if (!deleted)
         {
-            GetAllAttributes();
+            DialogHelper.ShowInfoMessage(
+                "Delete Attribute",
+                "The attribute could not be deleted.");
+            return;
         }
+
+        node.Parent?.Children.Remove(node);
     }
 
     private void DeleteAttributeSetNode(AttributeTreeNode node)
@@ -312,9 +320,14 @@ public partial class AttributeWindowViewModel(SettingsService settingsService, A
             node.OwnerObject,
             node.AttributeSetName);
 
-        if (deleted)
+        if (!deleted)
         {
-            GetAllAttributes();
+            DialogHelper.ShowInfoMessage(
+                "Delete Attribute Set",
+                "The attribute set could not be deleted.");
+            return;
         }
+
+        node.Parent?.Children.Remove(node);
     }
 }

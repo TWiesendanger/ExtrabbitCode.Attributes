@@ -30,6 +30,8 @@ public partial class AttributeTreeNode : ObservableObject
 
     public ObservableCollection<AttributeTreeNode> Children { get; } = [];
 
+    public AttributeTreeNode? Parent { get; set; }
+
     public bool CanEdit =>
         NodeType is NodeType.Attribute or NodeType.AttributeSet;
 
