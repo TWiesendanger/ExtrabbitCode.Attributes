@@ -19,8 +19,6 @@ public partial class InfoDialog
         new WindowInteropHelper(this).Owner = ownerHandle;
 
 
-        //ApplicationThemeManager.Apply(this);
-
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
     }
 
@@ -29,5 +27,10 @@ public partial class InfoDialog
         base.OnMouseLeftButtonDown(e);
 
         DragMove();
+    }
+
+    private void CloseButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }

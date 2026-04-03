@@ -68,6 +68,7 @@
 	  <None Remove="Resources\Attribute.png" />
 	  <None Remove="Resources\AttributeSet.png" />
 	  <None Remove="Resources\drawing.png" />
+	  <None Remove="Resources\extrabbit.png" />
 	  <None Remove="Resources\other.png" />
 	  <None Remove="Resources\part.png" />
 	  <None Remove="Resources\presentation.png" />
@@ -130,6 +131,9 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
 		<Resource Include="Resources\drawing.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\extrabbit.png">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
 		<Resource Include="Resources\other.png">

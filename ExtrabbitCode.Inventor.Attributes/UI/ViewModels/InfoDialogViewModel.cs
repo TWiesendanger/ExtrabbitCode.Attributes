@@ -1,30 +1,22 @@
-﻿using System.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
 using System.Reflection;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
-public class InfoDialogViewModel : INotifyPropertyChanged
+public partial class InfoDialogViewModel : ObservableObject
 {
-    private string _programVersion = string.Empty;
-    private string _versionHistory = string.Empty;
+    private const string GitHubUrl = "https://github.com/TWiesendanger/ExtrabbitCode.Inventor.Attributes";
+    private const string AutodeskStoreUrl = "https://apps.autodesk.com/";
 
-    public string ProgramVersion {
-        get => _programVersion;
-        set {
-            _programVersion = value;
-            OnPropertyChanged(nameof(ProgramVersion));
-        }
-    }
+    [ObservableProperty]
+    private string programVersion = string.Empty;
 
-    public string VersionHistory {
-        get => _versionHistory;
-        set {
-            _versionHistory = value;
-            OnPropertyChanged(nameof(VersionHistory));
-        }
-    }
+    [ObservableProperty]
+    private string versionHistory = string.Empty;
 
     public InfoDialogViewModel()
     {
@@ -32,24 +24,44 @@ public class InfoDialogViewModel : INotifyPropertyChanged
         LoadVersionHistory();
     }
 
+    [RelayCommand]
+    private static void OpenGitHub()
+    {
+        OpenUrl(GitHubUrl);
+    }
+
+    [RelayCommand]
+    private void OpenAutodeskStore()
+    {
+        OpenUrl(AutodeskStoreUrl);
+    }
+
     private void LoadProgramVersion()
     {
-        ProgramVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
+        ProgramVersion =
+            Assembly.GetExecutingAssembly().GetName().Version?.ToString() ??
+            "Unknown";
     }
 
     private void LoadVersionHistory()
     {
         string changeLogPath = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty,
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+            string.Empty,
             "Resources",
             "versionhistory.txt");
 
-        VersionHistory = File.Exists(changeLogPath) ? File.ReadAllText(changeLogPath) : "Changelog file not found.";
+        VersionHistory = File.Exists(changeLogPath)
+            ? File.ReadAllText(changeLogPath)
+            : "Changelog file not found.";
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged(string propertyName)
+    private static void OpenUrl(string url)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        });
     }
 }
