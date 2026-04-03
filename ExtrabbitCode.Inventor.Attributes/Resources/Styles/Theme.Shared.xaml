@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
     <FontFamily x:Key="InvFontFamily">Tahoma</FontFamily>
 
@@ -10,6 +10,7 @@
     <sys:Double x:Key="InvFontSizeTitle">14</sys:Double>
 
     <sys:Double x:Key="InvControlHeight">30</sys:Double>
+    <sys:Double x:Key="InvControlHeightLarge">35</sys:Double>
     <sys:Double x:Key="InvControlWidth">40</sys:Double>
     <sys:Double x:Key="InvToolbarButtonHeight">30</sys:Double>
     <sys:Double x:Key="InvToolbarButtonWidth">125</sys:Double>
