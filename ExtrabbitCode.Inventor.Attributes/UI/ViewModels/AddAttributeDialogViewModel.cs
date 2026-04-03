@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -13,6 +14,8 @@ namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
 public partial class AddAttributeDialogViewModel : ObservableValidator
 {
+    public AddAttributeDialogResult? Result { get; private set; }
+
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required(ErrorMessage = "Attribute set name is required.")]
@@ -201,20 +204,10 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
             return;
         }
 
-        object selectedObject = Globals.InvApp.ActiveDocument.SelectSet[1];
-
-        InventorAttribute? attribute = _attributeService.AddOrUpdateAttribute(
-            selectedObject,
+        Result = new AddAttributeDialogResult(
             AttributeSetName,
             AttributeName,
             SelectedValueType,
             AttributeValue);
-
-        if (attribute == null)
-        {
-            DialogHelper.ShowInfoMessage(
-                "Add Attribute",
-                "The attribute could not be created.");
-        }
     }
 }

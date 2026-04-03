@@ -11,7 +11,8 @@ public partial class AttributeDialog
     public AttributeDialog()
     {
         InitializeComponent();
-        _viewModel = new AttributeWindowViewModel(Globals.SettingsService, Globals.AttributeService);
+        _viewModel = new AttributeWindowViewModel(Globals.SettingsService, Globals.AttributeService, Globals.UserNotificationService);
+        Globals.UserNotificationService.SetPresenter(SnackbarPresenter);
         DataContext = _viewModel;
 
         _viewModel.AttributeTree.CollectionChanged += (_, _) => ExpandRootNode();

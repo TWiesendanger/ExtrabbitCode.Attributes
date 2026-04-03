@@ -247,7 +247,7 @@ public sealed class AttributeService : IAttributeService
                 return null;
             }
 
-            return openedSets[1] as InventorAttributeSet;
+            return openedSets[1];
         }
         catch (Exception ex)
         {

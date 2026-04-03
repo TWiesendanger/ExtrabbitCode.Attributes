@@ -25,6 +25,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converter:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </ui:FluentWindow.Resources>
 
@@ -149,6 +150,10 @@
                                         Background="{DynamicResource InvPanelBackgroundBrush}"
                                         Foreground="{DynamicResource InvForegroundBrush}">
                                         <MenuItem
+                                            Header="Select in Window"
+                                            Command="{Binding DataContext.SelectNodeObjectCommand, Source={x:Reference AttributeTreeView}}"
+                                            CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <MenuItem
                                             Header="Edit"
                                             Command="{Binding DataContext.EditNodeCommand, Source={x:Reference AttributeTreeView}}"
                                             CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
@@ -163,6 +168,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <Image
@@ -181,11 +187,31 @@
                                         Foreground="{DynamicResource InvMutedForegroundBrush}"
                                         Text="{Binding Value}" />
                                 </StackPanel>
+
+                                <ui:Button
+                                    Grid.Column="2"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="6,0,0,0"
+                                    Padding="0"
+                                    VerticalAlignment="Top"
+                                    Appearance="Transparent"
+                                    Command="{Binding DataContext.CopyNodeValueCommand, Source={x:Reference AttributeTreeView}}"
+                                    CommandParameter="{Binding}"
+                                    Icon="{ui:SymbolIcon Copy24}"
+                                    ToolTip="Copy value"/>
                             </Grid>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources>
                 </TreeView>
             </Grid>
         </Border>
+
+        <ui:SnackbarPresenter
+            x:Name="SnackbarPresenter"
+            Grid.Row="0" Grid.RowSpan="3"
+            Margin="12"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom" />
     </Grid>
 </ui:FluentWindow>

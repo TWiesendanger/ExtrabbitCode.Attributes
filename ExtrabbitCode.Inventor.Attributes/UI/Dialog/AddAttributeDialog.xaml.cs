@@ -10,21 +10,21 @@ namespace ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 
 public partial class AddAttributeDialog
 {
-    public readonly AddAttributeDialogViewModel _viewModel;
+    public readonly AddAttributeDialogViewModel ViewModel;
 
     public AddAttributeDialogResult Result =>
         new(
-            _viewModel.AttributeSetName,
-            _viewModel.AttributeName,
-            _viewModel.SelectedValueType,
-            _viewModel.AttributeValue);
+            ViewModel.AttributeSetName,
+            ViewModel.AttributeName,
+            ViewModel.SelectedValueType,
+            ViewModel.AttributeValue);
 
     public AddAttributeDialog()
     {
         InitializeComponent();
 
-        _viewModel = new AddAttributeDialogViewModel(Globals.AttributeService, Globals.AttributeLibraryService);
-        DataContext = _viewModel;
+        ViewModel = new AddAttributeDialogViewModel(Globals.AttributeService, Globals.AttributeLibraryService);
+        DataContext = ViewModel;
 
         _ = new WindowInteropHelper(this)
         {
@@ -41,9 +41,7 @@ public partial class AddAttributeDialog
         {
             WindowStartupLocation = WindowStartupLocation.Manual;
         }
-
-        //ApplicationThemeManager.Apply(this);
-
+        
         Closing += OnDialogClosing;
 
         OkButton.Click += OnOkButtonClick;
@@ -58,7 +56,7 @@ public partial class AddAttributeDialog
 
     private void OnOkButtonClick(object sender, RoutedEventArgs e)
     {
-        if (!_viewModel.ValidateAllInput())
+        if (!ViewModel.ValidateAllInput())
         {
             return;
         }

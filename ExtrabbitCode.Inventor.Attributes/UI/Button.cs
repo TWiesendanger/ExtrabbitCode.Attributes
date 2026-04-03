@@ -1,4 +1,5 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 using log4net;
 using System.Runtime.CompilerServices;
@@ -49,13 +50,16 @@ namespace ExtrabbitCode.Inventor.Attributes.UI
 
                 case "ExtrabbitCode.Inventor.Attributes.AddAttribute":
                     Logger.Debug("Add Attribute Button was pressed.");
-                    if (!DialogHelper.CanOpenAddAttributeDialog())
+                    AddAttributeWorkflowResult workflowResult = Globals.AddAttributeWorkflowService.Execute();
+
+                    if (!workflowResult.IsSuccess &&
+                        !string.IsNullOrWhiteSpace(workflowResult.ErrorMessage))
                     {
-                        return;
+                        DialogHelper.ShowInfoMessage(
+                            "Add Attribute",
+                            workflowResult.ErrorMessage);
                     }
-                    AddAttributeDialog addAttributeDialog = new();
-                    DialogHelper.SetDialogTheme(addAttributeDialog);
-                    addAttributeDialog.ShowDialog();
+
                     return;
 
                 case "ExtrabbitCode.Inventor.Attributes.Info":

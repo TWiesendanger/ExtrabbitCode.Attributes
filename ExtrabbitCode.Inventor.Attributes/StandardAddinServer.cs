@@ -1,4 +1,4 @@
-using ExtrabbitCode.Inventor.Attributes.Helper;
+﻿using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
 using ExtrabbitCode.Inventor.Attributes.UI;
@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Windows.Media;
 using Wpf.Ui.Appearance;
-using Color = Inventor.Color;
 
 namespace ExtrabbitCode.Inventor.Attributes
 {
@@ -66,6 +64,7 @@ namespace ExtrabbitCode.Inventor.Attributes
                 Globals.InvApplicationAddInSite = ApplicationAddInSite;
                 Globals.SettingsService = new SettingsService(StoragePaths.SettingsFile);
                 Globals.AttributeService = new AttributeService();
+                Globals.AddAttributeWorkflowService = new AddAttributeWorkflowService(Globals.AttributeService);
                 Globals.AttributeLibraryService = new AttributeLibraryService(StoragePaths.AttributeLibraryFile);
                 Globals.UserNotificationService = new UserNotificationService();
                 UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;

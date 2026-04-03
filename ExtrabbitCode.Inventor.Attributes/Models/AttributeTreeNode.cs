@@ -28,6 +28,8 @@ public partial class AttributeTreeNode : ObservableObject
 
     public string? AttributeName { get; init; }
 
+    public string RawAttributeValue { get; init; } = string.Empty;
+
     public ObservableCollection<AttributeTreeNode> Children { get; } = [];
 
     public AttributeTreeNode? Parent { get; set; }
@@ -37,4 +39,7 @@ public partial class AttributeTreeNode : ObservableObject
 
     public bool CanDelete =>
         NodeType is NodeType.Attribute or NodeType.AttributeSet;
+
+    public bool CanCopyValue =>
+        NodeType == NodeType.Attribute;
 }
