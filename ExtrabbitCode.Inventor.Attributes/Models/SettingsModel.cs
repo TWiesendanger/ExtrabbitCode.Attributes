@@ -8,4 +8,6 @@ public class SettingsModel
     public bool ShowWarningOnDeleteAllAttributes { get; set; } = true;
 
     public bool UpdateAttributesOnDocumentSwitch { get; set; } = true;
+
+    public bool DeleteAutodeskDefaultAttributeSets { get; set; }
 }
