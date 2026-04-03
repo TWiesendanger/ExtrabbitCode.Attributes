@@ -1,28 +1,39 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 // ReSharper disable InconsistentNaming
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
-public partial class SettingsDialogViewModel : ObservableObject
+public partial class SettingsDialogViewModel : ObservableValidator
 {
     private readonly SettingsService _settingsService;
 
     private readonly AttributeLibraryService _attributeLibraryService;
 
+    public bool CanAddAttributeSetName =>
+        !HasErrors &&
+        !string.IsNullOrWhiteSpace(NewAttributeSetName);
+
     [ObservableProperty]
     private bool showConfirmationMessages;
 
     [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required(ErrorMessage = "Attribute set name is required.")]
+    [RegularExpression(
+        "^[A-Za-z]+$",
+        ErrorMessage = "Only letters are allowed. No spaces, digits, or special characters.")]
     private string newAttributeSetName = string.Empty;
 
     [ObservableProperty]
     private string? selectedAttributeSetName;
 
     public ObservableCollection<string> AttributeSetNames { get; } = [];
+
     [ObservableProperty]
     private bool showWarningOnSingleAttributeDelete;
 
@@ -54,7 +65,9 @@ public partial class SettingsDialogViewModel : ObservableObject
     [RelayCommand]
     private void AddAttributeSetName()
     {
-        if (string.IsNullOrWhiteSpace(NewAttributeSetName))
+        ValidateProperty(NewAttributeSetName, nameof(NewAttributeSetName));
+
+        if (HasErrors || string.IsNullOrWhiteSpace(NewAttributeSetName))
         {
             return;
         }
@@ -75,6 +88,12 @@ public partial class SettingsDialogViewModel : ObservableObject
         _attributeLibraryService.RemoveAttributeSetName(SelectedAttributeSetName);
         LoadAttributeSetNames();
         SelectedAttributeSetName = null;
+    }
+
+    partial void OnNewAttributeSetNameChanged(string value)
+    {
+        ValidateProperty(value, nameof(NewAttributeSetName));
+        OnPropertyChanged(nameof(CanAddAttributeSetName));
     }
 
     private void LoadAttributeSetNames()
