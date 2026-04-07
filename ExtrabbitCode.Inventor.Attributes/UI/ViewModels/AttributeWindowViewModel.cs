@@ -24,14 +24,17 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
 {
     [ObservableProperty]
     private string searchText = string.Empty;
-
-
+    
     private readonly List<AttributeTreeNode> _allAttributeTree = [];
     public ObservableCollection<AttributeTreeNode> AttributeTree { get; } = [];
 
     [ObservableProperty]
     private AttributeTreeNode? selectedNode;
 
+    /// <summary>
+    /// Add attribute command that is used from dockable window and also the ribbon.
+    /// </summary>
+    /// <returns></returns>
     [RelayCommand]
     private async Task AddAttribute()
     {
@@ -65,6 +68,11 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
     }
 
+    /// <summary>
+    /// Copy command on rmt. Will copy the raw attribute value to clipboard if the node is an attribute node and has a value.
+    /// </summary>
+    /// <param name="node"></param>
+    /// <returns></returns>
     [RelayCommand]
     private async Task CopyNodeValue(AttributeTreeNode? node)
     {
@@ -83,6 +91,11 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
     }
 
+    /// <summary>
+    /// Tries to select the Inventor object associated with the node. Only works for attribute, attribute set and owner nodes. Shows a message if no object is associated or selection fails.
+    /// </summary>
+    /// <param name="node"></param>
+    /// <returns></returns>
     [RelayCommand]
     private async Task SelectNodeObject(AttributeTreeNode? node)
     {
@@ -184,7 +197,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     }
 
     /// <summary>
-    /// This is the command bar `DeleteAll` button.
+    /// This is the command bar `DeleteAll` button. Depending on options this can lead to destroyed documents.
     /// </summary>
     /// <returns></returns>
     [RelayCommand]
@@ -195,6 +208,9 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             "This will delete all attributes in the active document. Do you want to continue?").ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Refresh button dockable window. Builds the attribute tree from scratch. This is also called after adding an attribute to update the tree. Depending on the number of attributes this can be slow, so for adding we try to just update the tree without full refresh.
+    /// </summary>
     [RelayCommand]
     private void GetAllAttributes()
     {
@@ -304,6 +320,11 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
     }
 
+    /// <summary>
+    /// Edit is only possible on attribute nodes. It will open the same dialog as adding, but with prefilled values. After editing the tree is updated with the new values. Depending on the number of attributes this can be slow, so we try to just update the tree without full refresh.
+    /// </summary>
+    /// <param name="node"></param>
+    /// <returns></returns>
     [RelayCommand]
     private async Task EditNode(AttributeTreeNode? node)
     {
@@ -416,6 +437,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
 
         realNode.Parent?.Children.Remove(realNode);
+
         ApplyTreeFilter();
     }
 
@@ -856,3 +878,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
     }
 }
+
+//TODO move tree search methods
+//TODO add attached behavior for expanding
+//TODO maybe try reapplying theme / style after editing tree
