@@ -155,6 +155,7 @@
                                             CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <MenuItem
                                             Header="Edit"
+                                            Visibility="{Binding PlacementTarget.Tag.CanEdit, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
                                             Command="{Binding DataContext.EditNodeCommand, Source={x:Reference AttributeTreeView}}"
                                             CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
 
@@ -199,7 +200,8 @@
                                     Command="{Binding DataContext.CopyNodeValueCommand, Source={x:Reference AttributeTreeView}}"
                                     CommandParameter="{Binding}"
                                     Icon="{ui:SymbolIcon Copy24}"
-                                    ToolTip="Copy value"/>
+                                    ToolTip="Copy value"
+                                    Visibility="{Binding CanCopyValue, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </Grid>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources>

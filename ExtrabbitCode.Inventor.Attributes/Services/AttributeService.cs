@@ -404,8 +404,7 @@ public sealed class AttributeService : IAttributeService
     {
         if (inventorObject == null ||
             string.IsNullOrWhiteSpace(attributeSetName) ||
-            string.IsNullOrWhiteSpace(attributeName) ||
-            value == null)
+            string.IsNullOrWhiteSpace(attributeName))
         {
             Logger.Warn(
                 "Cannot add or update attribute: document, inventor object, names, or value is null.");
@@ -428,16 +427,18 @@ public sealed class AttributeService : IAttributeService
 
             foreach (InventorAttribute existingAttribute in attributeSet)
             {
-                if (existingAttribute.Name.Equals(
-                    attributeName,
-                    StringComparison.OrdinalIgnoreCase))
+                if (!existingAttribute.Name.Equals(
+                        attributeName,
+                        StringComparison.OrdinalIgnoreCase))
                 {
-                    existingAttribute.Value = value;
-
-                    Logger.Info(
-                        $"Updated attribute '{attributeName}' in set '{attributeSetName}'.");
-                    return existingAttribute;
+                    continue;
                 }
+
+                existingAttribute.Value = value;
+
+                Logger.Info(
+                    $"Updated attribute '{attributeName}' in set '{attributeSetName}'.");
+                return existingAttribute;
             }
 
             InventorAttribute newAttribute = attributeSet.Add(

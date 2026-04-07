@@ -15,8 +15,55 @@ public partial class AttributeDialog
         Globals.UserNotificationService.SetPresenter(SnackbarPresenter);
         DataContext = _viewModel;
 
-        _viewModel.AttributeTree.CollectionChanged += (_, _) => ExpandRootNode();
-        Loaded += (_, _) => ExpandRootNode();
+        _viewModel.AttributeTree.CollectionChanged += (_, _) => UpdateExpansion();
+        Loaded += (_, _) => UpdateExpansion();
+    }
+
+    private void UpdateExpansion()
+    {
+        if (DataContext is not AttributeWindowViewModel viewModel)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(viewModel.SearchText))
+        {
+            ExpandRootNode();
+            return;
+        }
+
+        //ExpandAllVisibleNodes();
+    }
+
+    private void ExpandAllVisibleNodes()
+    {
+        Dispatcher.InvokeAsync(() =>
+        {
+            AttributeTreeView.UpdateLayout();
+
+            for (int i = 0; i < AttributeTreeView.Items.Count; i++)
+            {
+                if (AttributeTreeView.ItemContainerGenerator.ContainerFromIndex(i)
+                    is TreeViewItem rootItem)
+                {
+                    ExpandTreeViewItemRecursive(rootItem);
+                }
+            }
+        }, DispatcherPriority.Loaded);
+    }
+
+    private static void ExpandTreeViewItemRecursive(TreeViewItem item)
+    {
+        item.IsExpanded = true;
+        item.UpdateLayout();
+
+        for (int i = 0; i < item.Items.Count; i++)
+        {
+            if (item.ItemContainerGenerator.ContainerFromIndex(i) is TreeViewItem childItem)
+            {
+                ExpandTreeViewItemRecursive(childItem);
+            }
+        }
     }
 
     private void ExpandRootNode()

@@ -23,7 +23,7 @@ public partial class AddAttributeDialog
     {
         InitializeComponent();
 
-        ViewModel = new AddAttributeDialogViewModel(Globals.AttributeService, Globals.AttributeLibraryService);
+        ViewModel = new AddAttributeDialogViewModel(Globals.AttributeLibraryService);
         DataContext = ViewModel;
 
         _ = new WindowInteropHelper(this)

@@ -14,6 +14,20 @@ namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
 public partial class AddAttributeDialogViewModel : ObservableValidator
 {
+    [ObservableProperty]
+    private AttributeDialogMode dialogMode = AttributeDialogMode.Add;
+
+    public bool IsEditMode => DialogMode == AttributeDialogMode.EditValue;
+
+    public bool CanEditAttributeSetName => !IsEditMode;
+
+    public bool CanEditAttributeName => !IsEditMode;
+
+    public bool CanEditValueType => !IsEditMode;
+
+    public string DialogTitle =>
+        IsEditMode ? "Edit Attribute Value" : "Add Attribute";
+
     public AddAttributeDialogResult? Result { get; private set; }
 
     [ObservableProperty]
@@ -54,7 +68,6 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
     [ObservableProperty]
     private bool? selectedBooleanValue;
 
-    private readonly AttributeService _attributeService;
     private readonly AttributeLibraryService _attributeLibraryService;
 
     public ObservableCollection<ValueTypeEnum> ValueTypes { get; } =
@@ -70,9 +83,8 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
 
     public bool IsTextValueType => SelectedValueType != ValueTypeEnum.kBooleanType;
 
-    public AddAttributeDialogViewModel(AttributeService attributeService, AttributeLibraryService attributeLibraryService)
+    public AddAttributeDialogViewModel(AttributeLibraryService attributeLibraryService)
     {
-        _attributeService = attributeService;
         _attributeLibraryService = attributeLibraryService;
         LoadAttributeSetNameLibrary();
     }
@@ -85,6 +97,40 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
         {
             AttributeSetNameLibrary.Add(name);
         }
+    }
+
+    public void InitializeForEdit(
+        string attributeSetNameInitial,
+        string attributeNameInitial,
+        ValueTypeEnum valueType,
+        string attributeValueInitial)
+    {
+        DialogMode = AttributeDialogMode.EditValue;
+
+        AttributeSetName = attributeSetNameInitial;
+        AttributeName = attributeNameInitial;
+        SelectedValueType = valueType;
+        AttributeValue = attributeValueInitial;
+
+        if (valueType == ValueTypeEnum.kBooleanType &&
+            bool.TryParse(attributeValueInitial, out bool boolValue))
+        {
+            SelectedBooleanValue = boolValue;
+        }
+
+        OnPropertyChanged(nameof(IsEditMode));
+        OnPropertyChanged(nameof(CanEditAttributeSetName));
+        OnPropertyChanged(nameof(CanEditAttributeName));
+        OnPropertyChanged(nameof(CanEditValueType));
+        OnPropertyChanged(nameof(CanSubmit));
+    }
+    partial void OnDialogModeChanged(AttributeDialogMode value)
+    {
+        OnPropertyChanged(nameof(IsEditMode));
+        OnPropertyChanged(nameof(CanEditAttributeSetName));
+        OnPropertyChanged(nameof(CanEditAttributeName));
+        OnPropertyChanged(nameof(CanEditValueType));
+        OnPropertyChanged(nameof(DialogTitle));
     }
 
     partial void OnSelectedBooleanValueChanged(bool? value)
@@ -196,7 +242,7 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
             return;
         }
 
-        if (Globals.InvApp.ActiveDocument.SelectSet.Count != 1)
+        if ((Globals.InvApp.ActiveDocument.SelectSet.Count != 1) & !IsEditMode)
         {
             DialogHelper.ShowInfoMessage(
                 "Add Attribute",

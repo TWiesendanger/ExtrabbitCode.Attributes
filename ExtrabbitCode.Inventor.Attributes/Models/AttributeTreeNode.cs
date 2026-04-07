@@ -28,14 +28,16 @@ public partial class AttributeTreeNode : ObservableObject
 
     public string? AttributeName { get; init; }
 
-    public string RawAttributeValue { get; init; } = string.Empty;
+    public string RawAttributeValue { get; set; } = string.Empty;
+
+    public ValueTypeEnum? AttributeValueType { get; set; }
 
     public ObservableCollection<AttributeTreeNode> Children { get; } = [];
 
     public AttributeTreeNode? Parent { get; set; }
 
     public bool CanEdit =>
-        NodeType is NodeType.Attribute or NodeType.AttributeSet;
+        NodeType is NodeType.Attribute;
 
     public bool CanDelete =>
         NodeType is NodeType.Attribute or NodeType.AttributeSet;

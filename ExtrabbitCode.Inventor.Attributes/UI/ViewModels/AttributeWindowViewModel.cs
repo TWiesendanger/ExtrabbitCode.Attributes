@@ -6,6 +6,7 @@ using ExtrabbitCode.Inventor.Attributes.Services;
 using ExtrabbitCode.Inventor.Attributes.Services.AttributeModels;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -24,6 +25,8 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     [ObservableProperty]
     private string searchText = string.Empty;
 
+
+    private readonly List<AttributeTreeNode> _allAttributeTree = [];
     public ObservableCollection<AttributeTreeNode> AttributeTree { get; } = [];
 
     [ObservableProperty]
@@ -210,7 +213,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             return;
         }
 
-        AttributeTree.Clear();
+        _allAttributeTree.Clear();
 
         AttributeTreeNode documentNode = new()
         {
@@ -250,6 +253,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
                         Value = $"{attribute.ValueType}: {attribute.Value}",
                         NodeType = NodeType.Attribute,
                         RawAttributeValue = attribute.Value,
+                        AttributeValueType = attribute.ValueType,
                         OwnerObject = owner.OwnerObject,
                         AttributeSetName = attributeSet.Name,
                         AttributeName = attribute.Name,
@@ -266,7 +270,8 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             documentNode.Children.Add(ownerNode);
         }
 
-        AttributeTree.Add(documentNode);
+        _allAttributeTree.Add(documentNode);
+        ApplyTreeFilter();
     }
 
     /// <summary>
@@ -300,22 +305,66 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     }
 
     [RelayCommand]
-    public static void EditNode(AttributeTreeNode? node)
+    private async Task EditNode(AttributeTreeNode? node)
     {
-        if (node == null)
+        if (node is not { NodeType: NodeType.Attribute })
         {
             return;
         }
 
-        switch (node.NodeType)
+        AttributeTreeNode? realNode = FindNodeInFullTree(node);
+        if (realNode?.OwnerObject == null ||
+            string.IsNullOrWhiteSpace(realNode.AttributeSetName) ||
+            string.IsNullOrWhiteSpace(realNode.AttributeName))
         {
-            case NodeType.Attribute:
-                //EditAttributeNode(node);
-                break;
+            return;
+        }
 
-            case NodeType.AttributeSet:
-                //EditAttributeSetNode(node);
-                break;
+        AddAttributeDialog dialog = new();
+
+        dialog.ViewModel.InitializeForEdit(
+            realNode.AttributeSetName,
+            realNode.AttributeName,
+            realNode.AttributeValueType ?? ValueTypeEnum.kStringType,
+            realNode.RawAttributeValue);
+
+        DialogHelper.SetDialogTheme(dialog);
+
+        bool? result = dialog.ShowDialog();
+        if (result != true)
+        {
+            return;
+        }
+
+        AddAttributeDialogResult input = dialog.Result;
+
+        object typedValue = ConvertToTypedValue(input.RawValue, input.ValueType);
+
+        InventorAttribute? updatedAttribute = attributeService.AddOrUpdateAttribute(
+            realNode.OwnerObject,
+            input.AttributeSetName,
+            input.AttributeName,
+            input.ValueType,
+            typedValue);
+
+        if (updatedAttribute == null)
+        {
+            await userNotificationService.ShowErrorAsync(
+                "Edit Attribute",
+                "The attribute value could not be updated.").ConfigureAwait(false);
+            return;
+        }
+
+        realNode.Value = $"{input.ValueType}: {input.RawValue}";
+        realNode.RawAttributeValue = input.RawValue;
+        ExpandNodePath(realNode);
+        ApplyTreeFilter();
+
+        if (settingsService.GetCopy().ShowConfirmationMessages)
+        {
+            await userNotificationService.ShowSuccessAsync(
+                "Edit Attribute",
+                $"Attribute '{input.AttributeName}' was updated.").ConfigureAwait(false);
         }
     }
 
@@ -344,18 +393,19 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
 
     private void DeleteAttributeNode(AttributeTreeNode node)
     {
-        if (node.OwnerObject == null ||
-            string.IsNullOrWhiteSpace(node.AttributeSetName) ||
-            string.IsNullOrWhiteSpace(node.AttributeName))
+        AttributeTreeNode? realNode = FindNodeInFullTree(node);
+        if (realNode?.OwnerObject == null ||
+            string.IsNullOrWhiteSpace(realNode.AttributeSetName) ||
+            string.IsNullOrWhiteSpace(realNode.AttributeName))
         {
             return;
         }
 
         bool deleted = attributeService.DeleteAttribute(
             Globals.InvApp.ActiveDocument,
-            node.OwnerObject,
-            node.AttributeSetName,
-            node.AttributeName);
+            realNode.OwnerObject,
+            realNode.AttributeSetName,
+            realNode.AttributeName);
 
         if (!deleted)
         {
@@ -365,21 +415,24 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             return;
         }
 
-        node.Parent?.Children.Remove(node);
+        realNode.Parent?.Children.Remove(realNode);
+        ApplyTreeFilter();
     }
 
     private void DeleteAttributeSetNode(AttributeTreeNode node)
     {
-        if (node.OwnerObject == null ||
-            string.IsNullOrWhiteSpace(node.AttributeSetName))
+        AttributeTreeNode? realNode = FindNodeInFullTree(node);
+        if (realNode == null ||
+            realNode.OwnerObject == null ||
+            string.IsNullOrWhiteSpace(realNode.AttributeSetName))
         {
             return;
         }
 
         bool deleted = attributeService.DeleteAttributeSet(
             Globals.InvApp.ActiveDocument,
-            node.OwnerObject,
-            node.AttributeSetName);
+            realNode.OwnerObject,
+            realNode.AttributeSetName);
 
         if (!deleted)
         {
@@ -389,27 +442,38 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             return;
         }
 
-        AttributeTreeNode? parentNode = node.Parent;
-
-        if (SelectedNode == node)
+        if (SelectedNode != null && NodesMatch(SelectedNode, realNode))
         {
             SelectedNode = null;
         }
 
-        parentNode?.Children.Remove(node);
+        AttributeTreeNode? parentNode = realNode.Parent;
+        parentNode?.Children.Remove(realNode);
+
+        if (parentNode is { NodeType: NodeType.Owner, Children.Count: 0 })
+        {
+            if (SelectedNode != null && NodesMatch(SelectedNode, parentNode))
+            {
+                SelectedNode = null;
+            }
+
+            parentNode.Parent?.Children.Remove(parentNode);
+        }
+
+        ApplyTreeFilter();
     }
 
     private void AddAttributeToTree(
         object selectedObject,
         AddAttributeDialogResult input)
     {
-        if (AttributeTree.Count == 0)
+        if (_allAttributeTree.Count == 0)
         {
             GetAllAttributes();
             return;
         }
 
-        AttributeTreeNode documentNode = AttributeTree[0];
+        AttributeTreeNode documentNode = _allAttributeTree[0];
 
         AttributeTreeNode? ownerNode = documentNode.Children
             .FirstOrDefault(x => ReferenceEquals(x.OwnerObject, selectedObject));
@@ -464,6 +528,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             Name = input.AttributeName,
             Value = valueText,
             RawAttributeValue = input.RawValue,
+            AttributeValueType = input.ValueType,
             NodeType = NodeType.Attribute,
             OwnerObject = selectedObject,
             AttributeSetName = input.AttributeSetName,
@@ -471,23 +536,18 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Attribute),
             Parent = setNode
         });
+
+        ApplyTreeFilter();
+    }
+    partial void OnSearchTextChanged(string value)
+    {
+        ApplyTreeFilter();
     }
 
-    private static object ConvertToTypedValue(string rawValue, ValueTypeEnum valueType)
-    {
-        return valueType switch
-        {
-            ValueTypeEnum.kStringType => rawValue,
-            ValueTypeEnum.kBooleanType => rawValue,
-            ValueTypeEnum.kIntegerType => int.Parse(rawValue, CultureInfo.InvariantCulture),
-            ValueTypeEnum.kDoubleType => double.Parse(rawValue, CultureInfo.InvariantCulture),
-            ValueTypeEnum.kByteArrayType => Convert.FromBase64String(rawValue),
-            _ => rawValue
-        };
-    }
     private void DeleteOwnerNode(AttributeTreeNode node)
     {
-        if (node.OwnerObject == null)
+        AttributeTreeNode? realNode = FindNodeInFullTree(node);
+        if (realNode?.OwnerObject == null)
         {
             return;
         }
@@ -495,26 +555,28 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         ObjectCollection objectCollection =
             Globals.InvApp.TransientObjects.CreateObjectCollection();
 
-        objectCollection.Add(node.OwnerObject);
+        objectCollection.Add(realNode.OwnerObject);
 
         DeleteAttributesResult result =
-            attributeService.DeleteAllAttributes(objectCollection, settingsService.GetCopy().DeleteAutodeskDefaultAttributeSets);
+            attributeService.DeleteAllAttributes(
+                objectCollection,
+                settingsService.GetCopy().DeleteAutodeskDefaultAttributeSets);
 
         if (!result.HasChanges)
         {
-            node.Parent?.Children.Remove(node);
             DialogHelper.ShowInfoMessage(
                 "Delete Attributes",
                 "No attributes were found on the selected owner object.");
             return;
         }
 
-        if (SelectedNode == node)
+        if (SelectedNode != null && NodesMatch(SelectedNode, realNode))
         {
             SelectedNode = null;
         }
 
-        node.Parent?.Children.Remove(node);
+        realNode.Parent?.Children.Remove(realNode);
+        ApplyTreeFilter();
     }
 
     private async Task DeleteDocumentNodeAsync(AttributeTreeNode node)
@@ -598,6 +660,199 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             await userNotificationService.ShowSuccessAsync(
                 title,
                 message).ConfigureAwait(false);
+        }
+    }
+    private void ApplyTreeFilter()
+    {
+        AttributeTree.Clear();
+
+        if (_allAttributeTree.Count == 0)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(SearchText))
+        {
+            foreach (AttributeTreeNode rootNode in _allAttributeTree)
+            {
+                AttributeTree.Add(CloneTree(rootNode, null));
+            }
+
+            return;
+        }
+
+        string search = SearchText.Trim();
+
+        foreach (AttributeTreeNode rootNode in _allAttributeTree)
+        {
+            AttributeTreeNode? filteredRoot = FilterNode(rootNode, search, null);
+            if (filteredRoot != null)
+            {
+                AttributeTree.Add(filteredRoot);
+            }
+        }
+    }
+
+    private static AttributeTreeNode? FilterNode(
+        AttributeTreeNode node,
+        string search,
+        AttributeTreeNode? parent)
+    {
+        bool nodeMatches = NodeMatches(node, search);
+
+        AttributeTreeNode clone = CloneShallow(node, parent);
+
+        foreach (AttributeTreeNode child in node.Children)
+        {
+            AttributeTreeNode? filteredChild = FilterNode(child, search, clone);
+            if (filteredChild != null)
+            {
+                clone.Children.Add(filteredChild);
+            }
+        }
+
+        if (nodeMatches || clone.Children.Count > 0)
+        {
+            clone.IsExpanded = true;
+            return clone;
+        }
+
+        return null;
+    }
+
+    private static bool NodeMatches(AttributeTreeNode node, string search)
+    {
+        return Contains(node.Name, search) ||
+               Contains(node.Value, search);
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        return !string.IsNullOrWhiteSpace(source) &&
+               source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static AttributeTreeNode CloneTree(
+        AttributeTreeNode node,
+        AttributeTreeNode? parent)
+    {
+        AttributeTreeNode clone = CloneShallow(node, parent);
+
+        foreach (AttributeTreeNode child in node.Children)
+        {
+            clone.Children.Add(CloneTree(child, clone));
+        }
+
+        return clone;
+    }
+
+    private static AttributeTreeNode CloneShallow(
+        AttributeTreeNode node,
+        AttributeTreeNode? parent)
+    {
+        return new AttributeTreeNode
+        {
+            Name = node.Name,
+            Value = node.Value,
+            RawAttributeValue = node.RawAttributeValue,
+            AttributeValueType = node.AttributeValueType,
+            NodeType = node.NodeType,
+            IsExpanded = node.IsExpanded,
+            IconSource = node.IconSource,
+            OwnerObject = node.OwnerObject,
+            AttributeSetName = node.AttributeSetName,
+            AttributeName = node.AttributeName,
+            Parent = parent
+        };
+    }
+
+    private AttributeTreeNode? FindNodeInFullTree(AttributeTreeNode node)
+    {
+        if (_allAttributeTree.Count == 0)
+        {
+            return null;
+        }
+
+        return FindNodeRecursive(_allAttributeTree[0], node);
+    }
+
+    private static AttributeTreeNode? FindNodeRecursive(
+        AttributeTreeNode current,
+        AttributeTreeNode target)
+    {
+        if (NodesMatch(current, target))
+        {
+            return current;
+        }
+
+        foreach (AttributeTreeNode child in current.Children)
+        {
+            AttributeTreeNode? result = FindNodeRecursive(child, target);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool NodesMatch(AttributeTreeNode left, AttributeTreeNode right)
+    {
+        if (left.NodeType != right.NodeType)
+        {
+            return false;
+        }
+
+        return left.NodeType switch
+        {
+            NodeType.Document =>
+                string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase),
+
+            NodeType.Owner =>
+                ReferenceEquals(left.OwnerObject, right.OwnerObject),
+
+            NodeType.AttributeSet =>
+                ReferenceEquals(left.OwnerObject, right.OwnerObject) &&
+                string.Equals(left.AttributeSetName, right.AttributeSetName,
+                    StringComparison.OrdinalIgnoreCase),
+
+            NodeType.Attribute =>
+                ReferenceEquals(left.OwnerObject, right.OwnerObject) &&
+                string.Equals(left.AttributeSetName, right.AttributeSetName,
+                    StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(left.AttributeName, right.AttributeName,
+                    StringComparison.OrdinalIgnoreCase),
+
+            _ => false
+        };
+    }
+
+    private static object ConvertToTypedValue(string rawValue, ValueTypeEnum valueType)
+    {
+        return valueType switch
+        {
+            ValueTypeEnum.kStringType => rawValue,
+            ValueTypeEnum.kBooleanType => rawValue,
+            ValueTypeEnum.kIntegerType => int.Parse(
+                rawValue,
+                CultureInfo.InvariantCulture),
+            ValueTypeEnum.kDoubleType => double.Parse(
+                rawValue,
+                CultureInfo.InvariantCulture),
+            ValueTypeEnum.kByteArrayType => Convert.FromBase64String(rawValue),
+            _ => rawValue
+        };
+    }
+
+    private static void ExpandNodePath(AttributeTreeNode node)
+    {
+        AttributeTreeNode? current = node;
+
+        while (current != null)
+        {
+            current.IsExpanded = true;
+            current = current.Parent;
         }
     }
 }
