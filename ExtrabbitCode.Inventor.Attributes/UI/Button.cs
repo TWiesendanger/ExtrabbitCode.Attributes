@@ -1,4 +1,4 @@
-﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 using log4net;
@@ -10,6 +10,7 @@ namespace ExtrabbitCode.Inventor.Attributes.UI
     public class UiButton
     {
         private ButtonDefinition? _bd;
+        private AttributeDialog _attributeDialogContent;
         private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(UiButton));
 
         public ButtonDefinition? Bd {
@@ -90,10 +91,10 @@ namespace ExtrabbitCode.Inventor.Attributes.UI
                         attributeWindow.Width = 650;
                         attributeWindow.Height = 850;
                     }
-                    AttributeDialog attributeDialogContent = new();
-                    DialogHelper.SetDialogTheme(attributeDialogContent);
+                    _attributeDialogContent = new();
 
-                    DockableWindowChildAdapter.AddWpfWindow(attributeWindow, attributeDialogContent);
+                    DockableWindowChildAdapter.AddWpfWindow(attributeWindow, _attributeDialogContent);
+                    DialogHelper.SetDialogTheme(_attributeDialogContent);
                     return;
                 default:
                     return;
