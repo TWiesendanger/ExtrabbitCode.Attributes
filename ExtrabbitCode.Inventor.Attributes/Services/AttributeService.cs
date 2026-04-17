@@ -90,7 +90,7 @@ public sealed class AttributeService : IAttributeService
                         {
                             Name = attribute.Name,
                             ValueType = attribute.ValueType,
-                            Value = attribute.Value?.ToString() ?? string.Empty
+                            Value = AttributeValueConverter.FormatAttributeValue(attribute.Value, attribute.ValueType)
                         });
                     }
 

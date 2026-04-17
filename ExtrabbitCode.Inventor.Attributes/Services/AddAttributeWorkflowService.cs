@@ -1,8 +1,6 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
-using System;
-using System.Globalization;
 
 namespace ExtrabbitCode.Inventor.Attributes.Services;
 
@@ -11,16 +9,16 @@ public sealed class AddAttributeWorkflowService(
 {
     public AddAttributeWorkflowResult Execute()
     {
-        (bool IsValid, string? Message) validation =
+        (bool isValid, string? message) =
             DialogHelper.ValidateSingleSelectionForAddAttribute();
 
-        if (!validation.IsValid)
+        if (!isValid)
         {
             return new AddAttributeWorkflowResult(
                 false,
                 null,
                 null,
-                validation.Message);
+                message);
         }
 
         Document document = Globals.InvApp.ActiveDocument;
@@ -36,7 +34,7 @@ public sealed class AddAttributeWorkflowService(
         }
 
         AddAttributeDialogResult input = dialog.Result;
-        object typedValue = ConvertToTypedValue(input.RawValue, input.ValueType);
+        object typedValue = AttributeValueConverter.ConvertToTypedValue(input.RawValue, input.ValueType);
 
         InventorAttribute? attribute = attributeService.AddOrUpdateAttribute(
             selectedObject,
@@ -58,24 +56,5 @@ public sealed class AddAttributeWorkflowService(
             true,
             selectedObject,
             input);
-    }
-
-    private static object ConvertToTypedValue(
-        string rawValue,
-        ValueTypeEnum valueType)
-    {
-        return valueType switch
-        {
-            ValueTypeEnum.kStringType => rawValue,
-            ValueTypeEnum.kBooleanType => rawValue,
-            ValueTypeEnum.kIntegerType => int.Parse(
-                rawValue,
-                CultureInfo.InvariantCulture),
-            ValueTypeEnum.kDoubleType => double.Parse(
-                rawValue,
-                CultureInfo.InvariantCulture),
-            ValueTypeEnum.kByteArrayType => Convert.FromBase64String(rawValue),
-            _ => rawValue
-        };
     }
 }
