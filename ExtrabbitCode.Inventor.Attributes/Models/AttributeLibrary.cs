@@ -4,5 +4,5 @@ namespace ExtrabbitCode.Inventor.Attributes.Models;
 
 public sealed class AttributeLibrary
 {
-    public List<string> AttributeSetNames { get; } = [];
+    public List<string> AttributeSetNames { get; set; } = [];
 }
