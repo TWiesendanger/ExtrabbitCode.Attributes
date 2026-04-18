@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
@@ -23,6 +23,8 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     UserNotificationService userNotificationService) : ObservableObject
 {
     private readonly HashSet<string> _expandedNodeKeys = [];
+
+    public void RefreshAttributes() => GetAllAttributesCommand.Execute(null);
 
     [ObservableProperty]
     private string searchText = string.Empty;
