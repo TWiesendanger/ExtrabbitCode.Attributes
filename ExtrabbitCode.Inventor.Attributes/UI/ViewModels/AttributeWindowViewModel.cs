@@ -17,7 +17,6 @@ using System.Windows;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
-/// <inheritdoc/>
 public partial class AttributeWindowViewModel(SettingsService settingsService,
     AttributeService attributeService,
     UserNotificationService userNotificationService) : ObservableObject
@@ -42,6 +41,8 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     [RelayCommand]
     private async Task AddAttribute()
     {
+        Globals.TelemetryService.TrackEvent("attribute_add_started");
+
         AddAttributeWorkflowResult workflowResult =
             Globals.AddAttributeWorkflowService.Execute();
 
@@ -61,6 +62,12 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         {
             AddAttributeToTree(workflowResult.OwnerObject, workflowResult.Input);
         }
+
+        Globals.TelemetryService.TrackEvent("attribute_add_succeeded",
+            new Dictionary<string, object>
+            {
+                ["value_type"] = workflowResult.Input?.ValueType.ToString() ?? "unknown"
+            });
 
         if (settingsService.GetCopy().ShowConfirmationMessages &&
             workflowResult.Input != null)

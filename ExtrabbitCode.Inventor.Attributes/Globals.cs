@@ -12,7 +12,7 @@ public static class Globals
     public static SettingsService SettingsService { get; set; } = null!;
     public static AttributeService AttributeService { get; set; } = null!;
     public static AttributeLibraryService AttributeLibraryService { get; set; } = null!;
-
+    public static ITelemetryService TelemetryService { get; set; } = null!;
     public static IAddAttributeWorkflowService AddAttributeWorkflowService { get; set; } = null!;
 
     public static UserNotificationService UserNotificationService { get; set; } = null!;

@@ -19,6 +19,9 @@ public partial class SettingsDialogViewModel : ObservableValidator
         !string.IsNullOrWhiteSpace(NewAttributeSetName);
 
     [ObservableProperty]
+    private bool telemetryEnabled;
+
+    [ObservableProperty]
     private bool showConfirmationMessages;
 
     [ObservableProperty]
@@ -60,6 +63,7 @@ public partial class SettingsDialogViewModel : ObservableValidator
         UpdateAttributesOnDocumentSwitch = settings.UpdateAttributesOnDocumentSwitch;
         ShowConfirmationMessages = settings.ShowConfirmationMessages;
         DeleteAutodeskDefaultAttributeSets = settings.DeleteAutodeskDefaultAttributeSets;
+        TelemetryEnabled = settings.TelemetryEnabled;
     }
 
     [RelayCommand]

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Wpf.Ui.Appearance;
 
 namespace ExtrabbitCode.Inventor.Attributes
@@ -84,6 +85,8 @@ namespace ExtrabbitCode.Inventor.Attributes
                 // Force initialize Wpf.Ui before any dialog opens
                 ApplicationThemeManager.Apply(appTheme);
 
+                InitializeTelemetry();
+
                 _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
                 _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
                 _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.Window", @"UI\ButtonResources\AttributeWindow", themeName);
@@ -107,8 +110,40 @@ namespace ExtrabbitCode.Inventor.Attributes
             }
         }
 
+        private static void InitializeTelemetry()
+        {
+            bool telemetryEnabled = Globals.SettingsService.GetCopy().TelemetryEnabled;
+            string distinctId = TelemetryIdentity.GetOrCreate(StoragePaths.AppDirectory);
+
+            Globals.TelemetryService = new PostHogTelemetryService(
+                apiKey: "phc_uLENDtZG9FvnNfkN7LmKaRcGY8BxQ4nKXiugrQhwi36n",
+                distinctId: distinctId,
+                enabled: telemetryEnabled);
+
+            Globals.TelemetryService.TrackEvent("addin_activated", new Dictionary<string, object>
+            {
+                ["inventor_version"] = Globals.InvApp.SoftwareVersion.DisplayVersion,
+                ["addin_version"] = typeof(StandardAddInServer).Assembly.GetName().Version?.ToString() ?? "unknown",
+                ["theme"] = Globals.ActiveTheme.Name
+            });
+        }
+
         public override void OnDeactivate()
         {
+            try
+            {
+                Globals.TelemetryService.TrackEvent("addin_deactivated");
+
+                Task.Run(async () =>
+                {
+                    await Globals.TelemetryService.FlushAsync().ConfigureAwait(false);
+                }).Wait(TimeSpan.FromSeconds(3));
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug($"Telemetry shutdown failed: {ex.Message}", ex);
+            }
+
             ReleaseButtons();
             ReleaseRibbonPanels();
             ReleaseRibbonTabs();

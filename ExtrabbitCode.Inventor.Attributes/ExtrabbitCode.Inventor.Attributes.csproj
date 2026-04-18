@@ -112,6 +112,7 @@
 		<PackageReference Include="Autodesk.Inventor.Sdk" Version="1.0.3" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="log4net" Version="3.3.0" />
+		<PackageReference Include="PostHog" Version="2.4.1" />
 		<PackageReference Include="WPF-UI" Version="4.2.0" />
 	</ItemGroup>
 
