@@ -51,6 +51,8 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="8" />
@@ -100,8 +102,17 @@
                     Icon="{ui:SymbolIcon ArrowClockwise24}"
                     ToolTip="Refresh" />
 
-                <ui:TextBox
+                <ui:Button
                     Grid.Column="6"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding PurgeAllOrphansCommand}"
+                    Icon="{ui:SymbolIcon Broom24}"
+                    ToolTip="Purge all orphaned attribute sets" />
+
+                <ui:TextBox
+                    Grid.Column="8"
                     VerticalAlignment="Center"
                     Height="{DynamicResource InvControlHeight}"
                     Icon="{ui:SymbolIcon Search12}"
@@ -113,7 +124,7 @@
                     ToolTip="Search attribute sets or attributes" />
 
                 <ui:Button
-                    Grid.Column="8"
+                    Grid.Column="10"
                     Appearance="Transparent"
                     Width="{DynamicResource InvControlWidth}"
                     Height="{DynamicResource InvControlHeight}"

@@ -6,4 +6,6 @@ public enum NodeType
     Owner,
     AttributeSet,
     Attribute,
+    OrphanRoot,
+    OrphanAttributeSet
 }

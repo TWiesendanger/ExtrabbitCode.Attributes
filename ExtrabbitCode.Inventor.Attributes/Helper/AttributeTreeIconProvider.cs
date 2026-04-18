@@ -39,6 +39,8 @@ public static class AttributeTreeIconProvider
             NodeType.AttributeSet => GetAttributeSetIcon(),
             NodeType.Attribute => GetAttributeIcon(),
             NodeType.Owner => GetOwnerIcon(),
+            NodeType.OrphanAttributeSet => GetAttributeSetIcon(),
+            NodeType.OrphanRoot => GetOwnerIcon(),
             _ => null
         };
     }

@@ -100,6 +100,11 @@ public sealed class AttributeService : IAttributeService
                 result.Owners.Add(ownerInfo);
             }
 
+            foreach (OrphanedAttributeSetInfo orphan in GetOrphanedAttributeSets(document))
+            {
+                result.OrphanedAttributeSets.Add(orphan);
+            }
+
             return result;
         }
         catch (Exception ex)
@@ -642,6 +647,77 @@ public sealed class AttributeService : IAttributeService
                 $"Error getting objects with attributes: {ex.Message}",
                 ex);
             return null;
+        }
+    }
+
+    public IReadOnlyList<OrphanedAttributeSetInfo> GetOrphanedAttributeSets(Document? document)
+    {
+        List<OrphanedAttributeSetInfo> result = [];
+
+        AttributeManager? attributeManager = GetAttributeManager(document);
+        if (attributeManager == null)
+        {
+            return result;
+        }
+
+        try
+        {
+            // reportOnly = true -> does not actually purge
+            attributeManager.PurgeAttributeSets("*", true, out object orphans);
+
+            if (orphans is null)
+            {
+                return result;
+            }
+
+            dynamic orphanCollection = orphans;
+            int count = orphanCollection.Count;
+
+            for (int i = 1; i <= count; i++)
+            {
+                InventorAttributeSet attributeSet = orphanCollection[i];
+
+                OrphanedAttributeSetInfo info = new() { Name = attributeSet.Name };
+
+                foreach (InventorAttribute attribute in attributeSet)
+                {
+                    info.Attributes.Add(new AttributeInfo
+                    {
+                        Name = attribute.Name,
+                        ValueType = attribute.ValueType,
+                        Value = AttributeValueConverter.FormatAttributeValue(
+                            attribute.Value, attribute.ValueType)
+                    });
+                }
+
+                result.Add(info);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error getting orphaned attribute sets: {ex.Message}", ex);
+        }
+
+        return result;
+    }
+
+    public bool PurgeOrphanedAttributeSet(Document? document, string attributeSetName)
+    {
+        AttributeManager? attributeManager = GetAttributeManager(document);
+        if (attributeManager == null || string.IsNullOrWhiteSpace(attributeSetName))
+        {
+            return false;
+        }
+
+        try
+        {
+            attributeManager.PurgeAttributeSets(attributeSetName, false, out _);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error purging orphaned attribute set '{attributeSetName}': {ex.Message}", ex);
+            return false;
         }
     }
 

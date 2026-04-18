@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
@@ -226,6 +226,8 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
 
         AttributeDocumentInfo? tree = attributeService.GetAttributeTree(document);
+
+
         if (tree == null)
         {
             return;
@@ -289,7 +291,57 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
 
         _allAttributeTree.Add(documentNode);
+
+        AddOrphanedAttributeSetsToTree(tree);
+
         ApplyTreeFilter();
+    }
+
+    private void AddOrphanedAttributeSetsToTree(AttributeDocumentInfo tree)
+    {
+        if (tree.OrphanedAttributeSets.Count > 0)
+        {
+            AttributeTreeNode orphanRoot = new()
+            {
+                Name = "Orphaned Attribute Sets",
+                Value = $"({tree.OrphanedAttributeSets.Count})",
+                NodeType = NodeType.OrphanRoot,
+                IsExpanded = true,
+                IconSource = AttributeTreeIconProvider.GetIcon(NodeType.OrphanRoot)
+            };
+
+            foreach (OrphanedAttributeSetInfo orphan in tree.OrphanedAttributeSets)
+            {
+                AttributeTreeNode orphanSetNode = new()
+                {
+                    Name = orphan.Name,
+                    NodeType = NodeType.OrphanAttributeSet,
+                    AttributeSetName = orphan.Name,
+                    IconSource = AttributeTreeIconProvider.GetIcon(NodeType.OrphanAttributeSet),
+                    Parent = orphanRoot
+                };
+
+                foreach (AttributeInfo attribute in orphan.Attributes)
+                {
+                    orphanSetNode.Children.Add(new AttributeTreeNode
+                    {
+                        Name = attribute.Name,
+                        Value = $"{attribute.ValueType}: {attribute.Value}",
+                        NodeType = NodeType.Attribute,
+                        RawAttributeValue = attribute.Value,
+                        AttributeValueType = attribute.ValueType,
+                        AttributeSetName = orphan.Name,
+                        AttributeName = attribute.Name,
+                        IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Attribute),
+                        Parent = orphanSetNode
+                    });
+                }
+
+                orphanRoot.Children.Add(orphanSetNode);
+            }
+
+            _allAttributeTree.Add(orphanRoot);
+        }
     }
 
     /// <summary>
@@ -318,6 +370,75 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             case NodeType.Document:
                 await DeleteDocumentNodeAsync(node).ConfigureAwait(false);
                 break;
+            case NodeType.OrphanAttributeSet:
+                DeleteOrphanAttributeSetNode(node);
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private async Task PurgeAllOrphans()
+    {
+        _Document? document = Globals.InvApp.ActiveDocument;
+        if (document == null)
+        {
+            await userNotificationService.ShowErrorAsync(
+                "Purge Orphaned Sets",
+                "No active Inventor document found.").ConfigureAwait(false);
+            return;
+        }
+
+        IReadOnlyList<OrphanedAttributeSetInfo> orphans =
+            attributeService.GetOrphanedAttributeSets(document);
+
+        if (orphans.Count == 0)
+        {
+            await userNotificationService.ShowInfoAsync(
+                "Purge Orphaned Sets",
+                "No orphaned attribute sets were found.").ConfigureAwait(false);
+            return;
+        }
+
+        bool confirmed = await DialogHelper.ShowConfirmationAsync(
+            "Purge Orphaned Sets",
+            $"This will permanently purge {orphans.Count} orphaned attribute set(s). Continue?",
+            "Purge").ConfigureAwait(true);
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        int purged = 0;
+        int failed = 0;
+
+        foreach (OrphanedAttributeSetInfo orphan in orphans)
+        {
+            if (attributeService.PurgeOrphanedAttributeSet(document, orphan.Name))
+            {
+                purged++;
+            }
+            else
+            {
+                failed++;
+            }
+        }
+
+        GetAllAttributes();
+
+        string message = $"Purged {purged} orphaned attribute set(s).";
+        if (failed > 0)
+        {
+            message += $" Failed: {failed}.";
+            await userNotificationService.ShowWarningAsync(
+                "Purge Orphaned Sets", message).ConfigureAwait(false);
+            return;
+        }
+
+        if (settingsService.GetCopy().ShowConfirmationMessages)
+        {
+            await userNotificationService.ShowSuccessAsync(
+                "Purge Orphaned Sets", message).ConfigureAwait(false);
         }
     }
 
@@ -399,6 +520,20 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         settingsDialog.ShowDialog();
     }
 
+
+    private AttributeTreeNode? FindOrphanNode(AttributeTreeNode target)
+    {
+        foreach (AttributeTreeNode root in _allAttributeTree)
+        {
+            AttributeTreeNode? match = FindNodeRecursive(root, target);
+            if (match != null)
+            {
+                return match;
+            }
+        }
+        return null;
+    }
+
     private static ObjectCollection? GetSelectedObjects()
     {
 
@@ -411,6 +546,43 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         }
 
         return selectedObjects;
+    }
+
+    private void DeleteOrphanAttributeSetNode(AttributeTreeNode node)
+    {
+        if (string.IsNullOrWhiteSpace(node.AttributeSetName))
+        {
+            return;
+        }
+
+        AttributeTreeNode? realNode = FindOrphanNode(node);
+        if (realNode == null)
+        {
+            return;
+        }
+
+        bool purged = attributeService.PurgeOrphanedAttributeSet(
+            Globals.InvApp.ActiveDocument,
+            realNode.AttributeSetName!);
+
+        if (!purged)
+        {
+            DialogHelper.ShowInfoMessage(
+                "Purge Attribute Set",
+                "The orphaned attribute set could not be purged.");
+            return;
+        }
+
+        AttributeTreeNode? parent = realNode.Parent;
+        parent?.Children.Remove(realNode);
+
+        // Remove OrphanRoot if empty
+        if (parent is { NodeType: NodeType.OrphanRoot, Children.Count: 0 })
+        {
+            _allAttributeTree.Remove(parent);
+        }
+
+        ApplyTreeFilter();
     }
 
     private void DeleteAttributeNode(AttributeTreeNode node)
@@ -849,7 +1021,11 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
                     StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(left.AttributeName, right.AttributeName,
                     StringComparison.OrdinalIgnoreCase),
+            NodeType.OrphanRoot => true,
 
+            NodeType.OrphanAttributeSet =>
+                string.Equals(left.AttributeSetName, right.AttributeSetName,
+                    StringComparison.OrdinalIgnoreCase),
             _ => false
         };
     }
