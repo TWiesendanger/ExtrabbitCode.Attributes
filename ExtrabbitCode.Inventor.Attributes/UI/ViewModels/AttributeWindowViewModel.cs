@@ -22,9 +22,11 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     AttributeService attributeService,
     UserNotificationService userNotificationService) : ObservableObject
 {
+    private readonly HashSet<string> _expandedNodeKeys = [];
+
     [ObservableProperty]
     private string searchText = string.Empty;
-    
+
     private readonly List<AttributeTreeNode> _allAttributeTree = [];
     public ObservableCollection<AttributeTreeNode> AttributeTree { get; } = [];
 
@@ -164,7 +166,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             }
         }
 
-        DeleteAttributesResult result = attributeService.DeleteAllAttributes(GetSelectedObjects(),settingsService.GetCopy().DeleteAutodeskDefaultAttributeSets);
+        DeleteAttributesResult result = attributeService.DeleteAllAttributes(GetSelectedObjects(), settingsService.GetCopy().DeleteAutodeskDefaultAttributeSets);
 
         if (!result.HasChanges)
         {
@@ -212,7 +214,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     /// Refresh button dockable window. Builds the attribute tree from scratch. This is also called after adding an attribute to update the tree. Depending on the number of attributes this can be slow, so for adding we try to just update the tree without full refresh.
     /// </summary>
     [RelayCommand]
-    private void GetAllAttributes()
+    public void GetAllAttributes()
     {
         _Document document = Globals.InvApp.ActiveDocument;
         if (document == null)
@@ -307,7 +309,6 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             case NodeType.Attribute:
                 DeleteAttributeNode(node);
                 break;
-
             case NodeType.AttributeSet:
                 DeleteAttributeSetNode(node);
                 break;
@@ -686,6 +687,10 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     }
     private void ApplyTreeFilter()
     {
+        // Snapshot current visible state before wiping the tree
+        _expandedNodeKeys.Clear();
+        SnapshotExpandState(AttributeTree);
+
         AttributeTree.Clear();
 
         if (_allAttributeTree.Count == 0)
@@ -699,20 +704,19 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             {
                 AttributeTree.Add(CloneTree(rootNode, null));
             }
-
-            return;
         }
-
-        string search = SearchText.Trim();
-
-        foreach (AttributeTreeNode rootNode in _allAttributeTree)
+        else
         {
-            AttributeTreeNode? filteredRoot = FilterNode(rootNode, search, null);
-            if (filteredRoot != null)
+            string search = SearchText.Trim();
+            foreach (AttributeTreeNode rootNode in _allAttributeTree)
             {
-                AttributeTree.Add(filteredRoot);
+                AttributeTreeNode? filteredRoot = FilterNode(rootNode, search, null);
+                if (filteredRoot != null)
+                    AttributeTree.Add(filteredRoot);
             }
         }
+
+        RestoreExpandState(AttributeTree);
     }
 
     private static AttributeTreeNode? FilterNode(
@@ -877,7 +881,42 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             current = current.Parent;
         }
     }
+
+    private void SnapshotExpandState(IEnumerable<AttributeTreeNode> nodes)
+    {
+        foreach (AttributeTreeNode node in nodes)
+        {
+            if (node.IsExpanded)
+            {
+                _expandedNodeKeys.Add(GetNodeKey(node));
+            }
+
+            SnapshotExpandState(node.Children);
+        }
+    }
+
+    private void RestoreExpandState(IEnumerable<AttributeTreeNode> nodes)
+    {
+        foreach (AttributeTreeNode node in nodes)
+        {
+            node.IsExpanded = _expandedNodeKeys.Contains(GetNodeKey(node));
+            RestoreExpandState(node.Children);
+        }
+    }
+
+    private static string GetNodeKey(AttributeTreeNode node) =>
+        node.NodeType switch
+        {
+            NodeType.Document => $"Doc|{node.Name}",
+            NodeType.Owner => $"Owner|{node.OwnerObject?.GetHashCode()}",
+            NodeType.AttributeSet =>
+                $"Set|{node.OwnerObject?.GetHashCode()}|{node.AttributeSetName}",
+            NodeType.Attribute =>
+                $"Attr|{node.OwnerObject?.GetHashCode()}|{node.AttributeSetName}|{node.AttributeName}",
+            _ => node.Name
+        };
 }
+
 
 //TODO move tree search methods
 //TODO add attached behavior for expanding

@@ -7,7 +7,7 @@ namespace ExtrabbitCode.Inventor.Attributes.UI.Dialog;
 
 public partial class AttributeDialog
 {
-    private readonly AttributeWindowViewModel _viewModel;
+    public readonly AttributeWindowViewModel _viewModel;
     private bool _themeRefreshScheduled;
 
     public AttributeDialog()

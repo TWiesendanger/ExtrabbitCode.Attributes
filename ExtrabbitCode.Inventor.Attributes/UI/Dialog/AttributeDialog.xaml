@@ -7,6 +7,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:uiModels="clr-namespace:ExtrabbitCode.Inventor.Attributes.Models"
     xmlns:converter="clr-namespace:ExtrabbitCode.Inventor.Attributes.Helper.Converter"
+    xmlns:behaviors="clr-namespace:ExtrabbitCode.Inventor.Attributes.Helper.Behavior"
     Title="Attributes"
     FontFamily="{DynamicResource InvFontFamily}"
     FontSize="{DynamicResource InvFontSizeNormal}"
@@ -32,13 +33,12 @@
     <Grid Background="{DynamicResource InvWindowBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
+            <RowDefinition Height="2" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Border
-            Margin="5"
-            Padding="10"
+            Padding="5"
             Grid.Row="0"
             Background="{DynamicResource InvToolbarBackgroundBrush}"
             BorderBrush="{DynamicResource InvToolbarBorderBrush}"
@@ -125,21 +125,22 @@
 
         <Border
             Grid.Row="2"
-            Margin="5"
-            Padding="10"
             Background="{DynamicResource InvPanelBackgroundBrush}"
             BorderBrush="{DynamicResource InvPanelBorderBrush}"
             BorderThickness="1"
             CornerRadius="{DynamicResource InvCornerRadius}">
             <Grid>
                 <TreeView
+                    FontFamily="{DynamicResource InvFontFamily}"
+                    FontSize="{DynamicResource InvFontSizeNormal}"
                     x:Name="AttributeTreeView"
                     Margin="4"
                     Tag="{Binding}"
                     Background="Transparent"
                     BorderThickness="0"
                     Foreground="{DynamicResource InvForegroundBrush}"
-                    ItemsSource="{Binding AttributeTree}">
+                    ItemsSource="{Binding AttributeTree}"
+                    behaviors:TreeViewExpandStateBehavior.PreserveExpandState="True">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate
                             DataType="{x:Type uiModels:AttributeTreeNode}"
@@ -182,9 +183,13 @@
                                     Visibility="{Binding IconSource, Converter={StaticResource NullToVisibilityConverter}}" />
 
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Name}"
+                                               FontFamily="{DynamicResource InvFontFamily}"
+                                               FontSize="{DynamicResource InvFontSizeNormal}"/>
                                     <TextBlock
                                         Margin="6,0,0,0"
+                                        FontFamily="{DynamicResource InvFontFamily}"
+                                        FontSize="{DynamicResource InvFontSizeNormal}"
                                         Foreground="{DynamicResource InvMutedForegroundBrush}"
                                         Text="{Binding Value}" />
                                 </StackPanel>
