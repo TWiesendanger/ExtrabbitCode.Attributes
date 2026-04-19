@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Interop;
 using Wpf.Ui.Appearance;
-using Wpf.Ui.Controls;
 using Color = System.Windows.Media.Color;
 using UiMessageBox = Wpf.Ui.Controls.MessageBox;
 
@@ -109,7 +108,7 @@ static class DialogHelper
 
         System.Windows.Controls.TextBlock textBlock = new()
         {
-            TextWrapping = System.Windows.TextWrapping.Wrap,
+            TextWrapping = TextWrapping.Wrap,
             MaxWidth = 440
         };
         textBlock.Inlines.Add(new Run(
