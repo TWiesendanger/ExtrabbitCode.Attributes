@@ -129,7 +129,8 @@ public partial class SettingsDialogViewModel : ObservableValidator
                 UpdateAttributesOnDocumentSwitch,
             DeleteAutodeskDefaultAttributeSets =
                 DeleteAutodeskDefaultAttributeSets,
-            TelemetryEnabled = TelemetryEnabled
+            TelemetryEnabled = TelemetryEnabled,
+            TelemetryConsentAsked = _settingsService.GetCopy().TelemetryConsentAsked
         };
 
         _settingsService.Update(settings);

@@ -29,12 +29,10 @@ public sealed class SettingsService : ISettingsService
         return new SettingsModel
         {
             ShowConfirmationMessages = _settings.ShowConfirmationMessages,
-            ShowWarningOnSingleAttributeDelete =
-                _settings.ShowWarningOnSingleAttributeDelete,
-            ShowWarningOnDeleteAllAttributes =
-                _settings.ShowWarningOnDeleteAllAttributes,
-            UpdateAttributesOnDocumentSwitch =
-                _settings.UpdateAttributesOnDocumentSwitch,
+            ShowWarningOnSingleAttributeDelete = _settings.ShowWarningOnSingleAttributeDelete,
+            ShowWarningOnDeleteAllAttributes = _settings.ShowWarningOnDeleteAllAttributes,
+            UpdateAttributesOnDocumentSwitch = _settings.UpdateAttributesOnDocumentSwitch,
+            DeleteAutodeskDefaultAttributeSets = _settings.DeleteAutodeskDefaultAttributeSets,
             TelemetryEnabled = _settings.TelemetryEnabled,
             TelemetryConsentAsked = _settings.TelemetryConsentAsked
         };
