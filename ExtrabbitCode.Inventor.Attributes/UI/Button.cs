@@ -83,13 +83,13 @@ public class UiButton
                     attributeWindow = Globals.InvApp.UserInterfaceManager.DockableWindows.Add("ExtrabbitCode.Inventor.Attributes.Window", "ExtrabbitCode.Inventor.Attributes.Window", "ExtrabbitCode.Inventor.Attributes");
                 }
 
-                attributeWindow.SetMinimumSize(800, 650);
+                attributeWindow.SetMinimumSize(800, 800);
                 attributeWindow.DockingState = DockingStateEnum.kDockLastKnown;
                 attributeWindow.Visible = true;
                 if (!attributeWindow.IsCustomized)
                 {
                     attributeWindow.DockingState = DockingStateEnum.kDockLeft;
-                    attributeWindow.Width = 650;
+                    attributeWindow.Width = 800;
                     attributeWindow.Height = 850;
                 }
                 AttributeDialog attributeDialogContent = new();
