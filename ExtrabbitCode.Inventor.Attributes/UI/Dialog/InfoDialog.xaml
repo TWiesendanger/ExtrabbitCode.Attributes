@@ -25,7 +25,7 @@
         </ResourceDictionary>
     </ui:FluentWindow.Resources>
 
-    <Grid Margin="10" Background="{DynamicResource InvWindowBackgroundBrush}">
+    <Grid  Background="{DynamicResource InvWindowBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
@@ -101,6 +101,7 @@
         </Border>
 
         <StackPanel
+            Margin="10"
             Grid.Row="4"
             Orientation="Horizontal">
             <ui:Button
@@ -148,6 +149,7 @@
         </Border>
 
         <StackPanel
+            Margin="10"
             Grid.Row="8"
             HorizontalAlignment="Right"
             Orientation="Horizontal">

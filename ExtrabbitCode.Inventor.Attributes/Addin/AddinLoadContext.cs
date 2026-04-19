@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ExtrabbitCode.Inventor.Attributes.Helper
+namespace ExtrabbitCode.Inventor.Attributes.Addin
 {
     internal sealed class AddinLoadContext : AssemblyLoadContext
     {
-        private static readonly Dictionary<string, AddinLoadContext> _dependenciesProviders = new(1);
+        private static readonly Dictionary<string, AddinLoadContext> DependenciesProviders = new(1);
         private readonly AssemblyDependencyResolver _resolver;
         private const BindingFlags MethodSearchFlags = BindingFlags.Public | BindingFlags.Instance;
 
@@ -45,14 +42,14 @@ namespace ExtrabbitCode.Inventor.Attributes.Helper
         {
             // Assembly location used as context name and the unique provider key.
             string addinRoot = System.IO.Path.GetDirectoryName(type.Assembly.Location)!;
-            if (_dependenciesProviders.TryGetValue(addinRoot, out AddinLoadContext? provider))
+            if (DependenciesProviders.TryGetValue(addinRoot, out AddinLoadContext? provider))
             {
                 return provider;
             }
 
             string addinName = System.IO.Path.GetFileName(addinRoot);
             provider = new AddinLoadContext(type, addinName);
-            _dependenciesProviders.Add(addinRoot, provider);
+            DependenciesProviders.Add(addinRoot, provider);
             return provider;
         }
 

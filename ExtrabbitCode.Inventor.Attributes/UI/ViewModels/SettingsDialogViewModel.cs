@@ -14,9 +14,7 @@ public partial class SettingsDialogViewModel : ObservableValidator
 
     private readonly AttributeLibraryService _attributeLibraryService;
 
-    public bool CanAddAttributeSetName =>
-        !HasErrors &&
-        !string.IsNullOrWhiteSpace(NewAttributeSetName);
+    public bool CanAddAttributeSetName => !HasErrors && !string.IsNullOrWhiteSpace(NewAttributeSetName);
 
     [ObservableProperty]
     private bool telemetryEnabled;
@@ -69,6 +67,8 @@ public partial class SettingsDialogViewModel : ObservableValidator
     [RelayCommand]
     private void AddAttributeSetName()
     {
+        Globals.TelemetryService.TrackEvent("settings_attribute_set_name_add_started");
+
         ValidateProperty(NewAttributeSetName, nameof(NewAttributeSetName));
 
         if (HasErrors || string.IsNullOrWhiteSpace(NewAttributeSetName))
@@ -79,11 +79,15 @@ public partial class SettingsDialogViewModel : ObservableValidator
         _attributeLibraryService.AddAttributeSetName(NewAttributeSetName);
         LoadAttributeSetNames();
         NewAttributeSetName = string.Empty;
+
+        Globals.TelemetryService.TrackEvent("settings_attribute_set_name_add_succeeded");
     }
 
     [RelayCommand]
     private void RemoveSelectedAttributeSetName()
     {
+        Globals.TelemetryService.TrackEvent("settings_attribute_set_name_remove_started");
+
         if (string.IsNullOrWhiteSpace(SelectedAttributeSetName))
         {
             return;
@@ -92,6 +96,8 @@ public partial class SettingsDialogViewModel : ObservableValidator
         _attributeLibraryService.RemoveAttributeSetName(SelectedAttributeSetName);
         LoadAttributeSetNames();
         SelectedAttributeSetName = null;
+
+        Globals.TelemetryService.TrackEvent("settings_attribute_set_name_remove_succeeded");
     }
 
     partial void OnNewAttributeSetNameChanged(string value)
@@ -120,9 +126,23 @@ public partial class SettingsDialogViewModel : ObservableValidator
             ShowWarningOnDeleteAllAttributes =
                 ShowWarningOnDeleteAllAttributes,
             UpdateAttributesOnDocumentSwitch =
-                UpdateAttributesOnDocumentSwitch
+                UpdateAttributesOnDocumentSwitch,
+            DeleteAutodeskDefaultAttributeSets =
+                DeleteAutodeskDefaultAttributeSets,
+            TelemetryEnabled = TelemetryEnabled
         };
 
         _settingsService.Update(settings);
+
+        Globals.TelemetryService.TrackEvent("settings_saved",
+            new System.Collections.Generic.Dictionary<string, object>
+            {
+                ["show_confirmation_messages"] = ShowConfirmationMessages,
+                ["show_warning_on_single_delete"] = ShowWarningOnSingleAttributeDelete,
+                ["show_warning_on_delete_all"] = ShowWarningOnDeleteAllAttributes,
+                ["update_on_document_switch"] = UpdateAttributesOnDocumentSwitch,
+                ["delete_autodesk_default_sets"] = DeleteAutodeskDefaultAttributeSets,
+                ["telemetry_enabled"] = TelemetryEnabled
+            });
     }
 }

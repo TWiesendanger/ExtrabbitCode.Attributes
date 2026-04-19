@@ -18,51 +18,8 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationManifest>$(ProjectDir)Addin\ExtrabbitCode.Inventor.Attributes.manifest</ApplicationManifest>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Remove="C:\ProgramData\ExtrabbitCode\**" />
-		<Content Remove="C:\ProgramData\ExtrabbitCode\**" />
-		<EmbeddedResource Remove="C:\ProgramData\ExtrabbitCode\**" />
-		<None Remove="C:\ProgramData\ExtrabbitCode\**" />
-		<Page Remove="C:\ProgramData\ExtrabbitCode\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Remove="Constants.cs" />
-		<Content Remove="Globals.cs" />
-		<Content Remove="Helper\DialogHelper.cs" />
-		<Content Remove="Helper\DockableWindowChildAdapter.cs" />
-		<Content Remove="Helper\StoragePaths.cs" />
-		<Content Remove="Helper\ThemeResourceHelper.cs" />
-		<Content Remove="Models\AddAttributeDialogResult.cs" />
-		<Content Remove="Models\AttributeLibrary.cs" />
-		<Content Remove="Models\DeleteAttributesResult.cs" />
-		<Content Remove="Models\SettingsModel.cs" />
-		<Content Remove="Resources\AddAttribute.png" />
-		<Content Remove="Resources\addAttribute_Dialog.png" />
-		<Content Remove="Resources\appIcon.png" />
-		<Content Remove="Resources\Styles\Theme.Dark.xaml" />
-		<Content Remove="Resources\versionhistory.txt" />
-		<Content Remove="Services\AttributeLibraryService.cs" />
-		<Content Remove="Services\AttributeService.cs" />
-		<Content Remove="Services\IAttributeLibraryService.cs" />
-		<Content Remove="Services\IAttributeService.cs" />
-		<Content Remove="Services\ISettingsService.cs" />
-		<Content Remove="Services\SettingsService.cs" />
-		<Content Remove="UI\Dialog\AddAttributeDialog.xaml" />
-		<Content Remove="UI\Dialog\AddAttributeDialog.xaml.cs" />
-		<Content Remove="UI\Dialog\AttributeDialog.xaml" />
-		<Content Remove="UI\Dialog\AttributeDialog.xaml.cs" />
-		<Content Remove="UI\Dialog\AttributeWindow.xaml" />
-		<Content Remove="UI\Dialog\InfoDialog.xaml" />
-		<Content Remove="UI\Dialog\InfoDialog.xaml.cs" />
-		<Content Remove="UI\Dialog\SettingsDialog.xaml" />
-		<Content Remove="UI\Dialog\SettingsDialog.xaml.cs" />
-		<Content Remove="UI\ViewModels\AddAttributeDialogViewModel.cs" />
-		<Content Remove="UI\ViewModels\AttributeWindowViewModel.cs" />
-		<Content Remove="UI\ViewModels\SettingsDialogViewModel.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove="Resources\assembly.png" />
@@ -109,7 +66,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Autodesk.Inventor.Sdk" Version="1.0.3" />
+		<PackageReference Include="Autodesk.Inventor.Sdk" Version="2.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="log4net" Version="3.3.0" />
 		<PackageReference Include="PostHog" Version="2.4.1" />
@@ -150,6 +107,14 @@
 		<Resource Include="Resources\versionhistory.txt">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -218,6 +183,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+		  <Generator>SettingsSingleFileGenerator</Generator>
+		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
 		<None Update="UI\ButtonResources\Info\32x32LightTheme.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

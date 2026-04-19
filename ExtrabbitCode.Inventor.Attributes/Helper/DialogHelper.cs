@@ -14,7 +14,7 @@ static class DialogHelper
 {
     public static (bool IsValid, string? Message) ValidateSingleSelectionForAddAttribute()
     {
-        Document? activeDocument = Globals.InvApp?.ActiveDocument;
+        Document? activeDocument = Globals.InvApp.ActiveDocument;
         if (activeDocument == null)
         {
             return (false, "No active Inventor document found.");
@@ -27,41 +27,6 @@ static class DialogHelper
 
         return (true, null);
     }
-
-    public static bool CanOpenAddAttributeDialog()
-    {
-        Document activeDocument = Globals.InvApp.ActiveDocument;
-        if (activeDocument.SelectSet.Count == 1)
-        {
-            return true;
-        }
-
-        UiMessageBox messageBox = new()
-        {
-            Title = "Add Attribute",
-            Content = "Please select exactly one object before adding an attribute.",
-            ShowTitle = true,
-            CloseButtonText = "Close",
-            IsCloseButtonEnabled = true,
-            IsPrimaryButtonEnabled = false,
-            IsSecondaryButtonEnabled = false,
-            Width = 420,
-            MinWidth = 420,
-            SizeToContent = SizeToContent.Height,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        _ = new WindowInteropHelper(messageBox)
-        {
-            Owner = new IntPtr(Globals.InvApp.MainFrameHWND)
-        };
-
-        SetDialogTheme(messageBox);
-
-        _ = messageBox.ShowDialogAsync();
-        return false;
-    }
-
     public static void ShowInfoMessage(string title, string content)
     {
         UiMessageBox messageBox = new()
@@ -121,24 +86,6 @@ static class DialogHelper
         Wpf.Ui.Controls.MessageBoxResult result = await messageBox.ShowDialogAsync().ConfigureAwait(true);
 
         return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
-    }
-
-    public static async Task ShowSnackbarAsync(
-        SnackbarPresenter presenter,
-        string title,
-        string content,
-        ControlAppearance appearance = ControlAppearance.Secondary)
-    {
-        Snackbar snackbar = new(presenter)
-        {
-            Title = title,
-            Content = content,
-            Appearance = appearance,
-            IsCloseButtonEnabled = true,
-            Timeout = TimeSpan.FromSeconds(3)
-        };
-
-        await snackbar.ShowAsync().ConfigureAwait(false);
     }
 
     public static void SetDialogTheme(Window dialog)

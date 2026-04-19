@@ -36,12 +36,9 @@ public partial class AttributeTreeNode : ObservableObject
 
     public AttributeTreeNode? Parent { get; set; }
 
-    public bool CanEdit =>
-        NodeType is NodeType.Attribute;
+    public bool CanEdit => NodeType is NodeType.Attribute;
 
-    public bool CanDelete =>
-        NodeType is NodeType.Attribute or NodeType.AttributeSet;
+    public bool CanDelete => NodeType is NodeType.Attribute or NodeType.AttributeSet;
 
-    public bool CanCopyValue =>
-        NodeType == NodeType.Attribute;
+    public bool CanCopyValue => NodeType == NodeType.Attribute;
 }

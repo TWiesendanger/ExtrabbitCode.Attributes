@@ -12,16 +12,10 @@ echo TargetDir is %TargetDir%
 echo "%ProjectDir%Addin\signing\mt.exe"
 echo "%ProjectDir%Addin\ExtrabbitCode.Inventor.Attributes.manifest"
 
-echo - Embed the manifest into the dll. 
-echo %ProjectDir%Addin\%TargetName%.manifest
-"%ProjectDir%Addin\signing\mt.exe" -manifest "%ProjectDir%Addin\ExtrabbitCode.Inventor.Attributes.manifest" -outputresource:"%TargetPath%";#2
-
 echo - Copy the .addin file and the ButtonResources folder into the result folder.
 if not exist "C:\ProgramData\Autodesk\Inventor Addins" mkdir "C:\ProgramData\Autodesk\Inventor Addins"
 XCopy "%ProjectDir%Addin\ExtrabbitCode.Inventor.Attributes.addin" "C:\ProgramData\Autodesk\Inventor Addins" /y
 
-::echo "%ProjectDir%UI\ButtonResources"
-::XCopy "%ProjectDir%UI\ButtonResources" "%TargetDir%ButtonResources" /y /r /i /s /f
 XCopy "%ProjectDir%Resources" "%TargetDir%Resources" /y /r /i /s /f
 
 echo - Delete the existing add-in folder.
