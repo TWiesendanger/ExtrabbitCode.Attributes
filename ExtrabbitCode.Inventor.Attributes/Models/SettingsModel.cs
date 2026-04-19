@@ -12,4 +12,6 @@ public class SettingsModel
     public bool DeleteAutodeskDefaultAttributeSets { get; set; }
 
     public bool TelemetryEnabled { get; set; } = true;
+
+    public bool TelemetryConsentAsked { get; set; }
 }

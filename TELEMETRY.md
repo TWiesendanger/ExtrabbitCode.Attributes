@@ -1,0 +1,41 @@
+# Telemetry & Privacy
+
+ExtrabbitCode.Inventor.Attributes collects **anonymous** usage data to help understand how the add-in is used and to prioritise improvements.
+
+Telemetry is **opt-in** and can be enabled or disabled at any time via **Settings → Enable telemetry**.
+
+---
+
+## What IS collected
+
+| Category | Examples |
+|---|---|
+| Feature usage | Which toolbar buttons and commands are used, and how often |
+| Workflow outcomes | Whether an add/edit/delete succeeded or was cancelled |
+| Configuration | Which settings are active (e.g. confirmation messages on/off) |
+| Environment | Inventor version, add-in version, active UI theme |
+| Session lifecycle | Add-in activated / deactivated |
+
+All events carry a randomly generated anonymous ID that is created on first run and stored locally. It contains no personal information and cannot be used to identify you.
+
+---
+
+## What is NOT collected
+
+- Your name, email, or any account information
+- File names, paths, or document contents
+- Attribute names, attribute set names, or attribute values
+- Any data from your Inventor models
+- IP address (PostHog is configured to not store it)
+
+---
+
+## Where data is sent
+
+Events are sent to [PostHog](https://posthog.com) (US region). PostHog is an open-source analytics platform.
+
+---
+
+## How to opt out
+
+Open the add-in and go to **Settings → Enable telemetry** and uncheck the option. No data will be sent after that point.

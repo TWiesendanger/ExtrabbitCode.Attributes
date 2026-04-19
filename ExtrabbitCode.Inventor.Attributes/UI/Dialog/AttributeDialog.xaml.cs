@@ -1,6 +1,8 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -31,6 +33,8 @@ public partial class AttributeDialog
         {
             StandardAddInServer.InvAppEvents.OnActivateDocument += OnInventorDocumentActivated;
         }
+
+        Dispatcher.BeginInvoke(async () => await AskTelemetryConsentIfNeededAsync());
     }
 
     private void OnClosed(object? sender, EventArgs e)
@@ -94,5 +98,27 @@ public partial class AttributeDialog
         DialogHelper.SetDialogTheme(this);
         InvalidateVisual();
         UpdateLayout();
+    }
+
+    private static async Task AskTelemetryConsentIfNeededAsync()
+    {
+        SettingsModel settings = Globals.SettingsService.GetCopy();
+        if (settings.TelemetryConsentAsked)
+        {
+            return;
+        }
+
+        bool enabled = await DialogHelper.ShowTelemetryConsentAsync().ConfigureAwait(true);
+
+        settings.TelemetryConsentAsked = true;
+        settings.TelemetryEnabled = enabled;
+        Globals.SettingsService.Update(settings);
+        Globals.TelemetryService.Enabled = enabled;
+
+        Globals.TelemetryService.TrackEvent("telemetry_consent_given",
+            new System.Collections.Generic.Dictionary<string, object>
+            {
+                ["enabled"] = enabled
+            });
     }
 }
