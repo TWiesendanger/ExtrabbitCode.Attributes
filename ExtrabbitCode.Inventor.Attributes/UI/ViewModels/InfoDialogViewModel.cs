@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using File = System.IO.File;
 using Path = System.IO.Path;
+// ReSharper disable InconsistentNaming
 
 namespace ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 
@@ -27,12 +28,14 @@ public partial class InfoDialogViewModel : ObservableObject
     [RelayCommand]
     private static void OpenGitHub()
     {
+        Globals.TelemetryService.TrackEvent("info_github_opened");
         OpenUrl(GitHubUrl);
     }
 
     [RelayCommand]
-    private void OpenAutodeskStore()
+    private static void OpenAutodeskStore()
     {
+        Globals.TelemetryService.TrackEvent("info_autodesk_store_opened");
         OpenUrl(AutodeskStoreUrl);
     }
 

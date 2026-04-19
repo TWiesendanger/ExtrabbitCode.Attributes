@@ -1,4 +1,5 @@
-﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+﻿using ExtrabbitCode.Inventor.Attributes.Addin;
+using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
 using ExtrabbitCode.Inventor.Attributes.UI;
@@ -7,368 +8,402 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Wpf.Ui.Appearance;
 
-namespace ExtrabbitCode.Inventor.Attributes
+namespace ExtrabbitCode.Inventor.Attributes;
+
+[ProgId("Inventor.Core.Template.StandardAddInServer")]
+[Guid(Globals.AddInClientId)]
+public class StandardAddInServer : IsolatedApplicationAddInServer
 {
-    [ProgId("Inventor.Core.Template.StandardAddInServer")]
-    [Guid(Globals.AddInClientId)]
-    public class StandardAddInServer : IsolatedApplicationAddInServer
-    {
-        private UserInterfaceEvents? _uiEvents;
-        private readonly List<RibbonPanel> _ribbonPanels = [];
-        private readonly List<RibbonTab> _ribbonTabs = [];
-        private readonly List<CommandControl> _buttons = [];
-        private readonly List<ButtonDefinition> _buttonDefinitions = [];
+    private UserInterfaceEvents? _uiEvents;
+    private readonly List<RibbonPanel> _ribbonPanels = [];
+    private readonly List<RibbonTab> _ribbonTabs = [];
+    private readonly List<CommandControl> _buttons = [];
+    private readonly List<ButtonDefinition> _buttonDefinitions = [];
 
-        public static ApplicationEvents? InvAppEvents { get; set; }
+    public static ApplicationEvents? InvAppEvents { get; set; }
 
-        private ButtonDefinition? _settingsButton;
-        private ButtonDefinition? _openAttributeWindow;
-        private ButtonDefinition? _addAttributeToObject;
-        private ButtonDefinition? _info;
+    private ButtonDefinition? _settingsButton;
+    private ButtonDefinition? _openAttributeWindow;
+    private ButtonDefinition? _addAttributeToObject;
+    private ButtonDefinition? _info;
 
-        private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(StandardAddInServer));
+    private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(StandardAddInServer));
 
-        public UserInterfaceEvents? UiEvents {
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            get => _uiEvents;
+    public UserInterfaceEvents? UiEvents {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        get => _uiEvents;
 
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            set {
-                if (_uiEvents != null)
-                {
-                    _uiEvents.OnResetRibbonInterface -= UiEventsOnResetRibbonInterface;
-                }
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        set {
+            if (_uiEvents != null)
+            {
+                _uiEvents.OnResetRibbonInterface -= UiEventsOnResetRibbonInterface;
+            }
 
-                _uiEvents = value;
-                if (_uiEvents != null)
-                {
-                    _uiEvents.OnResetRibbonInterface += UiEventsOnResetRibbonInterface;
-                }
+            _uiEvents = value;
+            if (_uiEvents != null)
+            {
+                _uiEvents.OnResetRibbonInterface += UiEventsOnResetRibbonInterface;
             }
         }
+    }
 
-        // ReSharper disable once CA1725
+    // ReSharper disable once CA1725
 #pragma warning disable CA1725 // Parameter names should match base declaration
-        public override void OnActivate()
+    public override void OnActivate()
 #pragma warning restore CA1725 // Parameter names should match base declaration
+    {
+        ArgumentNullException.ThrowIfNull(ApplicationAddInSite);
+
+        try
         {
-            ArgumentNullException.ThrowIfNull(ApplicationAddInSite);
+            Logger.Debug("Addin InventorTemplate Activated");
 
-            try
+            Globals.InvApp = ApplicationAddInSite.Application;
+            Globals.InvApplicationAddInSite = ApplicationAddInSite;
+            Globals.SettingsService = new SettingsService(StoragePaths.SettingsFile);
+            Globals.AttributeService = new AttributeService();
+            Globals.AddAttributeWorkflowService = new AddAttributeWorkflowService(Globals.AttributeService);
+            Globals.AttributeLibraryService = new AttributeLibraryService(StoragePaths.AttributeLibraryFile);
+            Globals.UserNotificationService = new UserNotificationService();
+            UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;
+            InvAppEvents = Globals.InvApp.ApplicationEvents;
+            InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;
+
+            ThemeManager themeManager = Globals.InvApp.ThemeManager;
+            Globals.ActiveTheme = themeManager.ActiveTheme;
+            string themeName = Globals.ActiveTheme.Name;
+            ThemeResourceHelper.ApplyInventorThemeResources();
+            Logger.Debug("Inventor ThemeManager ActiveTheme: " + themeName);
+
+            ApplicationTheme appTheme = themeName == InventorThemeConstants.LightTheme
+                ? ApplicationTheme.Light
+                : ApplicationTheme.Dark;
+
+            // Force initialize Wpf.Ui before any dialog opens
+            ApplicationThemeManager.Apply(appTheme);
+
+            InitializeTelemetry();
+
+            _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
+            _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
+            _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.Window", @"UI\ButtonResources\AttributeWindow", themeName);
+            _addAttributeToObject = UiDefinitionHelper.CreateButton("Add attribute", "ExtrabbitCode.Inventor.Attributes.AddAttribute", @"UI\ButtonResources\AddAttribute", themeName);
+            _buttonDefinitions.Add(_info);
+            _buttonDefinitions.Add(_settingsButton);
+            _buttonDefinitions.Add(_openAttributeWindow);
+            _buttonDefinitions.Add(_addAttributeToObject);
+
+            if (FirstTime)
             {
-                Logger.Debug("Addin InventorTemplate Activated");
-
-                Globals.InvApp = ApplicationAddInSite.Application;
-                Globals.InvApplicationAddInSite = ApplicationAddInSite;
-                Globals.SettingsService = new SettingsService(StoragePaths.SettingsFile);
-                Globals.AttributeService = new AttributeService();
-                Globals.AddAttributeWorkflowService = new AddAttributeWorkflowService(Globals.AttributeService);
-                Globals.AttributeLibraryService = new AttributeLibraryService(StoragePaths.AttributeLibraryFile);
-                Globals.UserNotificationService = new UserNotificationService();
-                UiEvents = Globals.InvApp.UserInterfaceManager.UserInterfaceEvents;
-                InvAppEvents = Globals.InvApp.ApplicationEvents;
-                InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;
-
-                ThemeManager themeManager = Globals.InvApp.ThemeManager;
-                Globals.ActiveTheme = themeManager.ActiveTheme;
-                string themeName = Globals.ActiveTheme.Name;
-                ThemeResourceHelper.ApplyInventorThemeResources();
-                Logger.Debug("Inventor ThemeManager ActiveTheme: " + themeName);
-
-                ApplicationTheme appTheme = themeName == InventorThemeConstants.LightTheme
-                    ? ApplicationTheme.Light
-                    : ApplicationTheme.Dark;
-
-                // Force initialize Wpf.Ui before any dialog opens
-                ApplicationThemeManager.Apply(appTheme);
-
-                _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
-                _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
-                _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.Window", @"UI\ButtonResources\AttributeWindow", themeName);
-                _addAttributeToObject = UiDefinitionHelper.CreateButton("Add attribute", "ExtrabbitCode.Inventor.Attributes.AddAttribute", @"UI\ButtonResources\AddAttribute", themeName);
-                _buttonDefinitions.Add(_info);
-                _buttonDefinitions.Add(_settingsButton);
-                _buttonDefinitions.Add(_openAttributeWindow);
-                _buttonDefinitions.Add(_addAttributeToObject);
-
-                if (FirstTime)
-                {
-                    AddToUserInterface();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(
-                    "Unexpected failure during activation of the add-in 'InventorTemplate'.",
-                    ex
-                );
+                AddToUserInterface();
             }
         }
-
-        public override void OnDeactivate()
+        catch (Exception ex)
         {
-            ReleaseButtons();
-            ReleaseRibbonPanels();
-            ReleaseRibbonTabs();
-            ReleaseAppEvents();
+            throw new InvalidOperationException(
+                "Unexpected failure during activation of the add-in 'InventorTemplate'.",
+                ex
+            );
+        }
+    }
 
-            if (_uiEvents == null)
+    private static void InitializeTelemetry()
+    {
+        bool telemetryEnabled = Globals.SettingsService.GetCopy().TelemetryEnabled;
+        string distinctId = TelemetryIdentity.GetOrCreate(StoragePaths.AppDirectory);
+
+        Globals.TelemetryService = new PostHogTelemetryService(
+            apiKey: "phc_uLENDtZG9FvnNfkN7LmKaRcGY8BxQ4nKXiugrQhwi36n",
+            distinctId: distinctId,
+            enabled: telemetryEnabled);
+
+        Globals.TelemetryService.TrackEvent("addin_activated", new Dictionary<string, object>
+        {
+            ["inventor_version"] = Globals.InvApp.SoftwareVersion.DisplayVersion,
+            ["addin_version"] = typeof(StandardAddInServer).Assembly.GetName().Version?.ToString() ?? "unknown",
+            ["theme"] = Globals.ActiveTheme.Name
+        });
+    }
+
+    public override void OnDeactivate()
+    {
+        try
+        {
+            Globals.TelemetryService.TrackEvent("addin_deactivated");
+
+            Task.Run(async () =>
             {
-                return;
-            }
-
-            _uiEvents.OnResetRibbonInterface -= UiEventsOnResetRibbonInterface;
-            _uiEvents = null;
+                await Globals.TelemetryService.FlushAsync().ConfigureAwait(false);
+            }).Wait(TimeSpan.FromSeconds(3));
+        }
+        catch (Exception ex)
+        {
+            Logger.Debug($"Telemetry shutdown failed: {ex.Message}", ex);
         }
 
-        private void ReleaseAppEvents()
-        {
-            if (InvAppEvents is null)
-            {
-                return;
-            }
+        ReleaseButtons();
+        ReleaseRibbonPanels();
+        ReleaseRibbonTabs();
+        ReleaseAppEvents();
 
+        if (_uiEvents == null)
+        {
+            return;
+        }
+
+        _uiEvents.OnResetRibbonInterface -= UiEventsOnResetRibbonInterface;
+        _uiEvents = null;
+    }
+
+    private void ReleaseAppEvents()
+    {
+        if (InvAppEvents is null)
+        {
+            return;
+        }
+
+        try
+        {
+            InvAppEvents.OnApplicationOptionChange -= InvAppEvents_OnApplicationOptionChange;
+        }
+        catch (COMException ex)
+        {
+            Logger.Debug("COMException while releasing application events.", ex);
+        }
+        catch (InvalidComObjectException ex)
+        {
+            Logger.Debug("InvalidComObjectException while releasing application events.", ex);
+        }
+        finally
+        {
+            InvAppEvents = null;
+        }
+    }
+
+    private void ReleaseRibbonTabs()
+    {
+        if (_ribbonTabs.Count == 0)
+        {
+            return;
+        }
+
+        foreach (RibbonTab tab in _ribbonTabs)
+        {
             try
             {
-                InvAppEvents.OnApplicationOptionChange -= InvAppEvents_OnApplicationOptionChange;
+                tab.Delete();
+                Marshal.ReleaseComObject(tab);
             }
             catch (COMException ex)
             {
-                Logger.Debug("COMException while releasing application events.", ex);
+                Logger.Debug("COMException releasing RibbonTab.", ex);
             }
             catch (InvalidComObjectException ex)
             {
-                Logger.Debug("InvalidComObjectException while releasing application events.", ex);
-            }
-            finally
-            {
-                InvAppEvents = null;
+                Logger.Debug("InvalidComObjectException releasing RibbonTab.", ex);
             }
         }
 
-        private void ReleaseRibbonTabs()
+        _ribbonTabs.Clear();
+    }
+
+    private void ReleaseRibbonPanels()
+    {
+        if (_ribbonPanels.Count == 0)
         {
-            if (_ribbonTabs.Count == 0)
-            {
-                return;
-            }
-
-            foreach (RibbonTab tab in _ribbonTabs)
-            {
-                try
-                {
-                    tab.Delete();
-                    Marshal.ReleaseComObject(tab);
-                }
-                catch (COMException ex)
-                {
-                    Logger.Debug("COMException releasing RibbonTab.", ex);
-                }
-                catch (InvalidComObjectException ex)
-                {
-                    Logger.Debug("InvalidComObjectException releasing RibbonTab.", ex);
-                }
-            }
-
-            _ribbonTabs.Clear();
+            return;
         }
 
-        private void ReleaseRibbonPanels()
+        foreach (RibbonPanel panel in _ribbonPanels)
         {
-            if (_ribbonPanels.Count == 0)
-            {
-                return;
-            }
-
-            foreach (RibbonPanel panel in _ribbonPanels)
-            {
-                try
-                {
-                    panel.Delete();
-                    Marshal.ReleaseComObject(panel);
-                }
-                catch (COMException ex)
-                {
-                    Logger.Debug("COMException releasing RibbonPanel.", ex);
-                }
-                catch (InvalidComObjectException ex)
-                {
-                    Logger.Debug("InvalidComObjectException releasing RibbonPanel.", ex);
-                }
-            }
-
-            _ribbonPanels.Clear();
-        }
-
-        private void ReleaseButtons()
-        {
-            if (_buttonDefinitions.Count == 0 && _buttons.Count == 0)
-            {
-                return;
-            }
-
             try
             {
-                foreach (ButtonDefinition buttonDefinition in _buttonDefinitions)
+                panel.Delete();
+                Marshal.ReleaseComObject(panel);
+            }
+            catch (COMException ex)
+            {
+                Logger.Debug("COMException releasing RibbonPanel.", ex);
+            }
+            catch (InvalidComObjectException ex)
+            {
+                Logger.Debug("InvalidComObjectException releasing RibbonPanel.", ex);
+            }
+        }
+
+        _ribbonPanels.Clear();
+    }
+
+    private void ReleaseButtons()
+    {
+        if (_buttonDefinitions.Count == 0 && _buttons.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            foreach (CommandControl commandControl in _buttons)
+            {
+                try
                 {
-                    try
-                    {
-                        buttonDefinition.Delete();
-                        Marshal.ReleaseComObject(buttonDefinition);
-                    }
-                    catch (COMException ex)
-                    {
-                        Logger.Debug("COMException releasing ButtonDefinition.", ex);
-                    }
-                    catch (InvalidComObjectException ex)
-                    {
-                        Logger.Debug("InvalidComObjectException releasing ButtonDefinition.", ex);
-                    }
+                    commandControl.Delete();
+                    Marshal.ReleaseComObject(commandControl);
                 }
-
-                foreach (CommandControl commandControl in _buttons)
+                catch (COMException ex)
                 {
-                    try
-                    {
-                        commandControl.Delete();
-                        Marshal.ReleaseComObject(commandControl);
-                    }
-                    catch (COMException ex)
-                    {
-                        Logger.Debug("COMException releasing CommandControl.", ex);
-                    }
-                    catch (InvalidComObjectException ex)
-                    {
-                        Logger.Debug("InvalidComObjectException releasing CommandControl.", ex);
-                    }
+                    Logger.Debug("COMException releasing CommandControl.", ex);
                 }
-            }
-            finally
-            {
-                _buttonDefinitions.Clear();
-                _buttons.Clear();
-            }
-        }
-
-        private void AddToUserInterface()
-        {
-            Ribbon idwRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Drawing"];
-            Ribbon iptRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Part"];
-            Ribbon iamRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Assembly"];
-            Ribbon ipnRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Presentation"];
-
-            RibbonTab tabIdw = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
-                Constants.AddinFolder, idwRibbon);
-            RibbonTab tabIpt = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
-                Constants.AddinFolder, iptRibbon);
-            RibbonTab tabIam = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
-                Constants.AddinFolder, iamRibbon);
-            RibbonTab tabIpn = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
-                Constants.AddinFolder, ipnRibbon);
-            _ribbonTabs.Add(tabIdw);
-            _ribbonTabs.Add(tabIpt);
-            _ribbonTabs.Add(tabIam);
-            _ribbonTabs.Add(tabIpn);
-
-            RibbonPanel infoIdw = UiDefinitionHelper.SetupPanel("Info", "Info", tabIdw);
-            RibbonPanel infoIpt = UiDefinitionHelper.SetupPanel("Info", "Info", tabIpt);
-            RibbonPanel infoIam = UiDefinitionHelper.SetupPanel("Info", "Info", tabIam);
-            RibbonPanel infoIpn = UiDefinitionHelper.SetupPanel("Info", "Info", tabIpn);
-            _ribbonPanels.Add(infoIdw);
-            _ribbonPanels.Add(infoIpt);
-            _ribbonPanels.Add(infoIam);
-            _ribbonPanels.Add(infoIpn);
-
-            RibbonPanel addinPanelIdw = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIdw);
-            RibbonPanel addinPanelIpt = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIpt);
-            RibbonPanel addinPanelIam = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIam);
-            RibbonPanel addinPanelIpn = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIpn);
-            _ribbonPanels.Add(addinPanelIdw);
-            _ribbonPanels.Add(addinPanelIpt);
-            _ribbonPanels.Add(addinPanelIam);
-            _ribbonPanels.Add(addinPanelIpn);
-
-            if (_settingsButton != null)
-            {
-                CommandControl settingsButtonIdw = addinPanelIdw.CommandControls.AddButton(_settingsButton, true);
-                CommandControl settingsButtonIpt = addinPanelIpt.CommandControls.AddButton(_settingsButton, true);
-                CommandControl settingsButtonIam = addinPanelIam.CommandControls.AddButton(_settingsButton, true);
-                CommandControl settingsButtonIpn = addinPanelIpn.CommandControls.AddButton(_settingsButton, true);
-                _buttons.Add(settingsButtonIdw);
-                _buttons.Add(settingsButtonIpt);
-                _buttons.Add(settingsButtonIam);
-                _buttons.Add(settingsButtonIpn);
-            }
-
-            if (_info != null)
-            {
-                CommandControl infoButtonIdw = infoIdw.CommandControls.AddButton(_info, true);
-                CommandControl infoButtonIpt = infoIpt.CommandControls.AddButton(_info, true);
-                CommandControl infoButtonIam = infoIam.CommandControls.AddButton(_info, true);
-                CommandControl infoButtonIpn = infoIpn.CommandControls.AddButton(_info, true);
-                _buttons.Add(infoButtonIdw);
-                _buttons.Add(infoButtonIpt);
-                _buttons.Add(infoButtonIam);
-                _buttons.Add(infoButtonIpn);
-            }
-
-            if (_openAttributeWindow != null)
-            {
-                CommandControl attributeWindowButtonIdw =
-                    addinPanelIdw.CommandControls.AddButton(_openAttributeWindow, true);
-                CommandControl attributeWindowButtonIpt =
-                    addinPanelIpt.CommandControls.AddButton(_openAttributeWindow, true);
-                CommandControl attributeWindowButtonIam =
-                    addinPanelIam.CommandControls.AddButton(_openAttributeWindow, true);
-                CommandControl attributeWindowButtonIpn =
-                    addinPanelIpn.CommandControls.AddButton(_openAttributeWindow, true);
-                _buttons.Add(attributeWindowButtonIdw);
-                _buttons.Add(attributeWindowButtonIpt);
-                _buttons.Add(attributeWindowButtonIam);
-                _buttons.Add(attributeWindowButtonIpn);
-            }
-
-            if (_addAttributeToObject != null)
-            {
-                CommandControl attributeWindowButtonIdw =
-                    addinPanelIdw.CommandControls.AddButton(_addAttributeToObject, true);
-                CommandControl attributeWindowButtonIpt =
-                    addinPanelIpt.CommandControls.AddButton(_addAttributeToObject, true);
-                CommandControl attributeWindowButtonIam =
-                    addinPanelIam.CommandControls.AddButton(_addAttributeToObject, true);
-                CommandControl attributeWindowButtonIpn =
-                    addinPanelIpn.CommandControls.AddButton(_addAttributeToObject, true);
-                _buttons.Add(attributeWindowButtonIdw);
-                _buttons.Add(attributeWindowButtonIpt);
-                _buttons.Add(attributeWindowButtonIam);
-                _buttons.Add(attributeWindowButtonIpn);
-            }
-        }
-
-        private void UiEventsOnResetRibbonInterface(NameValueMap context)
-        {
-            AddToUserInterface();
-        }
-
-        private void InvAppEvents_OnApplicationOptionChange(EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            if (beforeOrAfter == EventTimingEnum.kAfter)
-            {
-                ThemeManager themeManager = Globals.InvApp.ThemeManager;
-                Theme activeTheme = themeManager.ActiveTheme;
-                string theme = activeTheme.Name;
-                ThemeResourceHelper.ApplyInventorThemeResources();
-
-                if (Globals.ActiveTheme.Name != theme) //check if theme has changed
+                catch (InvalidComObjectException ex)
                 {
-                    Deactivate();
-                    OnActivate();
+                    Logger.Debug("InvalidComObjectException releasing CommandControl.", ex);
                 }
             }
 
-            handlingCode = HandlingCodeEnum.kEventNotHandled;
+            foreach (ButtonDefinition buttonDefinition in _buttonDefinitions)
+            {
+                try
+                {
+                    buttonDefinition.Delete();
+                    Marshal.ReleaseComObject(buttonDefinition);
+                }
+                catch (COMException ex)
+                {
+                    Logger.Debug("COMException releasing ButtonDefinition.", ex);
+                }
+                catch (InvalidComObjectException ex)
+                {
+                    Logger.Debug("InvalidComObjectException releasing ButtonDefinition.", ex);
+                }
+            }
         }
+        finally
+        {
+            _buttonDefinitions.Clear();
+            _buttons.Clear();
+        }
+    }
+
+    private void AddToUserInterface()
+    {
+        Ribbon idwRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Drawing"];
+        Ribbon iptRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Part"];
+        Ribbon iamRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Assembly"];
+        Ribbon ipnRibbon = Globals.InvApp.UserInterfaceManager.Ribbons["Presentation"];
+
+        RibbonTab tabIdw = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+            Constants.AddinFolder, idwRibbon);
+        RibbonTab tabIpt = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+            Constants.AddinFolder, iptRibbon);
+        RibbonTab tabIam = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+            Constants.AddinFolder, iamRibbon);
+        RibbonTab tabIpn = UiDefinitionHelper.SetupTab(Constants.AddinFolder,
+            Constants.AddinFolder, ipnRibbon);
+        _ribbonTabs.Add(tabIdw);
+        _ribbonTabs.Add(tabIpt);
+        _ribbonTabs.Add(tabIam);
+        _ribbonTabs.Add(tabIpn);
+
+        RibbonPanel infoIdw = UiDefinitionHelper.SetupPanel("Info", "Info", tabIdw);
+        RibbonPanel infoIpt = UiDefinitionHelper.SetupPanel("Info", "Info", tabIpt);
+        RibbonPanel infoIam = UiDefinitionHelper.SetupPanel("Info", "Info", tabIam);
+        RibbonPanel infoIpn = UiDefinitionHelper.SetupPanel("Info", "Info", tabIpn);
+        _ribbonPanels.Add(infoIdw);
+        _ribbonPanels.Add(infoIpt);
+        _ribbonPanels.Add(infoIam);
+        _ribbonPanels.Add(infoIpn);
+
+        RibbonPanel addinPanelIdw = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIdw);
+        RibbonPanel addinPanelIpt = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIpt);
+        RibbonPanel addinPanelIam = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIam);
+        RibbonPanel addinPanelIpn = UiDefinitionHelper.SetupPanel("AddinCommands", "AddinCommands", tabIpn);
+        _ribbonPanels.Add(addinPanelIdw);
+        _ribbonPanels.Add(addinPanelIpt);
+        _ribbonPanels.Add(addinPanelIam);
+        _ribbonPanels.Add(addinPanelIpn);
+
+        if (_settingsButton != null)
+        {
+            CommandControl settingsButtonIdw = addinPanelIdw.CommandControls.AddButton(_settingsButton, true);
+            CommandControl settingsButtonIpt = addinPanelIpt.CommandControls.AddButton(_settingsButton, true);
+            CommandControl settingsButtonIam = addinPanelIam.CommandControls.AddButton(_settingsButton, true);
+            CommandControl settingsButtonIpn = addinPanelIpn.CommandControls.AddButton(_settingsButton, true);
+            _buttons.Add(settingsButtonIdw);
+            _buttons.Add(settingsButtonIpt);
+            _buttons.Add(settingsButtonIam);
+            _buttons.Add(settingsButtonIpn);
+        }
+
+        if (_info != null)
+        {
+            CommandControl infoButtonIdw = infoIdw.CommandControls.AddButton(_info, true);
+            CommandControl infoButtonIpt = infoIpt.CommandControls.AddButton(_info, true);
+            CommandControl infoButtonIam = infoIam.CommandControls.AddButton(_info, true);
+            CommandControl infoButtonIpn = infoIpn.CommandControls.AddButton(_info, true);
+            _buttons.Add(infoButtonIdw);
+            _buttons.Add(infoButtonIpt);
+            _buttons.Add(infoButtonIam);
+            _buttons.Add(infoButtonIpn);
+        }
+
+        if (_openAttributeWindow != null)
+        {
+            CommandControl attributeWindowButtonIdw =
+                addinPanelIdw.CommandControls.AddButton(_openAttributeWindow, true);
+            CommandControl attributeWindowButtonIpt =
+                addinPanelIpt.CommandControls.AddButton(_openAttributeWindow, true);
+            CommandControl attributeWindowButtonIam =
+                addinPanelIam.CommandControls.AddButton(_openAttributeWindow, true);
+            CommandControl attributeWindowButtonIpn =
+                addinPanelIpn.CommandControls.AddButton(_openAttributeWindow, true);
+            _buttons.Add(attributeWindowButtonIdw);
+            _buttons.Add(attributeWindowButtonIpt);
+            _buttons.Add(attributeWindowButtonIam);
+            _buttons.Add(attributeWindowButtonIpn);
+        }
+
+        if (_addAttributeToObject != null)
+        {
+            CommandControl attributeWindowButtonIdw =
+                addinPanelIdw.CommandControls.AddButton(_addAttributeToObject, true);
+            CommandControl attributeWindowButtonIpt =
+                addinPanelIpt.CommandControls.AddButton(_addAttributeToObject, true);
+            CommandControl attributeWindowButtonIam =
+                addinPanelIam.CommandControls.AddButton(_addAttributeToObject, true);
+            CommandControl attributeWindowButtonIpn =
+                addinPanelIpn.CommandControls.AddButton(_addAttributeToObject, true);
+            _buttons.Add(attributeWindowButtonIdw);
+            _buttons.Add(attributeWindowButtonIpt);
+            _buttons.Add(attributeWindowButtonIam);
+            _buttons.Add(attributeWindowButtonIpn);
+        }
+    }
+
+    private void UiEventsOnResetRibbonInterface(NameValueMap context)
+    {
+        AddToUserInterface();
+    }
+
+    private void InvAppEvents_OnApplicationOptionChange(EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
+    {
+        if (beforeOrAfter == EventTimingEnum.kAfter)
+        {
+            ThemeManager themeManager = Globals.InvApp.ThemeManager;
+            Theme activeTheme = themeManager.ActiveTheme;
+            string theme = activeTheme.Name;
+            ThemeResourceHelper.ApplyInventorThemeResources();
+
+            if (Globals.ActiveTheme.Name != theme) //check if theme has changed
+            {
+                Deactivate();
+                OnActivate();
+            }
+        }
+
+        handlingCode = HandlingCodeEnum.kEventNotHandled;
     }
 }

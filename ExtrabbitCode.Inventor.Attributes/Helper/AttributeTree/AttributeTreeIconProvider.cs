@@ -3,7 +3,7 @@ using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace ExtrabbitCode.Inventor.Attributes.Helper;
+namespace ExtrabbitCode.Inventor.Attributes.Helper.AttributeTree;
 
 public static class AttributeTreeIconProvider
 {

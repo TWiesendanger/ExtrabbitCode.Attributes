@@ -1,3 +1,4 @@
+using ExtrabbitCode.Inventor.Attributes.Addin;
 using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services.AttributeModels;

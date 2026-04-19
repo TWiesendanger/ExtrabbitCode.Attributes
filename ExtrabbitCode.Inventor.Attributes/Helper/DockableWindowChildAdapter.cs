@@ -18,18 +18,15 @@ public static partial class DockableWindowChildAdapter
     private const int WsExToolWindow = 0x00000080;
     private const int WsExAppWindow = 0x00040000;
 
-    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW",
-        SetLastError = true)]
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     private static partial nint GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
-    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW",
-        SetLastError = true)]
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    private static partial nint SetWindowLongPtr(
-        IntPtr hWnd,
+    private static partial void SetWindowLongPtr(IntPtr hWnd,
         int nIndex,
-        nint dwNewLong);
+        IntPtr dwNewLong);
 
     public static void AddWpfWindow(DockableWindow? dockableWindow, Window? window)
     {
@@ -77,7 +74,7 @@ public static partial class DockableWindowChildAdapter
         exStyle &= ~WsExAppWindow;
         exStyle |= WsExToolWindow;
 
-        SetWindowLongPtr(hwnd, GwlExStyle, (nint)exStyle);
+        SetWindowLongPtr(hwnd, GwlExStyle, exStyle);
     }
 
     private static IntPtr WndProc(

@@ -14,12 +14,8 @@ internal static class AttributeValueConverter
         {
             ValueTypeEnum.kStringType => rawValue,
             ValueTypeEnum.kBooleanType => rawValue,
-            ValueTypeEnum.kIntegerType => int.Parse(
-                rawValue,
-                CultureInfo.InvariantCulture),
-            ValueTypeEnum.kDoubleType => double.Parse(
-                rawValue,
-                CultureInfo.InvariantCulture),
+            ValueTypeEnum.kIntegerType => int.Parse(rawValue, CultureInfo.InvariantCulture),
+            ValueTypeEnum.kDoubleType => double.Parse(rawValue, CultureInfo.InvariantCulture),
             ValueTypeEnum.kByteArrayType => ParseHexToByteArray(rawValue),
             _ => rawValue
         };
@@ -37,39 +33,33 @@ internal static class AttributeValueConverter
         return valueType switch
         {
             ValueTypeEnum.kByteArrayType => FormatByteArrayAsHex(value),
-            ValueTypeEnum.kDoubleType => Convert.ToDouble(
-                value,
-                CultureInfo.InvariantCulture).ToString(
-                CultureInfo.InvariantCulture),
-            ValueTypeEnum.kIntegerType => Convert.ToInt32(
-                value,
-                CultureInfo.InvariantCulture).ToString(
-                CultureInfo.InvariantCulture),
+            ValueTypeEnum.kDoubleType => Convert.ToDouble(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture),
+            ValueTypeEnum.kIntegerType => Convert.ToInt32(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture),
             _ => value.ToString() ?? string.Empty
         };
     }
 
     private static string FormatByteArrayAsHex(object value)
     {
-        if (value is byte[] bytes)
+        switch (value)
         {
-            return string.Join(
-                " ",
-                bytes.Select(
-                    b => b.ToString("X2", CultureInfo.InvariantCulture)));
+            case byte[] bytes:
+                return string.Join(
+                    " ",
+                    bytes.Select(
+                        b => b.ToString("X2", CultureInfo.InvariantCulture)));
+            case Array array:
+                {
+                    byte[] bytesFromArray = [.. array.Cast<object>().Select(Convert.ToByte)];
+
+                    return string.Join(
+                        " ",
+                        bytesFromArray.Select(
+                            b => b.ToString("X2", CultureInfo.InvariantCulture)));
+                }
+            default:
+                return value.ToString() ?? string.Empty;
         }
-
-        if (value is Array array)
-        {
-            byte[] bytesFromArray = [.. array.Cast<object>().Select(Convert.ToByte)];
-
-            return string.Join(
-                " ",
-                bytesFromArray.Select(
-                    b => b.ToString("X2", CultureInfo.InvariantCulture)));
-        }
-
-        return value.ToString() ?? string.Empty;
     }
 
     private static byte[] ParseHexToByteArray(string input)
@@ -86,8 +76,7 @@ internal static class AttributeValueConverter
 
         if (normalized.Length % 2 != 0)
         {
-            throw new FormatException(
-                "Hex value must contain an even number of characters.");
+            throw new FormatException("Hex value must contain an even number of characters.");
         }
 
         byte[] result = new byte[normalized.Length / 2];

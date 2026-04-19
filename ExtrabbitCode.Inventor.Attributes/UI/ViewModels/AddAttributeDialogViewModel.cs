@@ -237,6 +237,13 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
     [RelayCommand]
     private void AddAttribute()
     {
+        Globals.TelemetryService.TrackEvent("add_attribute_dialog_submitted",
+            new System.Collections.Generic.Dictionary<string, object>
+            {
+                ["dialog_mode"] = DialogMode.ToString(),
+                ["value_type"] = SelectedValueType.ToString()
+            });
+
         if (!ValidateAllInput())
         {
             return;
@@ -255,5 +262,12 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
             AttributeName,
             SelectedValueType,
             AttributeValue);
+
+        Globals.TelemetryService.TrackEvent("add_attribute_dialog_succeeded",
+            new System.Collections.Generic.Dictionary<string, object>
+            {
+                ["dialog_mode"] = DialogMode.ToString(),
+                ["value_type"] = SelectedValueType.ToString()
+            });
     }
 }

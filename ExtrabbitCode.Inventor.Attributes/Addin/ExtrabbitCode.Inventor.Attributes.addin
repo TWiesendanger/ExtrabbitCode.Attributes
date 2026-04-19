@@ -2,7 +2,7 @@
 	<ClassId>{2b75e9c2-a980-4760-8687-67966594c181}</ClassId>
 	<ClientId>{2b75e9c2-a980-4760-8687-67966594c181}</ClientId>
 	<DisplayName>ExtrabbitCode.Inventor.Attributes</DisplayName>
-	<Description>This addin help in making attributes visible and also create them on some objects.</Description>
+	<Description>This addin helps in making attributes visible and also create them on some objects.</Description>
 	<Assembly>C:\ProgramData\ExtrabbitCode\ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.dll</Assembly>
 	<LoadOnStartUp>0</LoadOnStartUp>
 	<UserUnloadable>1</UserUnloadable>

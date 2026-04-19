@@ -8,6 +8,5 @@ public sealed record DeleteAttributesResult(
 {
     public bool IsSuccess => FailedObjects == 0;
 
-    public bool HasChanges =>
-        DeletedAttributes > 0 || DeletedAttributeSets > 0;
+    public bool HasChanges => DeletedAttributes > 0 || DeletedAttributeSets > 0;
 }

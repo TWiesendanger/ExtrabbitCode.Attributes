@@ -10,4 +10,6 @@ public class SettingsModel
     public bool UpdateAttributesOnDocumentSwitch { get; set; } = true;
 
     public bool DeleteAutodeskDefaultAttributeSets { get; set; }
+
+    public bool TelemetryEnabled { get; set; } = true;
 }

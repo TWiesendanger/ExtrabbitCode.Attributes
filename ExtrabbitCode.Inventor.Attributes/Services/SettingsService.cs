@@ -34,7 +34,8 @@ public sealed class SettingsService : ISettingsService
             ShowWarningOnDeleteAllAttributes =
                 _settings.ShowWarningOnDeleteAllAttributes,
             UpdateAttributesOnDocumentSwitch =
-                _settings.UpdateAttributesOnDocumentSwitch
+                _settings.UpdateAttributesOnDocumentSwitch,
+            TelemetryEnabled = _settings.TelemetryEnabled
         };
     }
 
@@ -52,7 +53,8 @@ public sealed class SettingsService : ISettingsService
             UpdateAttributesOnDocumentSwitch =
                 settings.UpdateAttributesOnDocumentSwitch,
             DeleteAutodeskDefaultAttributeSets =
-                settings.DeleteAutodeskDefaultAttributeSets
+                settings.DeleteAutodeskDefaultAttributeSets,
+            TelemetryEnabled = settings.TelemetryEnabled
         };
 
         Save();
