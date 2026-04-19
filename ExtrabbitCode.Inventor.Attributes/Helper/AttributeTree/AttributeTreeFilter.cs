@@ -115,6 +115,15 @@ internal static class AttributeTreeFilter
         }
     }
 
+    internal static void SetExpandedAll(IEnumerable<AttributeTreeNode> nodes, bool expanded)
+    {
+        foreach (AttributeTreeNode node in nodes)
+        {
+            node.IsExpanded = expanded;
+            SetExpandedAll(node.Children, expanded);
+        }
+    }
+
     private static AttributeTreeNode? FilterNode(
         AttributeTreeNode node,
         string search,

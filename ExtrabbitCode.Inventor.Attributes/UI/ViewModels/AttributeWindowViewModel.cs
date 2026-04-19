@@ -409,6 +409,22 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     }
 
     [RelayCommand]
+    private void ExpandAllNodes()
+    {
+        Globals.TelemetryService.TrackEvent("attribute_tree_expand_all");
+        AttributeTreeFilter.SetExpandedAll(AttributeTree, true);
+        ApplyFilter();
+    }
+
+    [RelayCommand]
+    private void CollapseAllNodes()
+    {
+        Globals.TelemetryService.TrackEvent("attribute_tree_collapse_all");
+        AttributeTreeFilter.SetExpandedAll(AttributeTree, false);
+        ApplyFilter();
+    }
+
+    [RelayCommand]
     private static void OpenSettings()
     {
         Globals.TelemetryService.TrackEvent("settings_opened");

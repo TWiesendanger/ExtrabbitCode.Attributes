@@ -53,6 +53,10 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="8" />
@@ -107,12 +111,30 @@
                     Appearance="Transparent"
                     Width="{DynamicResource InvControlWidth}"
                     Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding ExpandAllNodesCommand}"
+                    Icon="{ui:SymbolIcon ChevronDown24}"
+                    ToolTip="Expand all" />
+
+                <ui:Button
+                    Grid.Column="8"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding CollapseAllNodesCommand}"
+                    Icon="{ui:SymbolIcon ChevronUp24}"
+                    ToolTip="Collapse all" />
+
+                <ui:Button
+                    Grid.Column="10"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
                     Command="{Binding PurgeAllOrphansCommand}"
                     Icon="{ui:SymbolIcon Broom24}"
                     ToolTip="Purge all orphaned attribute sets" />
 
                 <ui:TextBox
-                    Grid.Column="8"
+                    Grid.Column="12"
                     VerticalAlignment="Center"
                     Height="{DynamicResource InvControlHeight}"
                     Icon="{ui:SymbolIcon Search12}"
@@ -124,7 +146,7 @@
                     ToolTip="Search attribute sets or attributes" />
 
                 <ui:Button
-                    Grid.Column="10"
+                    Grid.Column="14"
                     Appearance="Transparent"
                     Width="{DynamicResource InvControlWidth}"
                     Height="{DynamicResource InvControlHeight}"
