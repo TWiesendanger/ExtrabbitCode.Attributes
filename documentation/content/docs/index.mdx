@@ -1,0 +1,50 @@
+---
+title: Introduction
+description: Attribute management for Autodesk Inventor — browse, add, edit, delete, and clean up attributes without writing a single line of code.
+---
+
+**ExtrabbitCode Inventor Attributes** is an Autodesk Inventor add-in that gives you a complete, UI-driven workflow for managing iProperties attributes on any Inventor document. Whether you are tagging parts with custom metadata, cleaning up orphaned attribute sets from old workflows, or bulk-deleting attributes across assemblies — this add-in handles it through a simple dockable panel.
+
+No VBA, no API, no workarounds. Just clicks.
+
+## Features
+
+<Cards>
+  <Card title="Attribute Browser" description="Hierarchical tree view of every attribute on the active document, organized by owner object." href="/docs/features/attribute-browser" />
+  <Card title="Add / Edit / Delete" description="Create new attributes, change values, or remove them individually or in bulk — with optional confirmation dialogs." href="/docs/features/add-edit-delete" />
+  <Card title="Orphaned Attribute Cleanup" description="Detect and purge attribute sets that are no longer attached to any live object." href="/docs/features/orphaned-cleanup" />
+  <Card title="Attribute Library" description="Save frequently-used attribute set names as favorites for fast reuse." href="/docs/features/attribute-library" />
+  <Card title="All Document Types" description="Works across Part (IPT), Assembly (IAM), Drawing (IDW), and Presentation (IPN) documents." href="/docs/features/document-types" />
+  <Card title="Live Search & Filter" description="Filter the attribute tree by keyword to quickly find what you need." href="/docs/features/search-filter" />
+  <Card title="Auto-Refresh" description="Optionally keep the panel in sync with the active document as you switch between open files." href="/docs/features/auto-refresh" />
+  <Card title="Copy to Clipboard" description="Copy any attribute value directly from the tree for use in other tools." href="/docs/features/copy-to-clipboard" />
+  <Card title="Expand / Collapse All" description="Expand or collapse the entire attribute tree in one click." href="/docs/features/attribute-browser#expand--collapse-all" />
+  <Card title="Files & Logs" description="Where settings, the attribute library, and log files are stored on your machine." href="/docs/files-and-logs" />
+</Cards>
+
+## Supported Attribute Value Types
+
+The add-in supports all native Inventor attribute value types:
+
+| Type | Description |
+|------|-------------|
+| `String` | Text values |
+| `Boolean` | True / false flags |
+| `Double` | Floating-point numbers |
+| `Integer` | Whole numbers |
+| `Byte Array` | Raw binary data |
+
+## Getting Started
+
+Once the add-in is loaded, Inventor shows a new **ExtrabbitCode.Inventor.Attributes** ribbon tab. Open any document and click the **Attribute Dialog** button to open the dockable panel. The tree populates automatically with all attributes on the active document.
+
+From there you can:
+
+1. **Browse** — expand the tree to explore attributes by owner object
+2. **Search** — type in the filter box to narrow results
+3. **Add** — click the add button and fill in the attribute set name, attribute name, type, and value
+4. **Edit** — select an attribute in the tree and click edit to change its value
+5. **Delete** — select an attribute or attribute set and delete it (with optional warning)
+6. **Purge orphans** — use the cleanup action to remove dead attribute sets
+
+Head to [Settings](/docs/settings) to configure confirmations, auto-refresh, and more.

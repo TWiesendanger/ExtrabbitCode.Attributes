@@ -1,0 +1,37 @@
+---
+title: All Document Types
+description: The add-in works across Part, Assembly, Drawing, and Presentation documents.
+---
+
+The Attribute Browser works with all four native Inventor document types. Switch between open documents and the panel updates to reflect the attributes of whatever file is currently active (when [Auto-Refresh](/docs/features/auto-refresh) is enabled).
+
+## Supported document types
+
+<div className="flex flex-row gap-8 my-4">
+  <div className="flex flex-col items-center gap-2">
+    <img src="/images/part.png" alt="Part" />
+    <span className="text-sm font-medium">Part</span>
+    <span className="text-xs text-fd-muted-foreground">`.ipt`</span>
+  </div>
+  <div className="flex flex-col items-center gap-2">
+    <img src="/images/assembly.png" alt="Assembly" />
+    <span className="text-sm font-medium">Assembly</span>
+    <span className="text-xs text-fd-muted-foreground">`.iam`</span>
+  </div>
+  <div className="flex flex-col items-center gap-2">
+    <img src="/images/drawing.png" alt="Drawing" />
+    <span className="text-sm font-medium">Drawing</span>
+    <span className="text-xs text-fd-muted-foreground">`.idw`</span>
+  </div>
+  <div className="flex flex-col items-center gap-2">
+    <img src="/images/presentation.png" alt="Presentation" />
+    <span className="text-sm font-medium">Presentation</span>
+    <span className="text-xs text-fd-muted-foreground">`.ipn`</span>
+  </div>
+</div>
+
+{/* Screenshot: panel showing attributes for an assembly document */}
+
+## Assemblies and components
+
+When you have an assembly open, the Attribute Browser shows attributes that belong to the **assembly document itself**. To inspect attributes on an individual component, open or activate that component's document in Inventor — the panel updates automatically.

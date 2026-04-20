@@ -1,0 +1,13 @@
+{
+  "title": "Features",
+  "pages": [
+    "attribute-browser",
+    "add-edit-delete",
+    "orphaned-cleanup",
+    "attribute-library",
+    "document-types",
+    "search-filter",
+    "auto-refresh",
+    "copy-to-clipboard"
+  ]
+}

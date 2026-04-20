@@ -1,0 +1,73 @@
+---
+title: Files & Logs
+description: Where the add-in stores its settings, attribute library, and log files on your machine.
+---
+
+All files the add-in writes are stored under two locations — one for persistent user data, one for temporary logs.
+
+---
+
+## User data
+
+Persistent data lives under your Windows user profile:
+
+```
+%APPDATA%\ExtrabbitCode.Inventor.Attributes\
+```
+
+Which typically resolves to:
+
+```
+C:\Users\<you>\AppData\Roaming\ExtrabbitCode.Inventor.Attributes\
+```
+
+| File | Purpose |
+|---|---|
+| `settings.json` | All settings configured in the Settings dialog |
+| `attribute-library.json` | Your saved attribute set names from the Attribute Library |
+
+These files are plain JSON and are created automatically on first run. You can back them up, copy them to another machine, or delete them to reset to defaults.
+
+---
+
+## Log files
+
+The add-in uses log4net with a rolling file appender. Logs are written to the Windows temp folder:
+
+```
+%TEMP%\ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.log
+```
+
+Which typically resolves to:
+
+```
+C:\Users\<you>\AppData\Local\Temp\ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.log
+```
+
+### Log rotation
+
+| Setting | Value |
+|---|---|
+| **Maximum file size** | 5 MB |
+| **Backup files kept** | 5 |
+| **Log level** | DEBUG (all messages) |
+
+Once the active log file reaches 5 MB it is renamed to `.log.1`, `.log.2`, and so on up to `.log.5`. The oldest backup is discarded when a new one is needed.
+
+### Log format
+
+Each line follows this pattern:
+
+```
+<date> <level> <logger> - <message>
+```
+
+For example:
+
+```
+2025-04-20 09:14:32,101 INFO  ExtrabbitCode.Inventor.Attributes.StandardAddinServer - Add-in activated
+```
+
+### When to check the logs
+
+The log file is the first place to look when something goes wrong — errors and exceptions are written there with full stack traces.
