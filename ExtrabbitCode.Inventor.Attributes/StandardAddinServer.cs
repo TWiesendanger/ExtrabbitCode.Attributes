@@ -117,7 +117,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
         string distinctId = TelemetryIdentity.GetOrCreate(StoragePaths.AppDirectory);
 
         Globals.TelemetryService = new PostHogTelemetryService(
-            apiKey: "phc_uLENDtZG9FvnNfkN7LmKaRcGY8BxQ4nKXiugrQhwi36n",
+            apiKey: "phc_nAWoVFjC6Fn6xWLTbK5S5qM6onNocCjgfPnXx2azfyZe",
             distinctId: distinctId,
             enabled: telemetryEnabled);
 

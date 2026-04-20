@@ -18,7 +18,7 @@ public sealed class PostHogTelemetryService(string apiKey, string distinctId, bo
     private readonly PostHogClient _client = new(new PostHogOptions
     {
         ProjectApiKey = apiKey,
-        HostUrl = new Uri("https://us.i.posthog.com")
+        HostUrl = new Uri("https://eu.i.posthog.com")
     });
 
     public void TrackEvent(string eventName, Dictionary<string, object>? properties = null)
