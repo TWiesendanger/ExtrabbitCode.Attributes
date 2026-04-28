@@ -1,4 +1,5 @@
-﻿using ExtrabbitCode.Inventor.Attributes.Models;
+﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 using System;
 using System.ComponentModel;
@@ -22,6 +23,7 @@ public partial class AddAttributeDialog
     public AddAttributeDialog()
     {
         InitializeComponent();
+        DialogHelper.SetDialogTheme(this);
 
         ViewModel = new AddAttributeDialogViewModel(Globals.AttributeLibraryService);
         DataContext = ViewModel;

@@ -19,8 +19,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Shared.xaml" />
-                <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Light.xaml" />
-                <ResourceDictionary Source="/ExtrabbitCode.Inventor.Attributes;component/Resources/Styles/Theme.Dark.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ui:FluentWindow.Resources>

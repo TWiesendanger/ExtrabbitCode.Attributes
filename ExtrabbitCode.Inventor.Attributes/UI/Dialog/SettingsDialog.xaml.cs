@@ -1,4 +1,5 @@
-﻿using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
+﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -13,6 +14,7 @@ public partial class SettingsDialog
     public SettingsDialog()
     {
         InitializeComponent();
+        DialogHelper.SetDialogTheme(this);
         _viewModel = new SettingsDialogViewModel(Globals.SettingsService, Globals.AttributeLibraryService);
         DataContext = _viewModel;
 

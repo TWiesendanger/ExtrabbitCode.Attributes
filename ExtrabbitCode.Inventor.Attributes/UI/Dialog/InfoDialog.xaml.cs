@@ -1,4 +1,5 @@
-﻿using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
+﻿using ExtrabbitCode.Inventor.Attributes.Helper;
+using ExtrabbitCode.Inventor.Attributes.UI.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -11,6 +12,7 @@ public partial class InfoDialog
     public InfoDialog()
     {
         InitializeComponent();
+        DialogHelper.SetDialogTheme(this);
         DataContext = new InfoDialogViewModel();
 
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
