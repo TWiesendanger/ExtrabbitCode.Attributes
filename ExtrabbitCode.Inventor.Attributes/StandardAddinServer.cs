@@ -247,23 +247,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
 
         try
         {
-            foreach (CommandControl commandControl in _buttons)
-            {
-                try
-                {
-                    commandControl.Delete();
-                    Marshal.ReleaseComObject(commandControl);
-                }
-                catch (COMException ex)
-                {
-                    Logger.Debug("COMException releasing CommandControl.", ex);
-                }
-                catch (InvalidComObjectException ex)
-                {
-                    Logger.Debug("InvalidComObjectException releasing CommandControl.", ex);
-                }
-            }
-
+            // Delete definitions first — Inventor removes all associated controls automatically
             foreach (ButtonDefinition buttonDefinition in _buttonDefinitions)
             {
                 try
@@ -278,6 +262,19 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
                 catch (InvalidComObjectException ex)
                 {
                     Logger.Debug("InvalidComObjectException releasing ButtonDefinition.", ex);
+                }
+            }
+
+            // Controls were already removed by ButtonDefinition.Delete() — just release wrappers
+            foreach (CommandControl commandControl in _buttons)
+            {
+                try
+                {
+                    Marshal.ReleaseComObject(commandControl);
+                }
+                catch (InvalidComObjectException ex)
+                {
+                    Logger.Debug("InvalidComObjectException releasing CommandControl.", ex);
                 }
             }
         }
