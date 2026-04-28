@@ -1,6 +1,7 @@
 ﻿using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.UI.Dialog;
+using System.Collections.Generic;
 
 namespace ExtrabbitCode.Inventor.Attributes.Services;
 
@@ -45,6 +46,13 @@ public sealed class AddAttributeWorkflowService(
 
         if (attribute == null)
         {
+            Globals.TelemetryService.TrackEvent("add_attribute_failed", new Dictionary<string, object>
+            {
+                ["document_type"] = document.DocumentType.ToString(),
+                ["selected_object_type"] = selectedObject.GetType().Name,
+                ["inventor_version"] = Globals.InvApp.SoftwareVersion.DisplayVersion
+            });
+
             return new AddAttributeWorkflowResult(
                 false,
                 selectedObject,
