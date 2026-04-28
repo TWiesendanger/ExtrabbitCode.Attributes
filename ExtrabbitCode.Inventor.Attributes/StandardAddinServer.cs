@@ -90,7 +90,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
 
             _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
             _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
-            _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.Window", @"UI\ButtonResources\AttributeWindow", themeName);
+            _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.OpenAttributeWindow", @"UI\ButtonResources\AttributeWindow", themeName);
             _addAttributeToObject = UiDefinitionHelper.CreateButton("Add attribute", "ExtrabbitCode.Inventor.Attributes.AddAttribute", @"UI\ButtonResources\AddAttribute", themeName);
             _buttonDefinitions.Add(_info);
             _buttonDefinitions.Add(_settingsButton);
@@ -145,6 +145,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             Logger.Debug($"Telemetry shutdown failed: {ex.Message}", ex);
         }
 
+        DeleteAttributeWindow();
         ReleaseButtons();
         ReleaseRibbonPanels();
         ReleaseRibbonTabs();
@@ -157,6 +158,20 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
 
         _uiEvents.OnResetRibbonInterface -= UiEventsOnResetRibbonInterface;
         _uiEvents = null;
+    }
+
+    private void DeleteAttributeWindow()
+    {
+        try
+        {
+            DockableWindow dw = Globals.InvApp.UserInterfaceManager
+                .DockableWindows["ExtrabbitCode.Inventor.Attributes.Window"];
+            dw.Delete();
+        }
+        catch
+        {
+            // Window was never opened — nothing to delete
+        }
     }
 
     private void ReleaseAppEvents()
@@ -257,11 +272,11 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
                 }
                 catch (COMException ex)
                 {
-                    Logger.Debug("COMException releasing ButtonDefinition.", ex);
+                    Logger.Debug($"COMException deleting ButtonDefinition: {ex.Message}");
                 }
                 catch (InvalidComObjectException ex)
                 {
-                    Logger.Debug("InvalidComObjectException releasing ButtonDefinition.", ex);
+                    Logger.Debug($"InvalidComObjectException deleting ButtonDefinition: {ex.Message}");
                 }
             }
 
@@ -365,18 +380,18 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
 
         if (_addAttributeToObject != null)
         {
-            CommandControl attributeWindowButtonIdw =
+            CommandControl addAttributeButtonIdw =
                 addinPanelIdw.CommandControls.AddButton(_addAttributeToObject, true);
-            CommandControl attributeWindowButtonIpt =
+            CommandControl addAttributeButtonIpt =
                 addinPanelIpt.CommandControls.AddButton(_addAttributeToObject, true);
-            CommandControl attributeWindowButtonIam =
+            CommandControl addAttributeButtonIam =
                 addinPanelIam.CommandControls.AddButton(_addAttributeToObject, true);
-            CommandControl attributeWindowButtonIpn =
+            CommandControl addAttributeButtonIpn =
                 addinPanelIpn.CommandControls.AddButton(_addAttributeToObject, true);
-            _buttons.Add(attributeWindowButtonIdw);
-            _buttons.Add(attributeWindowButtonIpt);
-            _buttons.Add(attributeWindowButtonIam);
-            _buttons.Add(attributeWindowButtonIpn);
+            _buttons.Add(addAttributeButtonIdw);
+            _buttons.Add(addAttributeButtonIpt);
+            _buttons.Add(addAttributeButtonIam);
+            _buttons.Add(addAttributeButtonIpn);
         }
     }
 

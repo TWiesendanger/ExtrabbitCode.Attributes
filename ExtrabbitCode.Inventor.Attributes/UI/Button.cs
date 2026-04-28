@@ -69,7 +69,7 @@ public class UiButton
                 DialogHelper.SetDialogTheme(infoDialog);
                 infoDialog.ShowDialog();
                 return;
-            case "ExtrabbitCode.Inventor.Attributes.Window":
+            case "ExtrabbitCode.Inventor.Attributes.OpenAttributeWindow":
                 Logger.Info("Attribute Window button pressed");
                 Globals.TelemetryService.TrackEvent("panel_button_attribute_window_clicked");
 
