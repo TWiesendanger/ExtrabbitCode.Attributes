@@ -6,6 +6,7 @@ const getUrl = createGetUrl('/docs');
 
 export default {
   ssr: false,
+  basename: process.env.VITE_BASE_PATH ?? '/',
   future: {
     v8_middleware: true,
   },
