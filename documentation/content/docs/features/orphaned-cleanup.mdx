@@ -3,12 +3,14 @@ title: Orphaned Attribute Cleanup
 description: Detect and remove attribute sets that are no longer attached to any live object in the document.
 ---
 
+import { PublicImage } from '@/components/public-image';
+
 Over time, Inventor documents can accumulate **orphaned attribute sets** — sets that were created by scripts, macros, or previous workflows but are no longer attached to any live object. These sets are invisible in Inventor's UI but still exist in the file, adding clutter and file size.
 
 The add-in can detect and purge these sets in one click.
 
-<img src="/images/screenshots/feature-orphaned-light.png" alt="Feature addAttribute" className="block dark:hidden" />
-<img src="/images/screenshots/feature-orphaned-dark.png" alt="Feature addAttribute" className="hidden dark:block" />
+<PublicImage src="/images/screenshots/feature-orphaned-light.png" alt="Feature addAttribute" className="block dark:hidden" />
+<PublicImage src="/images/screenshots/feature-orphaned-dark.png" alt="Feature addAttribute" className="hidden dark:block" />
 
 ## What counts as orphaned
 
