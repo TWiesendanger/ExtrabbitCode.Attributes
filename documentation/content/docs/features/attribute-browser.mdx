@@ -7,7 +7,8 @@ The Attribute Browser is the main panel of the add-in. It displays a live tree o
 
 Open the panel from the **ExtrabbitCode.Inventor.Attributes** ribbon tab by clicking the **Attribute Dialog** button. The tree populates automatically when a document is active (depends on settings).
 
-{/* Screenshot: dockable panel showing the attribute tree for an assembly */}
+<img src="/images/screenshots/feature-attributedialog-light.png" alt="Feature addAttribute" className="block dark:hidden" />
+<img src="/images/screenshots/feature-attributedialog-dark.png" alt="Feature addAttribute" className="hidden dark:block" />
 
 ## Tree structure
 
@@ -49,12 +50,10 @@ The tree is organized in four levels:
 
 The toolbar provides **Expand All** and **Collapse All** buttons that open or close every node in the tree at once.
 
-{/* Screenshot: toolbar with Expand All and Collapse All buttons highlighted */}
-
-| Action | Result |
-|---|---|
-| **Expand All** | Opens every document, owner, and attribute set node so all attributes are visible |
-| **Collapse All** | Closes all nodes back to just the document root |
+| Action           | Result                                                                            |
+|------------------|-----------------------------------------------------------------------------------|
+| **Expand All**   | Opens every document, owner, and attribute set node so all attributes are visible |
+| **Collapse All** | Closes all nodes back to just the document root                                   |
 
 These are useful when you want a quick overview of everything in a large document, or when you want to tidy up the view after browsing.
 
@@ -66,15 +65,11 @@ These are useful when you want a quick overview of everything in a large documen
 
 Right-clicking any node in the tree opens a context menu. The available items depend on the node type:
 
-| Action | Available on | Description |
-|---|---|---|
-| **Select in Window** | All nodes | Selects the corresponding Inventor object in the Inventor viewport |
-| **Edit** | Attribute nodes only | Opens the edit dialog pre-filled with the current value |
-| **Delete** | Attribute and attribute set nodes | Deletes the attribute or the entire attribute set |
-
-## Selecting items
-
-Click any node to select it. The selection context determines which toolbar actions are available — for example, the **Delete** action is only enabled when an attribute or attribute set is selected.
+| Action               | Available on         | Description                                                                                                                                                   |
+|----------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Select in Window** | All nodes            | Selects the corresponding Inventor object in the Inventor viewport (this is a best effort. There are things that cant be selected and still have a attribute. |
+| **Edit**             | Attribute nodes only | Opens the edit dialog pre-filled with the current value                                                                                                       |
+| **Delete**           | All nodes            | Deletes the attribute or the entire attribute set. On the orphaned attributes owner node this triggers a pruge orphaned attributes                            |
 
 ## Refreshing the tree
 

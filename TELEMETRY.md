@@ -8,13 +8,13 @@ Telemetry is **opt-in** and can be enabled or disabled at any time via **Setting
 
 ## What IS collected
 
-| Category | Examples |
-|---|---|
-| Feature usage | Which toolbar buttons and commands are used, and how often |
-| Workflow outcomes | Whether an add/edit/delete succeeded or was cancelled |
-| Configuration | Which settings are active (e.g. confirmation messages on/off) |
-| Environment | Inventor version, add-in version, active UI theme |
-| Session lifecycle | Add-in activated / deactivated |
+| Category          | Examples                                                      |
+|-------------------|---------------------------------------------------------------|
+| Feature usage     | Which toolbar buttons and commands are used, and how often    |
+| Workflow outcomes | Whether an add/edit/delete succeeded or was cancelled         |
+| Configuration     | Which settings are active (e.g. confirmation messages on/off) |
+| Environment       | Inventor version, add-in version, active UI theme             |
+| Session lifecycle | Add-in activated / deactivated                                |
 
 All events carry a randomly generated anonymous ID that is created on first run and stored locally. It contains no personal information and cannot be used to identify you.
 

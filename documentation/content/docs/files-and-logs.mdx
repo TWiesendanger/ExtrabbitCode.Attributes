@@ -21,9 +21,9 @@ Which typically resolves to:
 C:\Users\<you>\AppData\Roaming\ExtrabbitCode.Inventor.Attributes\
 ```
 
-| File | Purpose |
-|---|---|
-| `settings.json` | All settings configured in the Settings dialog |
+| File                     | Purpose                                                   |
+|--------------------------|-----------------------------------------------------------|
+| `settings.json`          | All settings configured in the Settings dialog            |
 | `attribute-library.json` | Your saved attribute set names from the Attribute Library |
 
 These files are plain JSON and are created automatically on first run. You can back them up, copy them to another machine, or delete them to reset to defaults.
@@ -46,11 +46,11 @@ C:\Users\<you>\AppData\Local\Temp\ExtrabbitCode.Inventor.Attributes\ExtrabbitCod
 
 ### Log rotation
 
-| Setting | Value |
-|---|---|
-| **Maximum file size** | 5 MB |
-| **Backup files kept** | 5 |
-| **Log level** | DEBUG (all messages) |
+| Setting               | Value                |
+|-----------------------|----------------------|
+| **Maximum file size** | 5 MB                 |
+| **Backup files kept** | 5                    |
+| **Log level**         | DEBUG (all messages) |
 
 Once the active log file reaches 5 MB it is renamed to `.log.1`, `.log.2`, and so on up to `.log.5`. The oldest backup is discarded when a new one is needed.
 

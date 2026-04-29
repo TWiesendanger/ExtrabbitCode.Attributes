@@ -14,20 +14,21 @@ Click the **Add Attribute** button in the toolbar to open the Add Attribute dial
 
 Fill in the following fields:
 
-| Field | Description |
-|---|---|
-| **Attribute Set Name** | The name of the attribute set to add the attribute to. Type a name or pick one from your [Attribute Library](/docs/features/attribute-library). Only chars are allowed.|
-| **Attribute Name** | The key for the new attribute. Only chars are allowed. |
-| **Value Type** | One of: `String`, `Boolean`, `Double`, `Integer`, `Byte Array`. |
-| **Value** | The initial value for the attribute. |
+| Field                  | Description                                                                                                                                                             |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Attribute Set Name** | The name of the attribute set to add the attribute to. Type a name or pick one from your [Attribute Library](/docs/features/attribute-library). Only chars are allowed. |
+| **Attribute Name**     | The key for the new attribute. Only chars are allowed.                                                                                                                  |
+| **Value Type**         | One of: `String`, `Boolean`, `Double`, `Integer`, `Byte Array`.                                                                                                         |
+| **Value**              | The initial value for the attribute.                                                                                                                                    |
 
 Click **OK** to create the attribute. The tree refreshes immediately and keeps its expanded state.
 
 ## Editing an attribute
 
-Select an attribute node in the tree and click the **Edit** button. The same dialog opens pre-filled with the current values. Change the value and click **OK** to save.
+Right-click an attribute node in the tree and select **Edit**. The same dialog opens pre-filled with the current values. Change the value and click **OK** to save.
 
-{/* Screenshot: Edit dialog pre-filled with existing attribute data */}
+<img src="/images/screenshots/feature-editAttribute-light.png" alt="Feature addAttribute" className="block dark:hidden" />
+<img src="/images/screenshots/feature-editAttribute-dark.png" alt="Feature addAttribute" className="hidden dark:block" />
 
 <Callout type="info">
   Only the **value** of an existing attribute can be changed. To rename an attribute, delete it and re-create it with the new name.
@@ -35,7 +36,7 @@ Select an attribute node in the tree and click the **Edit** button. The same dia
 
 ## Deleting an attribute or attribute set
 
-Select the node you want to remove and click the **Delete** button.
+Right-click the node you want to remove and select **Delete**.
 
 - Deleting an **attribute** removes that single key/value pair.
 - Deleting an **attribute set** removes the entire set and all attributes within it.
@@ -48,4 +49,5 @@ The **Delete All** action removes every attribute from the selected objects at o
 
 <Callout type="warn">
   Autodesk-created attribute sets (such as those used by iLogic) are excluded from bulk deletes by default. Enable **Delete Autodesk Default Attribute Sets** in Settings only if you intentionally want to remove iLogic data. This will damage some functionality.
+    Also there are other properties and not all of them might be in the exclusion list!
 </Callout>
