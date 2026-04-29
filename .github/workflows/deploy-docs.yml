@@ -23,11 +23,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: documentation/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         working-directory: documentation
 
       - name: Build
@@ -35,6 +33,11 @@ jobs:
         working-directory: documentation
         env:
           VITE_BASE_PATH: /ExtrabbitCode.Inventor.Attributes/
+
+      - name: Flatten basename subdirectory
+        run: |
+          cp -r documentation/build/client/ExtrabbitCode.Inventor.Attributes/. documentation/build/client/
+          rm -rf documentation/build/client/ExtrabbitCode.Inventor.Attributes
 
       - name: Add .nojekyll
         run: touch documentation/build/client/.nojekyll
