@@ -34,7 +34,7 @@ jobs:
         run: npm run build
         working-directory: documentation
         env:
-          VITE_BASE_PATH: /Extrabbitcode.Inventor.Attributes/
+          VITE_BASE_PATH: /ExtrabbitCode.Inventor.Attributes/
 
       - name: Add .nojekyll
         run: touch documentation/build/client/.nojekyll
