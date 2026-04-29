@@ -29,6 +29,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
     private ButtonDefinition? _openAttributeWindow;
     private ButtonDefinition? _addAttributeToObject;
     private ButtonDefinition? _info;
+    private ButtonDefinition? _helpPage;
 
     private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(StandardAddInServer));
 
@@ -89,10 +90,12 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             InitializeTelemetry();
 
             _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Inventor.Attributes.Info", @"UI\ButtonResources\Info", themeName);
+            _helpPage = UiDefinitionHelper.CreateButton("Help", "ExtrabbitCode.Inventor.Attributes.Help", @"UI\ButtonResources\Help", themeName);
             _settingsButton = UiDefinitionHelper.CreateButton("Settings", "ExtrabbitCode.Inventor.Attributes.SettingsButton", @"UI\ButtonResources\Settings", themeName);
             _openAttributeWindow = UiDefinitionHelper.CreateButton("Attribute Dialog", "ExtrabbitCode.Inventor.Attributes.OpenAttributeWindow", @"UI\ButtonResources\AttributeWindow", themeName);
             _addAttributeToObject = UiDefinitionHelper.CreateButton("Add attribute", "ExtrabbitCode.Inventor.Attributes.AddAttribute", @"UI\ButtonResources\AddAttribute", themeName);
             _buttonDefinitions.Add(_info);
+            _buttonDefinitions.Add(_helpPage);
             _buttonDefinitions.Add(_settingsButton);
             _buttonDefinitions.Add(_openAttributeWindow);
             _buttonDefinitions.Add(_addAttributeToObject);
@@ -360,6 +363,18 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             _buttons.Add(infoButtonIpt);
             _buttons.Add(infoButtonIam);
             _buttons.Add(infoButtonIpn);
+        }
+
+        if (_helpPage != null)
+        {
+            CommandControl helpButtonIdw = infoIdw.CommandControls.AddButton(_helpPage, true);
+            CommandControl helpButtonIpt = infoIpt.CommandControls.AddButton(_helpPage, true);
+            CommandControl helpButtonIam = infoIam.CommandControls.AddButton(_helpPage, true);
+            CommandControl helpButtonIpn = infoIpn.CommandControls.AddButton(_helpPage, true);
+            _buttons.Add(helpButtonIdw);
+            _buttons.Add(helpButtonIpt);
+            _buttons.Add(helpButtonIam);
+            _buttons.Add(helpButtonIpn);
         }
 
         if (_openAttributeWindow != null)

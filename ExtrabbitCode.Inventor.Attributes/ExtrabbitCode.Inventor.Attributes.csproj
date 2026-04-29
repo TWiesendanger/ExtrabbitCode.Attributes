@@ -41,6 +41,10 @@
 	  <None Remove="UI\ButtonResources\Info\16x16DarkTheme.png" />
 	  <None Remove="UI\ButtonResources\Info\16x16LightTheme.png" />
 	  <None Remove="UI\ButtonResources\Info\32x32DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Help\16x16DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Help\16x16LightTheme.png" />
+	  <None Remove="UI\ButtonResources\Help\32x32DarkTheme.png" />
+	  <None Remove="UI\ButtonResources\Help\32x32LightTheme.png" />
 	  <None Remove="UI\ButtonResources\Settings\16x16DarkTheme.png" />
 	  <None Remove="UI\ButtonResources\Settings\16x16LightTheme.png" />
 	  <None Remove="UI\ButtonResources\Settings\32x32DarkTheme.png" />
@@ -59,6 +63,10 @@
 	  <Content Include="UI\ButtonResources\Info\16x16DarkTheme.png" />
 	  <Content Include="UI\ButtonResources\Info\16x16LightTheme.png" />
 	  <Content Include="UI\ButtonResources\Info\32x32DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Help\16x16DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Help\16x16LightTheme.png" />
+	  <Content Include="UI\ButtonResources\Help\32x32DarkTheme.png" />
+	  <Content Include="UI\ButtonResources\Help\32x32LightTheme.png" />
 	  <Content Include="UI\ButtonResources\Settings\16x16DarkTheme.png" />
 	  <Content Include="UI\ButtonResources\Settings\16x16LightTheme.png" />
 	  <Content Include="UI\ButtonResources\Settings\32x32DarkTheme.png" />
@@ -157,6 +165,18 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Update="UI\ButtonResources\Info\32x32DarkTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\Help\16x16DarkTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\Help\16x16LightTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\Help\32x32DarkTheme.png">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Update="UI\ButtonResources\Help\32x32LightTheme.png">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Update="UI\ButtonResources\Info\32x32LightTheme.png">

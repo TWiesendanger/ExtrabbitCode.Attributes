@@ -103,6 +103,13 @@
             Grid.Row="4"
             Orientation="Horizontal">
             <ui:Button
+                Width="150"
+                Margin="0,0,8,0"
+                Command="{Binding OpenDocumentationCommand}"
+                Content="Documentation"
+                Icon="{ui:SymbolIcon Book24}" />
+
+            <ui:Button
                 Width="180"
                 Margin="0,0,8,0"
                 Command="{Binding OpenGitHubCommand}"

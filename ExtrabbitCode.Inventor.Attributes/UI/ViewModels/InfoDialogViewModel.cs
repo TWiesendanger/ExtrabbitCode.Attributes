@@ -12,6 +12,7 @@ public partial class InfoDialogViewModel : ObservableObject
 {
     private const string GitHubUrl = "https://github.com/TWiesendanger/ExtrabbitCode.Inventor.Attributes";
     private const string AutodeskStoreUrl = "https://apps.autodesk.com/";
+    private const string DocumentationUrl = "https://twiesendanger.github.io/ExtrabbitCode.Inventor.Attributes/";
 
     [ObservableProperty]
     private string programVersion = string.Empty;
@@ -37,6 +38,13 @@ public partial class InfoDialogViewModel : ObservableObject
     {
         Globals.TelemetryService.TrackEvent("info_autodesk_store_opened");
         OpenUrl(AutodeskStoreUrl);
+    }
+
+    [RelayCommand]
+    private static void OpenDocumentation()
+    {
+        Globals.TelemetryService.TrackEvent("info_documentation_opened");
+        OpenUrl(DocumentationUrl);
     }
 
     private void LoadProgramVersion()

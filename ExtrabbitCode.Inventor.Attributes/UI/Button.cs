@@ -9,6 +9,7 @@ namespace ExtrabbitCode.Inventor.Attributes.UI;
 
 public class UiButton
 {
+    private const string DocumentationUrl = "https://twiesendanger.github.io/ExtrabbitCode.Inventor.Attributes/";
     private ButtonDefinition? _bd;
     private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(UiButton));
 
@@ -68,6 +69,15 @@ public class UiButton
                 InfoDialog infoDialog = new();
                 DialogHelper.SetDialogTheme(infoDialog);
                 infoDialog.ShowDialog();
+                return;
+            case "ExtrabbitCode.Inventor.Attributes.Help":
+                Logger.Info("Help button pressed");
+                Globals.TelemetryService.TrackEvent("panel_button_help_clicked");
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = DocumentationUrl,
+                    UseShellExecute = true
+                });
                 return;
             case "ExtrabbitCode.Inventor.Attributes.OpenAttributeWindow":
                 Logger.Info("Attribute Window button pressed");
