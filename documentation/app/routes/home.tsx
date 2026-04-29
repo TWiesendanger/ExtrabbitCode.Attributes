@@ -15,7 +15,7 @@ export default function Home() {
     <HomeLayout {...baseOptions()}>
       <main className="flex flex-col items-center justify-center flex-1 px-6 py-20 text-center gap-6">
         <img
-          src="/images/branding/AppIcon.png"
+          src={`${import.meta.env.BASE_URL}images/branding/AppIcon.png`}
           alt="Attribute Browser icon"
           className="w-24 h-24"
         />
@@ -44,7 +44,7 @@ export default function Home() {
             Made by
           </span>
           <img
-            src="/images/branding/extrabbit.png"
+            src={`${import.meta.env.BASE_URL}images/branding/extrabbit.png`}
             alt="Extrabbit logo"
             className="h-8 opacity-80"
           />
