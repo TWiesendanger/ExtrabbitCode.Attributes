@@ -802,17 +802,30 @@ public sealed class AttributeService : IAttributeService
             return false;
         }
 
-        return attributeSetName.Equals(
-                   "iLogicRuleListSet",
-                   StringComparison.OrdinalIgnoreCase) ||
-               attributeSetName.Equals(
-                   "iLogicDocumentRuleOptions",
-                   StringComparison.OrdinalIgnoreCase) ||
-               attributeSetName.Equals(
-                   "iLogicDocumentLanguageAttSet",
-                   StringComparison.OrdinalIgnoreCase) ||
-               attributeSetName.StartsWith(
-                   "iLogicRule_",
-                   StringComparison.OrdinalIgnoreCase);
+        // iLogic sets
+        if (attributeSetName.Equals("iLogicRuleListSet", StringComparison.OrdinalIgnoreCase) ||
+            attributeSetName.Equals("iLogicDocumentRuleOptions", StringComparison.OrdinalIgnoreCase) ||
+            attributeSetName.Equals("iLogicDocumentLanguageAttSet", StringComparison.OrdinalIgnoreCase) ||
+            attributeSetName.StartsWith("iLogicRule_", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        // Inventor Publications / Shared Views (PUBx prefix)
+        if (attributeSetName.StartsWith("PUBx", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        // Other known internal Autodesk attribute sets
+        if (attributeSetName.Equals("_ADSK_PartDataValues", StringComparison.OrdinalIgnoreCase) ||
+            attributeSetName.Equals("_ADSK_AssemblyDataValues", StringComparison.OrdinalIgnoreCase) ||
+            attributeSetName.StartsWith("_ADSK_", StringComparison.OrdinalIgnoreCase) ||
+            attributeSetName.StartsWith("Adsk_", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
