@@ -64,6 +64,7 @@ internal static class AttributeTreeMutations
         if (existingAttributeNode != null)
         {
             existingAttributeNode.Value = valueText;
+            existingAttributeNode.RawAttributeValue = input.RawValue;
             return;
         }
 

@@ -97,7 +97,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         {
             await userNotificationService.ShowSuccessAsync(
                 "Copied",
-                $"Copied value of '{node.Name}' to clipboard.").ConfigureAwait(false);
+                $"'{node.RawAttributeValue}' copied to clipboard.").ConfigureAwait(false);
         }
     }
 
