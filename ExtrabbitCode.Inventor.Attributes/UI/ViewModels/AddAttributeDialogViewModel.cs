@@ -215,16 +215,18 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
                     : new ValidationResult("Value must be a valid double.");
 
             case ValueTypeEnum.kByteArrayType:
-                try
+                string normalizedHex = text
+                    .Replace(" ", string.Empty, StringComparison.Ordinal)
+                    .Replace("-", string.Empty, StringComparison.Ordinal)
+                    .Replace(":", string.Empty, StringComparison.Ordinal);
+                if (normalizedHex.Length % 2 != 0)
+                    return new ValidationResult("Hex string must have an even number of digits (e.g. FF 0A 1B).");
+                foreach (char c in normalizedHex)
                 {
-                    _ = Convert.FromBase64String(text);
-                    return ValidationResult.Success;
+                    if (!Uri.IsHexDigit(c))
+                        return new ValidationResult("Value must be a valid hex string (e.g. FF 0A 1B). Only 0–9 and A–F are allowed.");
                 }
-                catch
-                {
-                    return new ValidationResult(
-                        "Value must be a valid Base64 string.");
-                }
+                return ValidationResult.Success;
             case ValueTypeEnum.kBooleanType:
                 return bool.TryParse(text, out _)
                     ? ValidationResult.Success

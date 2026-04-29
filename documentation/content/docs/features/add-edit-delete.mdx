@@ -23,6 +23,23 @@ Fill in the following fields:
 
 Click **OK** to create the attribute. The tree refreshes immediately and keeps its expanded state.
 
+### Entering a Byte Array value
+
+When **Byte Array** is selected as the value type, enter the value as a **hex string**. Each byte is two hex digits (`0–9`, `A–F`), and bytes can be separated by spaces, dashes, or colons — or written as a continuous string.
+
+| Format          | Example    |
+|-----------------|------------|
+| Space-separated | `FF 0A 1B` |
+| Dash-separated  | `FF-0A-1B` |
+| Colon-separated | `FF:0A:1B` |
+| No separator    | `FF0A1B`   |
+
+All four examples produce the same three-byte value. When you re-open an existing Byte Array attribute to edit it, the value is displayed in the space-separated form (e.g. `FF 0A 1B`).
+
+<Callout type="info">
+  **Example — integrity checksum:** A quality add-in writes a 4-byte CRC-32 of the part's key dimensions after sign-off: `A3 F2 01 CC`. A downstream export script re-computes the checksum and compares it to detect unauthorised geometry changes between approval and release.
+</Callout>
+
 ## Editing an attribute
 
 Right-click an attribute node in the tree and select **Edit**. The same dialog opens pre-filled with the current values. Change the value and click **OK** to save.
