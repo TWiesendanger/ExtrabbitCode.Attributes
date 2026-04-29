@@ -21,10 +21,18 @@ function initOrama() {
   });
 }
 
+function resolveBasePath(path: string): string {
+  const baseUrl = import.meta.env.BASE_URL;
+  const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+
+  return `${baseUrl}${normalizedPath}`;
+}
+
 export default function DefaultSearchDialog(props: SharedProps) {
   const { locale } = useI18n();
   const { search, setSearch, query } = useDocsSearch({
     type: 'static',
+    from: resolveBasePath('/api/search'),
     initOrama,
     locale,
   });

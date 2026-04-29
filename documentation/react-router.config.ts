@@ -4,9 +4,25 @@ import { createGetUrl, getSlugs } from 'fumadocs-core/source';
 
 const getUrl = createGetUrl('/docs');
 
+function getBasePath() {
+  if (process.env.VITE_BASE_PATH) {
+    return process.env.VITE_BASE_PATH;
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    return '/';
+  }
+
+  const repoName =
+    process.env.GITHUB_REPOSITORY?.split('/')[1] ??
+    'ExtrabbitCode.Inventor.Attributes';
+
+  return `/${repoName}/`;
+}
+
 export default {
   ssr: false,
-  basename: process.env.VITE_BASE_PATH ?? '/',
+  basename: getBasePath(),
   future: {
     v8_middleware: true,
   },
