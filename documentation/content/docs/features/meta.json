@@ -3,9 +3,9 @@
   "pages": [
     "attribute-browser",
     "add-edit-delete",
+    "document-types",
     "orphaned-cleanup",
     "attribute-library",
-    "document-types",
     "search-filter",
     "auto-refresh",
     "copy-to-clipboard"
