@@ -1,4 +1,6 @@
-﻿namespace ExtrabbitCode.Inventor.Attributes.Models;
+﻿using System;
+
+namespace ExtrabbitCode.Inventor.Attributes.Models;
 
 public class SettingsModel
 {
@@ -14,4 +16,6 @@ public class SettingsModel
     public bool TelemetryEnabled { get; set; } = true;
 
     public bool TelemetryConsentAsked { get; set; }
+
+    public string TelemetryId { get; set; } = Guid.NewGuid().ToString("N");
 }

@@ -34,7 +34,8 @@ public sealed class SettingsService : ISettingsService
             UpdateAttributesOnDocumentSwitch = _settings.UpdateAttributesOnDocumentSwitch,
             DeleteAutodeskDefaultAttributeSets = _settings.DeleteAutodeskDefaultAttributeSets,
             TelemetryEnabled = _settings.TelemetryEnabled,
-            TelemetryConsentAsked = _settings.TelemetryConsentAsked
+            TelemetryConsentAsked = _settings.TelemetryConsentAsked,
+            TelemetryId = _settings.TelemetryId
         };
     }
 
@@ -54,7 +55,8 @@ public sealed class SettingsService : ISettingsService
             DeleteAutodeskDefaultAttributeSets =
                 settings.DeleteAutodeskDefaultAttributeSets,
             TelemetryEnabled = settings.TelemetryEnabled,
-            TelemetryConsentAsked = settings.TelemetryConsentAsked
+            TelemetryConsentAsked = settings.TelemetryConsentAsked,
+            TelemetryId = settings.TelemetryId
         };
 
         Save();
@@ -78,19 +80,21 @@ public sealed class SettingsService : ISettingsService
         try
         {
             string json = File.ReadAllText(_filePath);
+            SettingsModel settings = JsonSerializer.Deserialize<SettingsModel>(json) ?? new SettingsModel();
 
-            return JsonSerializer.Deserialize<SettingsModel>(json) ??
-                   new SettingsModel();
+            string canonical = JsonSerializer.Serialize(settings, _jsonSerializerOptions);
+            if (canonical != json)
+            {
+                File.WriteAllText(_filePath, canonical);
+            }
+
+            return settings;
         }
         catch
         {
             SettingsModel defaultSettings = new();
-            string json = JsonSerializer.Serialize(
-                defaultSettings,
-                _jsonSerializerOptions);
-
+            string json = JsonSerializer.Serialize(defaultSettings, _jsonSerializerOptions);
             File.WriteAllText(_filePath, json);
-
             return defaultSettings;
         }
     }

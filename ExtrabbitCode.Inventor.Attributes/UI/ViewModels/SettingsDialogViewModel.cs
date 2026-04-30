@@ -118,6 +118,7 @@ public partial class SettingsDialogViewModel : ObservableValidator
 
     public void Save()
     {
+        SettingsModel current = _settingsService.GetCopy();
         SettingsModel settings = new()
         {
             ShowConfirmationMessages = ShowConfirmationMessages,
@@ -130,7 +131,8 @@ public partial class SettingsDialogViewModel : ObservableValidator
             DeleteAutodeskDefaultAttributeSets =
                 DeleteAutodeskDefaultAttributeSets,
             TelemetryEnabled = TelemetryEnabled,
-            TelemetryConsentAsked = _settingsService.GetCopy().TelemetryConsentAsked
+            TelemetryConsentAsked = current.TelemetryConsentAsked,
+            TelemetryId = current.TelemetryId
         };
 
         _settingsService.Update(settings);
