@@ -318,6 +318,14 @@
                                         Opacity="0.8"
                                         TextWrapping="Wrap"
                                         Text="Helps improve the add-in. Only command usage and version info are collected. No document names, file paths, or attribute values are sent." />
+                                    <TextBlock
+                                        Margin="0,4,0,0"
+                                        FontFamily="{DynamicResource InvFontFamily}"
+                                        FontSize="{DynamicResource InvFontSizeNormal}">
+                                        <Hyperlink
+                                            NavigateUri="https://twiesendanger.github.io/ExtrabbitCode.Inventor.Attributes/docs/telemetry"
+                                            RequestNavigate="TelemetryLink_OnRequestNavigate">Learn more about telemetry</Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
 
                                 <CheckBox

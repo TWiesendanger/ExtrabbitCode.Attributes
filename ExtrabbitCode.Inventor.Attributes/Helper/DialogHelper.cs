@@ -104,7 +104,7 @@ static class DialogHelper
 
     public static async Task<bool> ShowTelemetryConsentAsync()
     {
-        const string privacyUrl = "https://github.com/TWiesendanger/ExtrabbitCode.Inventor.Attributes/blob/master/TELEMETRY.md";
+        const string privacyUrl = "https://twiesendanger.github.io/ExtrabbitCode.Inventor.Attributes/docs/telemetry";
 
         System.Windows.Controls.TextBlock textBlock = new()
         {
