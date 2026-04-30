@@ -18,6 +18,7 @@ Telemetry is **opt-in** and can be enabled or disabled at any time via **Setting
 | Configuration     | Which settings are active (e.g. confirmation messages on/off) |
 | Environment       | Inventor version, add-in version, active UI theme             |
 | Session lifecycle | Add-in activated / deactivated                                |
+| Approximate location | Country and region, derived from your IP address at the time of the event |
 
 All events carry a randomly generated anonymous ID that is created on first run and stored locally. It contains no personal information and cannot be used to identify you.
 
@@ -29,7 +30,7 @@ All events carry a randomly generated anonymous ID that is created on first run 
 - File names, paths, or document contents
 - Attribute names, attribute set names, or attribute values
 - Any data from your Inventor models
-- IP address (PostHog is configured to not store it)
+- Your exact IP address (used only to resolve approximate location, not stored)
 
 ---
 

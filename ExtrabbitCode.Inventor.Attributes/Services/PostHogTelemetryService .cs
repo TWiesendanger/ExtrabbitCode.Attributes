@@ -30,7 +30,11 @@ public sealed class PostHogTelemetryService(string apiKey, string distinctId, bo
 
         try
         {
-            _client.Capture(distinctId, eventName, properties);
+            var props = new Dictionary<string, object>(properties ?? [])
+            {
+                ["$geoip_disable"] = false
+            };
+            _client.Capture(distinctId, eventName, props);
         }
         catch (Exception ex)
         {
