@@ -39,11 +39,19 @@ jobs:
           -p:AssemblyVersion="${{ env.VERSION }}.0"
         shell: pwsh
 
+      - name: Install InnoSetup
+        run: choco install innosetup --yes --no-progress
+        shell: pwsh
+
       - name: Build installer
         run: >-
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
           /DMyAppVersion="${{ env.VERSION }}"
           ExtrabbitCode.Inventor.Attributes\Installer\InstallerScript.iss
+        shell: pwsh
+
+      - name: List installer output
+        run: Get-ChildItem ExtrabbitCode.Inventor.Attributes\Installer\
         shell: pwsh
 
       - name: Create release
