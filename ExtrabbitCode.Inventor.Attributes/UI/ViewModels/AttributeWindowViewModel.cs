@@ -310,6 +310,18 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
                             ["node_type"] = node.NodeType.ToString()
                         });
                     return;
+            case NodeType.OrphanRoot:
+                await AttributeTreeMutations.PurgeAllOrphansAsync(
+                    attributeService,
+                    userNotificationService,
+                    settingsService,
+                    GetAllAttributes).ConfigureAwait(false);
+                Globals.TelemetryService.TrackEvent("attribute_delete_node_succeeded",
+                    new Dictionary<string, object>
+                    {
+                        ["node_type"] = node.NodeType.ToString()
+                    });
+                return;
             case NodeType.OrphanAttributeSet:
                 AttributeTreeMutations.DeleteOrphanAttributeSet(
                     node, _allAttributeTree, attributeService);
