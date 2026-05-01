@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace ExtrabbitCode.Inventor.Attributes.UI;
@@ -96,7 +97,7 @@ public static class UiDefinitionHelper
             try
             {
                 using System.Drawing.Bitmap image16X16 = new(filename16X16);
-                iPicDisp16X16 = ConvertImage.ConvertImageToIPictureDisp(image16X16);
+                iPicDisp16X16 = PictureDispConverter.ToIPictureDisp(image16X16);
             }
             catch (Exception ex)
             {
@@ -117,7 +118,7 @@ public static class UiDefinitionHelper
             try
             {
                 using System.Drawing.Bitmap image32X32 = new(filename32X32);
-                iPicDisp32X32 = ConvertImage.ConvertImageToIPictureDisp(image32X32);
+                iPicDisp32X32 = PictureDispConverter.ToIPictureDisp(image32X32);
             }
             catch (Exception ex)
             {
@@ -189,23 +190,36 @@ public static class UiDefinitionHelper
     }
 }
 
-///<summary>
-/// Class used to convert bitmaps and icons between their .Net native types
-/// and an IPictureDisp object which is what the Inventor API requires.
-/// </summary>
-public class ConvertImage() : AxHost("59EE46BA-677D-4d20-BF10-8D8067CB8B32")
+public static class PictureDispConverter
 {
-    public static IPictureDisp ConvertImageToIPictureDisp(System.Drawing.Image image)
+    private const int PictypeIcon = 3;
+    private static readonly Guid IPictureDispGuid = typeof(IPictureDisp).GUID;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PictDesc
     {
-        try
+        public int cbSizeofstruct;
+        public int picType;
+        public IntPtr handle;
+    }
+
+    [DllImport("OleAut32.dll", ExactSpelling = true, PreserveSig = false)]
+    private static extern IPictureDisp OleCreatePictureIndirect(
+        ref PictDesc pPictDesc,
+        ref Guid riid,
+        [MarshalAs(UnmanagedType.Bool)] bool fOwn);
+
+    public static IPictureDisp ToIPictureDisp(System.Drawing.Bitmap bitmap)
+    {
+        IntPtr hIcon = bitmap.GetHicon();
+        var desc = new PictDesc
         {
-            return (IPictureDisp)GetIPictureFromPicture(image);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                "Failed to convert image to IPictureDisp. The input image might be invalid or unsupported.",
-                ex);
-        }
+            cbSizeofstruct = Marshal.SizeOf<PictDesc>(),
+            picType = PictypeIcon,
+            handle = hIcon
+        };
+        var guid = IPictureDispGuid;
+        // fOwn=true transfers hIcon ownership to the OLE picture object
+        return OleCreatePictureIndirect(ref desc, ref guid, true);
     }
 }
