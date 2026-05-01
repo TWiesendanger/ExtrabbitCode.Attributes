@@ -1,0 +1,53 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 1.2.3)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ inputs.version || github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.csproj
+        shell: pwsh
+
+      - name: Build
+        run: >-
+          dotnet build ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.csproj
+          --configuration Release
+          --no-restore
+          -p:Platform=x64
+          -p:AssemblyVersion="${{ env.VERSION }}.0"
+        shell: pwsh
+
+      - name: Build installer
+        run: >-
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          /DMyAppVersion="${{ env.VERSION }}"
+          ExtrabbitCode.Inventor.Attributes\Installer\InstallerScript.iss
+        shell: pwsh
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: ExtrabbitCode.Inventor.Attributes/Installer/ExtrabbitCode.Inventor.Attributes_${{ env.VERSION }}.exe
