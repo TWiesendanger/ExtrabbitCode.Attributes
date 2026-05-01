@@ -1,13 +1,13 @@
 #define MyAppName "ExtrabbitCode.Inventor.Attributes"
 #define MyAppVersion "0.0.0.1"
-#define MyAppPublisher "Company"
-#define MyAppURL "http://www.company.com"
+#define MyAppPublisher "ExtrabbitCode"
+#define MyAppURL ""
 
 [Setup]
  
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{GUID}
+AppId={{58C9D72B-AD94-4C18-9D6E-D00892F7EB21}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName}
