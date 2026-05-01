@@ -268,36 +268,23 @@ internal static class AttributeTreeMutations
             return;
         }
 
-        int purged = 0;
-        int failed = 0;
-
-        foreach (OrphanedAttributeSetInfo orphan in orphans)
-        {
-            if (attributeService.PurgeOrphanedAttributeSet(document, orphan.Name))
-            {
-                purged++;
-            }
-            else
-            {
-                failed++;
-            }
-        }
+        int purged = attributeService.PurgeAllOrphanedAttributeSets(document);
 
         refreshAll();
 
-        string message = $"Purged {purged} orphaned attribute set(s).";
-        if (failed > 0)
+        if (purged == 0)
         {
-            message += $" Failed: {failed}.";
             await userNotificationService.ShowWarningAsync(
-                "Purge Orphaned Sets", message).ConfigureAwait(false);
+                "Purge Orphaned Sets",
+                "No orphaned attribute sets could be purged.").ConfigureAwait(false);
             return;
         }
 
         if (settingsService.GetCopy().ShowConfirmationMessages)
         {
             await userNotificationService.ShowSuccessAsync(
-                "Purge Orphaned Sets", message).ConfigureAwait(false);
+                "Purge Orphaned Sets",
+                $"Purged {purged} orphaned attribute set(s).").ConfigureAwait(false);
         }
     }
 

@@ -292,8 +292,14 @@ public sealed class AttributeService : IAttributeService
                 return false;
             }
 
-            attributeSet.Delete();
-            Logger.Info($"Deleted attribute set '{attributeSetName}'.");
+            TransactionHelper.Run(
+                document,
+                $"Delete Attribute Set '{attributeSetName}'",
+                () =>
+                {
+                    attributeSet.Delete();
+                    Logger.Info($"Deleted attribute set '{attributeSetName}'.");
+                });
             return true;
         }
         catch (Exception ex)
@@ -419,42 +425,45 @@ public sealed class AttributeService : IAttributeService
 
         try
         {
-            InventorAttributeSet? attributeSet = GetOrCreateAttributeSet(
+            InventorAttribute? result = null;
+            TransactionHelper.Run(
                 Globals.InvApp.ActiveDocument,
-                inventorObject,
-                attributeSetName);
-
-            if (attributeSet == null)
-            {
-                Logger.Warn(
-                    $"Could not get or create attribute set '{attributeSetName}'.");
-                return null;
-            }
-
-            foreach (InventorAttribute existingAttribute in attributeSet)
-            {
-                if (!existingAttribute.Name.Equals(
-                        attributeName,
-                        StringComparison.OrdinalIgnoreCase))
+                $"Add Attribute '{attributeName}'",
+                () =>
                 {
-                    continue;
-                }
+                    InventorAttributeSet? attributeSet = GetOrCreateAttributeSet(
+                        Globals.InvApp.ActiveDocument,
+                        inventorObject,
+                        attributeSetName);
 
-                existingAttribute.Value = value;
+                    if (attributeSet == null)
+                    {
+                        Logger.Warn(
+                            $"Could not get or create attribute set '{attributeSetName}'.");
+                        return;
+                    }
 
-                Logger.Info(
-                    $"Updated attribute '{attributeName}' in set '{attributeSetName}'.");
-                return existingAttribute;
-            }
+                    foreach (InventorAttribute existingAttribute in attributeSet)
+                    {
+                        if (!existingAttribute.Name.Equals(
+                                attributeName,
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
 
-            InventorAttribute newAttribute = attributeSet.Add(
-                attributeName,
-                valueType,
-                value);
+                        existingAttribute.Value = value;
+                        Logger.Info(
+                            $"Updated attribute '{attributeName}' in set '{attributeSetName}'.");
+                        result = existingAttribute;
+                        return;
+                    }
 
-            Logger.Info(
-                $"Added attribute '{attributeName}' to set '{attributeSetName}'.");
-            return newAttribute;
+                    result = attributeSet.Add(attributeName, valueType, value);
+                    Logger.Info(
+                        $"Added attribute '{attributeName}' to set '{attributeSetName}'.");
+                });
+            return result;
         }
         catch (Exception ex)
         {
@@ -519,9 +528,15 @@ public sealed class AttributeService : IAttributeService
                 return false;
             }
 
-            attribute.Delete();
-            Logger.Info(
-                $"Deleted attribute '{attributeName}' from set '{attributeSetName}'.");
+            TransactionHelper.Run(
+                document,
+                $"Delete Attribute '{attributeName}'",
+                () =>
+                {
+                    attribute.Delete();
+                    Logger.Info(
+                        $"Deleted attribute '{attributeName}' from set '{attributeSetName}'.");
+                });
             return true;
         }
         catch (Exception ex)
@@ -549,53 +564,58 @@ public sealed class AttributeService : IAttributeService
 
         try
         {
-            foreach (object inventorObject in inventorObjectCollection)
-            {
-                try
+            TransactionHelper.Run(
+                Globals.InvApp.ActiveDocument,
+                "Delete Attributes",
+                () =>
                 {
-                    InventorAttributeSets? attributeSets =
-                        TryGetAttributeSets(inventorObject);
-
-                    if (attributeSets == null || attributeSets.Count == 0)
+                    foreach (object inventorObject in inventorObjectCollection)
                     {
-                        continue;
-                    }
-
-                    affectedObjects++;
-
-                    List<InventorAttributeSet> attributeSetsToDelete = [];
-                    attributeSetsToDelete.AddRange(attributeSets.Cast<InventorAttributeSet>());
-
-                    foreach (InventorAttributeSet attributeSet in attributeSetsToDelete)
-                    {
-                        if (!deleteAutodeskDefaultAttributeSets &&
-                            IsAutodeskDefaultAttributeSet(attributeSet.Name))
+                        try
                         {
-                            continue;
+                            InventorAttributeSets? attributeSets =
+                                TryGetAttributeSets(inventorObject);
+
+                            if (attributeSets == null || attributeSets.Count == 0)
+                            {
+                                continue;
+                            }
+
+                            affectedObjects++;
+
+                            List<InventorAttributeSet> attributeSetsToDelete = [];
+                            attributeSetsToDelete.AddRange(attributeSets.Cast<InventorAttributeSet>());
+
+                            foreach (InventorAttributeSet attributeSet in attributeSetsToDelete)
+                            {
+                                if (!deleteAutodeskDefaultAttributeSets &&
+                                    IsAutodeskDefaultAttributeSet(attributeSet.Name))
+                                {
+                                    continue;
+                                }
+
+                                List<InventorAttribute> attributesToDelete = [];
+                                attributesToDelete.AddRange(attributeSet.Cast<InventorAttribute>());
+
+                                foreach (InventorAttribute attribute in attributesToDelete)
+                                {
+                                    attribute.Delete();
+                                    deletedAttributes++;
+                                }
+
+                                attributeSet.Delete();
+                                deletedAttributeSets++;
+                            }
                         }
-
-                        List<InventorAttribute> attributesToDelete = [];
-                        attributesToDelete.AddRange(attributeSet.Cast<InventorAttribute>());
-
-                        foreach (InventorAttribute attribute in attributesToDelete)
+                        catch (Exception ex)
                         {
-                            attribute.Delete();
-                            deletedAttributes++;
+                            failedObjects++;
+                            Logger.Error(
+                                $"Error deleting attributes from selected object: {ex.Message}",
+                                ex);
                         }
-
-                        attributeSet.Delete();
-                        deletedAttributeSets++;
                     }
-                }
-                catch (Exception ex)
-                {
-                    failedObjects++;
-
-                    Logger.Error(
-                        $"Error deleting attributes from selected object: {ex.Message}",
-                        ex);
-                }
-            }
+                });
 
             Logger.Info(
                 $"Deleted {deletedAttributes} attribute(s) and {deletedAttributeSets} attribute set(s) from {affectedObjects} object(s). Failed objects: {failedObjects}.");
@@ -712,7 +732,10 @@ public sealed class AttributeService : IAttributeService
 
         try
         {
-            attributeManager.PurgeAttributeSets(attributeSetName, false, out _);
+            TransactionHelper.Run(
+                document,
+                $"Purge Orphaned Attribute Set '{attributeSetName}'",
+                () => attributeManager.PurgeAttributeSets(attributeSetName, false, out _));
             return true;
         }
         catch (Exception ex)
@@ -720,6 +743,47 @@ public sealed class AttributeService : IAttributeService
             Logger.Error($"Error purging orphaned attribute set '{attributeSetName}': {ex.Message}", ex);
             return false;
         }
+    }
+
+    public int PurgeAllOrphanedAttributeSets(Document? document)
+    {
+        AttributeManager? attributeManager = GetAttributeManager(document);
+        IReadOnlyList<OrphanedAttributeSetInfo> orphans = GetOrphanedAttributeSets(document);
+        if (attributeManager == null || orphans.Count == 0)
+        {
+            return 0;
+        }
+
+        int purged = 0;
+        try
+        {
+            TransactionHelper.Run(
+                document,
+                "Purge All Orphaned Attribute Sets",
+                () =>
+                {
+                    foreach (OrphanedAttributeSetInfo orphan in orphans)
+                    {
+                        try
+                        {
+                            attributeManager.PurgeAttributeSets(orphan.Name, false, out _);
+                            purged++;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(
+                                $"Error purging orphaned attribute set '{orphan.Name}': {ex.Message}",
+                                ex);
+                        }
+                    }
+                });
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error purging all orphaned attribute sets: {ex.Message}", ex);
+        }
+
+        return purged;
     }
 
     public bool AttributeSetExists(

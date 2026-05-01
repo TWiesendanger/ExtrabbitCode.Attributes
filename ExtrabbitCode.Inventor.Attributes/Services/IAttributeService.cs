@@ -73,4 +73,5 @@ public interface IAttributeService
     ObjectCollection? GetObjectsWithAttributes(Document? document);
     IReadOnlyList<OrphanedAttributeSetInfo> GetOrphanedAttributeSets(Document? document);
     bool PurgeOrphanedAttributeSet(Document? document, string attributeSetName);
+    int PurgeAllOrphanedAttributeSets(Document? document);
 }

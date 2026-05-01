@@ -212,13 +212,13 @@ public static class PictureDispConverter
     public static IPictureDisp ToIPictureDisp(System.Drawing.Bitmap bitmap)
     {
         IntPtr hIcon = bitmap.GetHicon();
-        var desc = new PictDesc
+        PictDesc desc = new()
         {
             cbSizeofstruct = Marshal.SizeOf<PictDesc>(),
             picType = PictypeIcon,
             handle = hIcon
         };
-        var guid = IPictureDispGuid;
+        Guid guid = IPictureDispGuid;
         // fOwn=true transfers hIcon ownership to the OLE picture object
         return OleCreatePictureIndirect(ref desc, ref guid, true);
     }
