@@ -1,5 +1,7 @@
 #define MyAppName "ExtrabbitCode.Inventor.Attributes"
-#define MyAppVersion "0.0.0.1"
+#ifndef MyAppVersion
+  #define MyAppVersion "0.0.0.1"
+#endif
 #define MyAppPublisher "ExtrabbitCode"
 #define MyAppURL ""
 
