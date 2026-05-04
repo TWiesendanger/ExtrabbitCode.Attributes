@@ -195,6 +195,39 @@ internal static class AttributeTreeMutations
         realNode.Parent?.Children.Remove(realNode);
     }
 
+    internal static void RemoveOwnerNodes(
+        ObjectCollection deletedObjects,
+        List<AttributeTreeNode> allAttributeTree,
+        ref AttributeTreeNode? selectedNode)
+    {
+        if (allAttributeTree.Count == 0)
+            return;
+
+        AttributeTreeNode documentNode = allAttributeTree[0];
+
+        for (int i = documentNode.Children.Count - 1; i >= 0; i--)
+        {
+            AttributeTreeNode ownerNode = documentNode.Children[i];
+            bool matched = false;
+            foreach (object obj in deletedObjects)
+            {
+                if (ReferenceEquals(ownerNode.OwnerObject, obj))
+                {
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched)
+                continue;
+
+            if (selectedNode != null && AttributeTreeFilter.NodesMatch(selectedNode, ownerNode))
+                selectedNode = null;
+
+            documentNode.Children.RemoveAt(i);
+        }
+    }
+
     internal static void DeleteOrphanAttributeSet(
         AttributeTreeNode node,
         List<AttributeTreeNode> allAttributeTree,

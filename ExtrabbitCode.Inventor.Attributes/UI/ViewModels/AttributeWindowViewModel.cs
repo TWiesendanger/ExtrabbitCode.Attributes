@@ -198,6 +198,14 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             $"{result.DeletedAttributeSets} attribute set(s) on " +
             $"{result.AffectedObjects} object(s).";
 
+        AttributeTreeNode? mutableSelectedNode = SelectedNode;
+        AttributeTreeMutations.RemoveOwnerNodes(
+            selectedObjects,
+            _allAttributeTree,
+            ref mutableSelectedNode);
+        SelectedNode = mutableSelectedNode;
+        ApplyFilter();
+
         if (result.FailedObjects > 0)
         {
             message += $"\nFailed objects: {result.FailedObjects}.";
