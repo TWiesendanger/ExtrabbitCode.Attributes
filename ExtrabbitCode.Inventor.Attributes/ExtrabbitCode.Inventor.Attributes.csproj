@@ -203,6 +203,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Installer\app.ico">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
 		<None Update="Properties\Settings.settings">
 		  <Generator>SettingsSingleFileGenerator</Generator>
 		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>

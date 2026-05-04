@@ -27,6 +27,7 @@ LicenseFile={#SourcePath}License.txt
 OutputDir={#SourcePath}
 OutputBaseFilename=ExtrabbitCode.Inventor.Attributes_{#MyAppVersion}
 SetupIconFile={#SourcePath}app.ico
+UninstallDisplayIcon={app}\app.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -37,5 +38,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "..\Addin\ExtrabbitCode.Inventor.Attributes.addin"; DestDir: "C:\ProgramData\Autodesk\Inventor Addins";  Flags: ignoreversion
 Source: "..\bin\x64\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourcePath}app.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
