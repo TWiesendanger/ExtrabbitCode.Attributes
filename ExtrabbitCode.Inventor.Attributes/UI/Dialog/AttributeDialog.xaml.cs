@@ -34,7 +34,7 @@ public partial class AttributeDialog
             StandardAddInServer.InvAppEvents.OnActivateDocument += OnInventorDocumentActivated;
         }
 
-        Dispatcher.BeginInvoke(async () => await AskTelemetryConsentIfNeededAsync());
+        Dispatcher.BeginInvoke(async () => await AskTelemetryConsentIfNeededAsync().ConfigureAwait(false));
     }
 
     private void OnClosed(object? sender, EventArgs e)

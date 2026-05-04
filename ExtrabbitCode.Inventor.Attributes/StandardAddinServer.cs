@@ -164,7 +164,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
         _uiEvents = null;
     }
 
-    private void DeleteAttributeWindow()
+    private static void DeleteAttributeWindow()
     {
         try
         {

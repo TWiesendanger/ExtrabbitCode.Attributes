@@ -8,6 +8,8 @@
     xmlns:uiModels="clr-namespace:ExtrabbitCode.Inventor.Attributes.Models"
     xmlns:converter="clr-namespace:ExtrabbitCode.Inventor.Attributes.Helper.Converter"
     xmlns:behaviors="clr-namespace:ExtrabbitCode.Inventor.Attributes.Helper.Behavior"
+    xmlns:viewModels="clr-namespace:ExtrabbitCode.Inventor.Attributes.UI.ViewModels"
+    xmlns:dialog="clr-namespace:ExtrabbitCode.Inventor.Attributes.UI.Dialog"
     Title="Attributes"
     FontFamily="{DynamicResource InvFontFamily}"
     FontSize="{DynamicResource InvFontSizeNormal}"
@@ -84,13 +86,13 @@
                             Background="{DynamicResource InvPanelBackgroundBrush}"
                             FontFamily="{DynamicResource InvFontFamily}"
                             FontSize="{DynamicResource InvFontSizeNormal}"
-                            DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                            DataContext="{Binding PlacementTarget.(dialog:AttributeDialog.DataContext), RelativeSource={RelativeSource Self}}">
                             <MenuItem
                                 Header="Delete Selection"
-                                Command="{Binding DeleteSelectedCommand}" />
+                                Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.DeleteSelectedCommand), Source={x:Reference AttributeTreeView}}" />
                             <MenuItem
                                 Header="Delete All"
-                                Command="{Binding DeleteAllCommand}" />
+                                Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.DeleteAllCommand), Source={x:Reference AttributeTreeView}}" />
                         </ContextMenu>
                     </ui:SplitButton.Flyout>
                 </ui:SplitButton>
@@ -183,18 +185,18 @@
                                         Foreground="{DynamicResource InvForegroundBrush}">
                                         <MenuItem
                                             Header="Select in Window"
-                                            Command="{Binding DataContext.SelectNodeObjectCommand, Source={x:Reference AttributeTreeView}}"
-                                            CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                            Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.SelectNodeObjectCommand), Source={x:Reference AttributeTreeView}}"
+                                            CommandParameter="{Binding PlacementTarget.(dialog:AttributeDialog.Tag), RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <MenuItem
                                             Header="Edit"
-                                            Visibility="{Binding PlacementTarget.Tag.CanEdit, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                            Command="{Binding DataContext.EditNodeCommand, Source={x:Reference AttributeTreeView}}"
-                                            CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                            Visibility="{Binding PlacementTarget.(dialog:AttributeDialog.Tag).(uiModels:AttributeTreeNode.CanEdit), RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.EditNodeCommand), Source={x:Reference AttributeTreeView}}"
+                                            CommandParameter="{Binding PlacementTarget.(dialog:AttributeDialog.Tag), RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
 
                                         <MenuItem
                                             Header="Delete"
-                                            Command="{Binding DataContext.DeleteNodeCommand, Source={x:Reference AttributeTreeView}}"
-                                            CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                            Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.DeleteNodeCommand), Source={x:Reference AttributeTreeView}}"
+                                            CommandParameter="{Binding PlacementTarget.(dialog:AttributeDialog.Tag), RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
 
@@ -233,7 +235,7 @@
                                     Padding="0"
                                     VerticalAlignment="Top"
                                     Appearance="Transparent"
-                                    Command="{Binding DataContext.CopyNodeValueCommand, Source={x:Reference AttributeTreeView}}"
+                                    Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.CopyNodeValueCommand), Source={x:Reference AttributeTreeView}}"
                                     CommandParameter="{Binding}"
                                     Icon="{ui:SymbolIcon Copy24}"
                                     ToolTip="Copy value"
