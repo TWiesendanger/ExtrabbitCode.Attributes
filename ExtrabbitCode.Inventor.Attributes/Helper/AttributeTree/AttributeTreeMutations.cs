@@ -1,4 +1,3 @@
-using ExtrabbitCode.Inventor.Attributes.Helper;
 using ExtrabbitCode.Inventor.Attributes.Models;
 using ExtrabbitCode.Inventor.Attributes.Services;
 using ExtrabbitCode.Inventor.Attributes.Services.AttributeModels;
@@ -201,7 +200,9 @@ internal static class AttributeTreeMutations
         ref AttributeTreeNode? selectedNode)
     {
         if (allAttributeTree.Count == 0)
+        {
             return;
+        }
 
         AttributeTreeNode documentNode = allAttributeTree[0];
 
@@ -219,10 +220,14 @@ internal static class AttributeTreeMutations
             }
 
             if (!matched)
+            {
                 continue;
+            }
 
             if (selectedNode != null && AttributeTreeFilter.NodesMatch(selectedNode, ownerNode))
+            {
                 selectedNode = null;
+            }
 
             documentNode.Children.RemoveAt(i);
         }
