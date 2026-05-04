@@ -1,4 +1,4 @@
-﻿<ui:FluentWindow
+<ui:FluentWindow
     x:Class="ExtrabbitCode.Inventor.Attributes.UI.Dialog.AttributeDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -178,25 +178,26 @@
                         <HierarchicalDataTemplate
                             DataType="{x:Type uiModels:AttributeTreeNode}"
                             ItemsSource="{Binding Children}">
-                            <Grid Tag="{Binding}">
+                            <Grid Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TreeView}}">
                                 <Grid.ContextMenu>
                                     <ContextMenu
                                         Background="{DynamicResource InvPanelBackgroundBrush}"
-                                        Foreground="{DynamicResource InvForegroundBrush}">
+                                        Foreground="{DynamicResource InvForegroundBrush}"
+                                        DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}"
+                                        Tag="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                         <MenuItem
                                             Header="Select in Window"
-                                            Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.SelectNodeObjectCommand), Source={x:Reference AttributeTreeView}}"
-                                            CommandParameter="{Binding PlacementTarget.(dialog:AttributeDialog.Tag), RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                            Command="{Binding SelectNodeObjectCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <MenuItem
                                             Header="Edit"
-                                            Visibility="{Binding PlacementTarget.(dialog:AttributeDialog.Tag).(uiModels:AttributeTreeNode.CanEdit), RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                            Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.EditNodeCommand), Source={x:Reference AttributeTreeView}}"
-                                            CommandParameter="{Binding PlacementTarget.(dialog:AttributeDialog.Tag), RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-
+                                            Visibility="{Binding Tag.CanEdit, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Command="{Binding EditNodeCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <MenuItem
                                             Header="Delete"
-                                            Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.DeleteNodeCommand), Source={x:Reference AttributeTreeView}}"
-                                            CommandParameter="{Binding PlacementTarget.(dialog:AttributeDialog.Tag), RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                            Command="{Binding DeleteNodeCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
 
@@ -235,7 +236,7 @@
                                     Padding="0"
                                     VerticalAlignment="Top"
                                     Appearance="Transparent"
-                                    Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.CopyNodeValueCommand), Source={x:Reference AttributeTreeView}}"
+                                    Command="{Binding Tag.CopyNodeValueCommand, RelativeSource={RelativeSource AncestorType=Grid}}"
                                     CommandParameter="{Binding}"
                                     Icon="{ui:SymbolIcon Copy24}"
                                     ToolTip="Copy value"
