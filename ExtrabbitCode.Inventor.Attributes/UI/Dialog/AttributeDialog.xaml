@@ -73,29 +73,23 @@
                     Appearance="Transparent"
                     ToolTip="Add Attribute" />
 
-                <ui:SplitButton
-                    Grid.Column="2"
-                    Width="80"
-                    Height="{DynamicResource InvControlHeight}"
-                    Appearance="Secondary"
-                    Command="{Binding DeleteSelectedCommand}"
-                    Icon="{ui:SymbolIcon Delete24}"
-                    ToolTip="Delete">
-                    <ui:SplitButton.Flyout>
-                        <ContextMenu
-                            Background="{DynamicResource InvPanelBackgroundBrush}"
-                            FontFamily="{DynamicResource InvFontFamily}"
-                            FontSize="{DynamicResource InvFontSizeNormal}"
-                            DataContext="{Binding PlacementTarget.(dialog:AttributeDialog.DataContext), RelativeSource={RelativeSource Self}}">
-                            <MenuItem
-                                Header="Delete Selection"
-                                Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.DeleteSelectedCommand), Source={x:Reference AttributeTreeView}}" />
-                            <MenuItem
-                                Header="Delete All"
-                                Command="{Binding DataContext.(viewModels:AttributeWindowViewModel.DeleteAllCommand), Source={x:Reference AttributeTreeView}}" />
-                        </ContextMenu>
-                    </ui:SplitButton.Flyout>
-                </ui:SplitButton>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <ui:Button
+                        Width="{DynamicResource InvControlWidth}"
+                        Height="{DynamicResource InvControlHeight}"
+                        Appearance="Secondary"
+                        Command="{Binding DeleteSelectedCommand}"
+                        Icon="{ui:SymbolIcon Delete24}"
+                        ToolTip="Delete attributes on selected objects" />
+                    <ui:Button
+                        Width="{DynamicResource InvControlWidth}"
+                        Height="{DynamicResource InvControlHeight}"
+                        Margin="4,0,0,0"
+                        Appearance="Secondary"
+                        Command="{Binding DeleteAllCommand}"
+                        Icon="{ui:SymbolIcon DeleteDismiss24}"
+                        ToolTip="Delete all attributes in document" />
+                </StackPanel>
 
                 <ui:Button
                     Grid.Column="4"
@@ -179,6 +173,15 @@
                             DataType="{x:Type uiModels:AttributeTreeNode}"
                             ItemsSource="{Binding Children}">
                             <Grid Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TreeView}}">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                                                <Setter Property="Background" Value="#4400AAFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
                                 <Grid.ContextMenu>
                                     <ContextMenu
                                         Background="{DynamicResource InvPanelBackgroundBrush}"
