@@ -32,6 +32,19 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
 
     public void RefreshAttributes() => GetAllAttributesCommand.Execute(null);
 
+    public void ApplyExternalAttributeAdded(AddAttributeWorkflowResult result)
+    {
+        if (result is { OwnerObject: not null, Input: not null })
+        {
+            _pendingExpandNode = AttributeTreeMutations.AddAttributeToTree(
+                result.OwnerObject,
+                result.Input,
+                _allAttributeTree,
+                GetAllAttributes);
+        }
+        ApplyFilter();
+    }
+
     [RelayCommand]
     private async Task AddAttribute()
     {

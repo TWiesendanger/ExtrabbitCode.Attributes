@@ -1,4 +1,5 @@
-﻿using ExtrabbitCode.Inventor.Attributes.Services;
+﻿using ExtrabbitCode.Inventor.Attributes.Models;
+using ExtrabbitCode.Inventor.Attributes.Services;
 using System;
 
 namespace ExtrabbitCode.Inventor.Attributes;
@@ -14,6 +15,7 @@ public static class Globals
     public static AttributeLibraryService AttributeLibraryService { get; set; } = null!;
     public static ITelemetryService TelemetryService { get; set; } = null!;
     public static IAddAttributeWorkflowService AddAttributeWorkflowService { get; set; } = null!;
+    public static Action<AddAttributeWorkflowResult>? OnAttributeAdded { get; set; }
 
     public static UserNotificationService UserNotificationService { get; set; } = null!;
 

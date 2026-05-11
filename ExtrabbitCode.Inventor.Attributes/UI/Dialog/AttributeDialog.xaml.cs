@@ -34,6 +34,9 @@ public partial class AttributeDialog
             StandardAddInServer.InvAppEvents.OnActivateDocument += OnInventorDocumentActivated;
         }
 
+        Globals.OnAttributeAdded = result =>
+            Dispatcher.BeginInvoke(() => _viewModel.ApplyExternalAttributeAdded(result));
+
         Dispatcher.BeginInvoke(async () => await AskTelemetryConsentIfNeededAsync().ConfigureAwait(false));
     }
 
@@ -43,6 +46,8 @@ public partial class AttributeDialog
         {
             StandardAddInServer.InvAppEvents.OnActivateDocument -= OnInventorDocumentActivated;
         }
+
+        Globals.OnAttributeAdded = null;
     }
 
     private void OnInventorDocumentActivated(

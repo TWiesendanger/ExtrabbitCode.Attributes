@@ -54,14 +54,16 @@ public class UiButton
                 Globals.TelemetryService.TrackEvent("panel_button_add_attribute_clicked");
                 AddAttributeWorkflowResult workflowResult = Globals.AddAttributeWorkflowService.Execute();
 
-                if (!workflowResult.IsSuccess &&
-                    !string.IsNullOrWhiteSpace(workflowResult.ErrorMessage))
+                if (!workflowResult.IsSuccess)
                 {
-                    DialogHelper.ShowInfoMessage(
-                        "Add Attribute",
-                        workflowResult.ErrorMessage);
+                    if (!string.IsNullOrWhiteSpace(workflowResult.ErrorMessage))
+                    {
+                        DialogHelper.ShowInfoMessage("Add Attribute", workflowResult.ErrorMessage);
+                    }
+                    return;
                 }
 
+                Globals.OnAttributeAdded?.Invoke(workflowResult);
                 return;
             case "ExtrabbitCode.Inventor.Attributes.Info":
                 Logger.Info("Info button pressed");
