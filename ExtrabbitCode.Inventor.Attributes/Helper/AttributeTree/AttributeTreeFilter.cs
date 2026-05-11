@@ -11,10 +11,18 @@ internal static class AttributeTreeFilter
         string searchText,
         HashSet<string> expandedNodeKeys,
         List<AttributeTreeNode> allAttributeTree,
-        ObservableCollection<AttributeTreeNode> attributeTree)
+        ObservableCollection<AttributeTreeNode> attributeTree,
+        AttributeTreeNode? forceExpandNode = null)
     {
         expandedNodeKeys.Clear();
         SnapshotExpandState(attributeTree, expandedNodeKeys);
+
+        AttributeTreeNode? current = forceExpandNode;
+        while (current != null)
+        {
+            expandedNodeKeys.Add(GetNodeKey(current));
+            current = current.Parent;
+        }
 
         attributeTree.Clear();
 
@@ -234,6 +242,7 @@ internal static class AttributeTreeFilter
             RestoreExpandState(node.Children, expandedNodeKeys);
         }
     }
+
 
     private static string GetNodeKey(AttributeTreeNode node) =>
         node.NodeType switch

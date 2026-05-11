@@ -20,6 +20,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
 {
     private readonly HashSet<string> _expandedNodeKeys = [];
     private readonly List<AttributeTreeNode> _allAttributeTree = [];
+    private AttributeTreeNode? _pendingExpandNode;
 
     public ObservableCollection<AttributeTreeNode> AttributeTree { get; } = [];
 
@@ -53,7 +54,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
 
         if (workflowResult is { OwnerObject: not null, Input: not null })
         {
-            AttributeTreeMutations.AddAttributeToTree(
+            _pendingExpandNode = AttributeTreeMutations.AddAttributeToTree(
                 workflowResult.OwnerObject,
                 workflowResult.Input,
                 _allAttributeTree,
@@ -458,10 +459,14 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
 
     partial void OnSearchTextChanged(string value) => ApplyFilter();
 
-    private void ApplyFilter() =>
+    private void ApplyFilter()
+    {
         AttributeTreeFilter.Apply(
             SearchText,
             _expandedNodeKeys,
             _allAttributeTree,
-            AttributeTree);
+            AttributeTree,
+            _pendingExpandNode);
+        _pendingExpandNode = null;
+    }
 }

@@ -9,7 +9,7 @@ namespace ExtrabbitCode.Inventor.Attributes.Helper.AttributeTree;
 
 internal static class AttributeTreeMutations
 {
-    internal static void AddAttributeToTree(
+    internal static AttributeTreeNode? AddAttributeToTree(
         object selectedObject,
         AddAttributeDialogResult input,
         List<AttributeTreeNode> allAttributeTree,
@@ -18,7 +18,7 @@ internal static class AttributeTreeMutations
         if (allAttributeTree.Count == 0)
         {
             refreshAll();
-            return;
+            return FindAttributeNode(allAttributeTree, selectedObject, input.AttributeSetName, input.AttributeName);
         }
 
         AttributeTreeNode documentNode = allAttributeTree[0];
@@ -29,7 +29,7 @@ internal static class AttributeTreeMutations
         if (ownerNode == null)
         {
             refreshAll();
-            return;
+            return FindAttributeNode(allAttributeTree, selectedObject, input.AttributeSetName, input.AttributeName);
         }
 
         AttributeTreeNode? setNode = ownerNode.Children
@@ -64,10 +64,10 @@ internal static class AttributeTreeMutations
         {
             existingAttributeNode.Value = valueText;
             existingAttributeNode.RawAttributeValue = input.RawValue;
-            return;
+            return existingAttributeNode;
         }
 
-        setNode.Children.Add(new AttributeTreeNode
+        AttributeTreeNode newNode = new()
         {
             Name = input.AttributeName,
             Value = valueText,
@@ -79,7 +79,34 @@ internal static class AttributeTreeMutations
             AttributeName = input.AttributeName,
             IconSource = AttributeTreeIconProvider.GetIcon(NodeType.Attribute),
             Parent = setNode
-        });
+        };
+        setNode.Children.Add(newNode);
+        return newNode;
+    }
+
+    private static AttributeTreeNode? FindAttributeNode(
+        List<AttributeTreeNode> allAttributeTree,
+        object ownerObject,
+        string attributeSetName,
+        string attributeName)
+    {
+        if (allAttributeTree.Count == 0) return null;
+
+        AttributeTreeNode? ownerNode = allAttributeTree[0].Children
+            .FirstOrDefault(x => ReferenceEquals(x.OwnerObject, ownerObject));
+        if (ownerNode == null) return null;
+
+        AttributeTreeNode? setNode = ownerNode.Children
+            .FirstOrDefault(x =>
+                x.NodeType == NodeType.AttributeSet &&
+                string.Equals(x.AttributeSetName, attributeSetName,
+                    System.StringComparison.OrdinalIgnoreCase));
+        if (setNode == null) return null;
+
+        return setNode.Children.FirstOrDefault(x =>
+            x.NodeType == NodeType.Attribute &&
+            string.Equals(x.AttributeName, attributeName,
+                System.StringComparison.OrdinalIgnoreCase));
     }
 
     internal static void DeleteAttribute(
