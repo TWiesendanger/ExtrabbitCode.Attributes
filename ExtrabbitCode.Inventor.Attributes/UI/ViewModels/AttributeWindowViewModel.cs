@@ -42,7 +42,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
                 _allAttributeTree,
                 GetAllAttributes);
         }
-        ApplyFilter();
+        ApplyFilterWithHighlight();
     }
 
     [RelayCommand]
@@ -89,7 +89,7 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
                 .ConfigureAwait(false);
         }
 
-        ApplyFilter();
+        ApplyFilterWithHighlight();
     }
 
     [RelayCommand]
@@ -481,5 +481,28 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             AttributeTree,
             _pendingExpandNode);
         _pendingExpandNode = null;
+    }
+
+    private void ApplyFilterWithHighlight()
+    {
+        AttributeTreeNode? sourceNode = _pendingExpandNode;
+        ApplyFilter();
+        if (sourceNode == null) return;
+        AttributeTreeNode? visibleNode = FindVisibleNode(sourceNode);
+        if (visibleNode != null)
+            _ = HighlightNodeAsync(visibleNode);
+    }
+
+    private AttributeTreeNode? FindVisibleNode(AttributeTreeNode sourceNode)
+    {
+        List<AttributeTreeNode> visibleList = [.. AttributeTree];
+        return AttributeTreeFilter.FindInFullTree(sourceNode, visibleList);
+    }
+
+    private static async Task HighlightNodeAsync(AttributeTreeNode node)
+    {
+        node.IsHighlighted = true;
+        await Task.Delay(5000).ConfigureAwait(true);
+        node.IsHighlighted = false;
     }
 }

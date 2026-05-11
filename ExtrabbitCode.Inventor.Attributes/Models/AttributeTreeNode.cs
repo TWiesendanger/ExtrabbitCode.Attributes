@@ -20,6 +20,9 @@ public partial class AttributeTreeNode : ObservableObject
     private bool isExpanded;
 
     [ObservableProperty]
+    private bool isHighlighted;
+
+    [ObservableProperty]
     private ImageSource? iconSource;
 
     public object? OwnerObject { get; init; }
