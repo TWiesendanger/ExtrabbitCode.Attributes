@@ -90,18 +90,23 @@ internal static class AttributeTreeMutations
         string attributeSetName,
         string attributeName)
     {
-        if (allAttributeTree.Count == 0) return null;
+        if (allAttributeTree.Count == 0)
+        {
+            return null;
+        }
 
         AttributeTreeNode? ownerNode = allAttributeTree[0].Children
             .FirstOrDefault(x => ReferenceEquals(x.OwnerObject, ownerObject));
-        if (ownerNode == null) return null;
 
-        AttributeTreeNode? setNode = ownerNode.Children
+        AttributeTreeNode? setNode = ownerNode?.Children
             .FirstOrDefault(x =>
                 x.NodeType == NodeType.AttributeSet &&
                 string.Equals(x.AttributeSetName, attributeSetName,
                     System.StringComparison.OrdinalIgnoreCase));
-        if (setNode == null) return null;
+        if (setNode == null)
+        {
+            return null;
+        }
 
         return setNode.Children.FirstOrDefault(x =>
             x.NodeType == NodeType.Attribute &&
