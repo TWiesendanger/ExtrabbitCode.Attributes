@@ -48,16 +48,18 @@ The tree is organized in four levels:
   </tbody>
 </table>
 
-## Expand / Collapse All
+## Toolbar buttons
 
-The toolbar provides **Expand All** and **Collapse All** buttons that open or close every node in the tree at once.
-
-| Action           | Result                                                                            |
-|------------------|-----------------------------------------------------------------------------------|
-| **Expand All**   | Opens every document, owner, and attribute set node so all attributes are visible |
-| **Collapse All** | Closes all nodes back to just the document root                                   |
-
-These are useful when you want a quick overview of everything in a large document, or when you want to tidy up the view after browsing.
+| Button | Action |
+|--------|--------|
+| **Add Attribute** | Opens the Add Attribute dialog |
+| **Delete Selected** (trash) | Removes all attributes from the objects currently selected in the Inventor viewport |
+| **Delete All** (trash + ✕) | Removes every attribute from the entire active document |
+| **Refresh** | Manually reloads the tree from the active document |
+| **Expand All** | Opens every node so all attributes are visible |
+| **Collapse All** | Closes all nodes back to just the document root |
+| **Purge Orphans** | Removes all orphaned attribute sets from the document |
+| **Settings** | Opens the Settings dialog |
 
 <Callout type="warn">
   On documents with a large number of attributes, **Expand All** can take a noticeable amount of time. For large assemblies, consider using the [search filter](/docs/features/search-filter) to find what you need instead.

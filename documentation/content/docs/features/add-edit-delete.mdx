@@ -62,11 +62,18 @@ Right-click the node you want to remove and select **Delete**.
 
 Optional confirmation dialogs can be configured in [Settings](/docs/settings) to prevent accidental deletions.
 
-## Delete All Attributes
+## Deleting via the toolbar
 
-The **Delete All** action removes every attribute from the selected objects at once. A separate confirmation dialog is shown before this action runs (configurable in Settings).
+The toolbar provides two dedicated delete buttons:
+
+| Button | Icon | Action |
+|--------|------|--------|
+| **Delete Selected** | Trash | Removes all attributes from the objects currently selected in the Inventor viewport |
+| **Delete All** | Trash + ✕ | Removes every attribute from the entire active document |
+
+Both actions support optional confirmation dialogs, configurable in [Settings](/docs/settings).
 
 <Callout type="warn">
   Autodesk-created attribute sets (such as those used by iLogic) are excluded from bulk deletes by default. Enable **Delete Autodesk Default Attribute Sets** in Settings only if you intentionally want to remove iLogic data. This will damage some functionality.
-    Also there are other properties and not all of them might be in the exclusion list!
+  Also there are other properties and not all of them might be in the exclusion list!
 </Callout>
