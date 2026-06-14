@@ -1,0 +1,261 @@
+<ui:FluentWindow
+    x:Class="ExtrabbitCode.Attributes.UI.Dialog.AttributeDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:uiModels="clr-namespace:ExtrabbitCode.Attributes.Models"
+    xmlns:converter="clr-namespace:ExtrabbitCode.Attributes.Helper.Converter"
+    xmlns:behaviors="clr-namespace:ExtrabbitCode.Attributes.Helper.Behavior"
+    xmlns:viewModels="clr-namespace:ExtrabbitCode.Attributes.UI.ViewModels"
+    xmlns:dialog="clr-namespace:ExtrabbitCode.Attributes.UI.Dialog"
+    Title="Attributes"
+    FontFamily="{DynamicResource InvFontFamily}"
+    FontSize="{DynamicResource InvFontSizeNormal}"
+    Background="{DynamicResource InvWindowBackgroundBrush}"
+    Foreground="{DynamicResource InvForegroundBrush}"
+    d:DesignHeight="600"
+    d:DesignWidth="900"
+    mc:Ignorable="d">
+
+    <ui:FluentWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ExtrabbitCode.Attributes;component/Resources/Styles/Theme.Shared.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converter:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </ui:FluentWindow.Resources>
+
+    <Grid Background="{DynamicResource InvWindowBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Padding="5"
+            Grid.Row="0"
+            Background="{DynamicResource InvToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource InvToolbarBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource InvCornerRadius}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ui:Button
+                    Grid.Column="0"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Background="{DynamicResource InvAccentBrush}"
+                    Command="{Binding AddAttributeCommand}"
+                    Icon="{ui:SymbolIcon Add24}"
+                    Appearance="Transparent"
+                    ToolTip="Add Attribute" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <ui:Button
+                        Width="{DynamicResource InvControlWidth}"
+                        Height="{DynamicResource InvControlHeight}"
+                        Appearance="Secondary"
+                        Command="{Binding DeleteSelectedCommand}"
+                        Icon="{ui:SymbolIcon Delete24}"
+                        ToolTip="Delete attributes on selected objects" />
+                    <ui:Button
+                        Width="{DynamicResource InvControlWidth}"
+                        Height="{DynamicResource InvControlHeight}"
+                        Margin="4,0,0,0"
+                        Appearance="Secondary"
+                        Command="{Binding DeleteAllCommand}"
+                        Icon="{ui:SymbolIcon DeleteDismiss24}"
+                        ToolTip="Delete all attributes in document" />
+                </StackPanel>
+
+                <ui:Button
+                    Grid.Column="4"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding GetAllAttributesCommand}"
+                    Icon="{ui:SymbolIcon ArrowClockwise24}"
+                    ToolTip="Refresh" />
+
+                <ui:Button
+                    Grid.Column="6"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding ExpandAllNodesCommand}"
+                    Icon="{ui:SymbolIcon ChevronDown24}"
+                    ToolTip="Expand all" />
+
+                <ui:Button
+                    Grid.Column="8"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding CollapseAllNodesCommand}"
+                    Icon="{ui:SymbolIcon ChevronUp24}"
+                    ToolTip="Collapse all" />
+
+                <ui:Button
+                    Grid.Column="10"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding PurgeAllOrphansCommand}"
+                    Icon="{ui:SymbolIcon Broom24}"
+                    ToolTip="Purge all orphaned attribute sets" />
+
+                <ui:TextBox
+                    Grid.Column="12"
+                    VerticalAlignment="Center"
+                    Height="{DynamicResource InvControlHeight}"
+                    Icon="{ui:SymbolIcon Search12}"
+                    IconPlacement="Right"
+                    FontFamily="{DynamicResource InvFontFamily}"
+                    FontSize="{DynamicResource InvFontSizeNormal}"
+                    PlaceholderText="Search ..."
+                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="Search attribute sets or attributes" />
+
+                <ui:Button
+                    Grid.Column="14"
+                    Appearance="Transparent"
+                    Width="{DynamicResource InvControlWidth}"
+                    Height="{DynamicResource InvControlHeight}"
+                    Command="{Binding OpenSettingsCommand}"
+                    Icon="{ui:SymbolIcon Settings24}"
+                    ToolTip="Settings" />
+            </Grid>
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Background="{DynamicResource InvPanelBackgroundBrush}"
+            BorderBrush="{DynamicResource InvPanelBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource InvCornerRadius}">
+            <Grid>
+                <TreeView
+                    FontFamily="{DynamicResource InvFontFamily}"
+                    FontSize="{DynamicResource InvFontSizeNormal}"
+                    x:Name="AttributeTreeView"
+                    Margin="4"
+                    Tag="{Binding}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="{DynamicResource InvForegroundBrush}"
+                    ItemsSource="{Binding AttributeTree}"
+                    behaviors:TreeViewExpandStateBehavior.PreserveExpandState="True">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate
+                            DataType="{x:Type uiModels:AttributeTreeNode}"
+                            ItemsSource="{Binding Children}">
+                            <Grid Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=TreeView}}">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                                                <Setter Property="Background" Value="#4400AAFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.ContextMenu>
+                                    <ContextMenu
+                                        Background="{DynamicResource InvPanelBackgroundBrush}"
+                                        Foreground="{DynamicResource InvForegroundBrush}"
+                                        DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}"
+                                        Tag="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem
+                                            Header="Select in Window"
+                                            Command="{Binding SelectNodeObjectCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <MenuItem
+                                            Header="Edit"
+                                            Visibility="{Binding Tag.CanEdit, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Command="{Binding EditNodeCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <MenuItem
+                                            Header="Delete"
+                                            Command="{Binding DeleteNodeCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image
+                                    Grid.Column="0"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0,2,6,0"
+                                    VerticalAlignment="Top"
+                                    Source="{Binding IconSource}"
+                                    Visibility="{Binding IconSource, Converter={StaticResource NullToVisibilityConverter}}" />
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}"
+                                               FontFamily="{DynamicResource InvFontFamily}"
+                                               FontSize="{DynamicResource InvFontSizeNormal}"/>
+                                    <TextBlock
+                                        Margin="6,0,0,0"
+                                        FontFamily="{DynamicResource InvFontFamily}"
+                                        FontSize="{DynamicResource InvFontSizeNormal}"
+                                        Foreground="{DynamicResource InvMutedForegroundBrush}"
+                                        Text="{Binding Value}" />
+                                </StackPanel>
+
+                                <ui:Button
+                                    Grid.Column="2"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="6,0,0,0"
+                                    Padding="0"
+                                    VerticalAlignment="Top"
+                                    Appearance="Transparent"
+                                    Command="{Binding Tag.CopyNodeValueCommand, RelativeSource={RelativeSource AncestorType=Grid}}"
+                                    CommandParameter="{Binding}"
+                                    Icon="{ui:SymbolIcon Copy24}"
+                                    ToolTip="Copy value"
+                                    Visibility="{Binding CanCopyValue, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </Grid>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </Grid>
+        </Border>
+
+        <ui:SnackbarPresenter
+            x:Name="SnackbarPresenter"
+            Grid.Row="0" Grid.RowSpan="3"
+            Margin="12"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom" />
+    </Grid>
+</ui:FluentWindow>

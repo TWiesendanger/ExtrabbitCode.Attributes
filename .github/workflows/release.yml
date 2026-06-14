@@ -27,12 +27,12 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.csproj
+        run: dotnet restore ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj
         shell: pwsh
 
       - name: Build
         run: >-
-          dotnet build ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.csproj
+          dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj
           --configuration Release
           --no-restore
           -p:Platform=x64
@@ -47,11 +47,11 @@ jobs:
         run: >-
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
           /DMyAppVersion="${{ env.VERSION }}"
-          ExtrabbitCode.Inventor.Attributes\Installer\InstallerScript.iss
+          ExtrabbitCode.Attributes\Installer\InstallerScript.iss
         shell: pwsh
 
       - name: List installer output
-        run: Get-ChildItem ExtrabbitCode.Inventor.Attributes\Installer\
+        run: Get-ChildItem ExtrabbitCode.Attributes\Installer\
         shell: pwsh
 
       - name: Create release
@@ -59,4 +59,4 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           generate_release_notes: true
-          files: ExtrabbitCode.Inventor.Attributes/Installer/ExtrabbitCode.Inventor.Attributes_${{ env.VERSION }}.exe
+          files: ExtrabbitCode.Attributes/Installer/ExtrabbitCode.Attributes_${{ env.VERSION }}.exe

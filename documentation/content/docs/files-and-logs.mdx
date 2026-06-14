@@ -12,13 +12,13 @@ All files the add-in writes are stored under two locations — one for persisten
 Persistent data lives under your Windows user profile:
 
 ```
-%APPDATA%\ExtrabbitCode.Inventor.Attributes\
+%APPDATA%\ExtrabbitCode.Attributes\
 ```
 
 Which typically resolves to:
 
 ```
-C:\Users\<you>\AppData\Roaming\ExtrabbitCode.Inventor.Attributes\
+C:\Users\<you>\AppData\Roaming\ExtrabbitCode.Attributes\
 ```
 
 | File                     | Purpose                                                   |
@@ -35,13 +35,13 @@ These files are plain JSON and are created automatically on first run. You can b
 The add-in uses log4net with a rolling file appender. Logs are written to the Windows temp folder:
 
 ```
-%TEMP%\ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.log
+%TEMP%\ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.log
 ```
 
 Which typically resolves to:
 
 ```
-C:\Users\<you>\AppData\Local\Temp\ExtrabbitCode.Inventor.Attributes\ExtrabbitCode.Inventor.Attributes.log
+C:\Users\<you>\AppData\Local\Temp\ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.log
 ```
 
 ### Log rotation
@@ -65,7 +65,7 @@ Each line follows this pattern:
 For example:
 
 ```
-2025-04-20 09:14:32,101 INFO  ExtrabbitCode.Inventor.Attributes.StandardAddinServer - Add-in activated
+2025-04-20 09:14:32,101 INFO  ExtrabbitCode.Attributes.StandardAddinServer - Add-in activated
 ```
 
 ### When to check the logs

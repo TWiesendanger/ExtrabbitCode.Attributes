@@ -1,0 +1,60 @@
+﻿using ExtrabbitCode.Attributes.Helper;
+using ExtrabbitCode.Attributes.UI.ViewModels;
+using System;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Navigation;
+
+namespace ExtrabbitCode.Attributes.UI.Dialog;
+
+public partial class SettingsDialog
+{
+    private readonly SettingsDialogViewModel _viewModel;
+
+    public SettingsDialog()
+    {
+        InitializeComponent();
+        DialogHelper.SetDialogTheme(this);
+        _viewModel = new SettingsDialogViewModel(Globals.SettingsService, Globals.AttributeLibraryService);
+        DataContext = _viewModel;
+
+        WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+        IntPtr ownerHandle = new(Globals.InvApp.MainFrameHWND);
+        new WindowInteropHelper(this).Owner = ownerHandle;
+
+
+        //ApplicationThemeManager.Apply(this);
+
+        WindowStartupLocation = WindowStartupLocation.CenterOwner;
+    }
+
+
+    private void OkButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        _viewModel.Save();
+        DialogResult = true;
+        Close();
+    }
+
+    private void CancelButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    private void TelemetryLink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        e.Handled = true;
+    }
+
+    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+    {
+        base.OnMouseLeftButtonDown(e);
+
+        DragMove();
+    }
+}

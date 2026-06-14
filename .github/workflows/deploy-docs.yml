@@ -34,12 +34,12 @@ jobs:
         run: npm run build
         working-directory: documentation
         env:
-          VITE_BASE_PATH: /ExtrabbitCode.Inventor.Attributes/
+          VITE_BASE_PATH: /ExtrabbitCode.Attributes/
 
       - name: Flatten basename subdirectory
         run: |
-          cp -r documentation/build/client/ExtrabbitCode.Inventor.Attributes/. documentation/build/client/
-          rm -rf documentation/build/client/ExtrabbitCode.Inventor.Attributes
+          cp -r documentation/build/client/ExtrabbitCode.Attributes/. documentation/build/client/
+          rm -rf documentation/build/client/ExtrabbitCode.Attributes
 
       - name: Add .nojekyll
         run: touch documentation/build/client/.nojekyll

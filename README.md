@@ -1,4 +1,4 @@
-# ExtrabbitCode.Inventor.Attributes
+# ExtrabbitCode.Attributes
 
 ![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D4?logo=windows)
@@ -8,7 +8,7 @@
 
 An Autodesk Inventor add-in for reading and managing native Inventor attributes through a dockable WPF panel — no API code required.
 
-**[Full documentation](https://twiesendanger.github.io/ExtrabbitCode.Inventor.Attributes)**
+**[Full documentation](https://twiesendanger.github.io/ExtrabbitCode.Attributes)**
 
 ---
 

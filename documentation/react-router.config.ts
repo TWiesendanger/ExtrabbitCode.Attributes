@@ -15,7 +15,7 @@ function getBasePath() {
 
   const repoName =
     process.env.GITHUB_REPOSITORY?.split('/')[1] ??
-    'ExtrabbitCode.Inventor.Attributes';
+    'ExtrabbitCode.Attributes';
 
   return `/${repoName}/`;
 }
