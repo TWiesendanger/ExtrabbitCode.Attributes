@@ -11,7 +11,7 @@ namespace ExtrabbitCode.Attributes.UI.ViewModels;
 public partial class InfoDialogViewModel : ObservableObject
 {
     private const string GitHubUrl = "https://github.com/TWiesendanger/ExtrabbitCode.Attributes";
-    private const string AutodeskStoreUrl = "https://apps.autodesk.com/";
+    private const string AutodeskStoreUrl = "https://marketplace.autodesk.com/publisher-profile?id=200812101855337";
     private const string DocumentationUrl = "https://twiesendanger.github.io/ExtrabbitCode.Attributes/";
 
     [ObservableProperty]
