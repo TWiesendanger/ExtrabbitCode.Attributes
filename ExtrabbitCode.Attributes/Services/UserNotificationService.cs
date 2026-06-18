@@ -1,75 +1,35 @@
-﻿using System;
+using ExtrabbitCode.Inventor.ModernUi;
 using System.Threading.Tasks;
-using Wpf.Ui.Controls;
+using System.Windows;
 
 namespace ExtrabbitCode.Attributes.Services;
 
 public sealed class UserNotificationService : IUserNotificationService
 {
-    private SnackbarPresenter? _presenter;
+    private Window? _owner;
 
-    public void SetPresenter(SnackbarPresenter presenter)
+    public void SetPresenter(Window owner)
     {
-        _presenter = presenter;
+        _owner = owner;
     }
 
-    public Task ShowInfoAsync(string title, string message)
-    {
-        return ShowAsync(
-            title,
-            message,
-            ControlAppearance.Secondary,
-            new SymbolIcon(SymbolRegular.Info24));
-    }
+    public Task ShowInfoAsync(string title, string message) => Show(title, message, ToastType.Info);
 
-    public Task ShowSuccessAsync(string title, string message)
-    {
-        return ShowAsync(
-            title,
-            message,
-            ControlAppearance.Success,
-            new SymbolIcon(SymbolRegular.CheckmarkCircle24));
-    }
+    public Task ShowSuccessAsync(string title, string message) => Show(title, message, ToastType.Success);
 
-    public Task ShowWarningAsync(string title, string message)
-    {
-        return ShowAsync(
-            title,
-            message,
-            ControlAppearance.Caution,
-            new SymbolIcon(SymbolRegular.Warning24));
-    }
+    public Task ShowWarningAsync(string title, string message) => Show(title, message, ToastType.Warning);
 
-    public Task ShowErrorAsync(string title, string message)
-    {
-        return ShowAsync(
-            title,
-            message,
-            ControlAppearance.Danger,
-            new SymbolIcon(SymbolRegular.DismissCircle24));
-    }
+    public Task ShowErrorAsync(string title, string message) => Show(title, message, ToastType.Error);
 
-    private async Task ShowAsync(
-        string title,
-        string message,
-        ControlAppearance appearance,
-        IconElement icon)
+    private Task Show(string title, string message, ToastType type)
     {
-        if (_presenter == null)
+        Window? owner = _owner;
+        if (owner != null)
         {
-            return;
+            // Toasts must be shown on the UI thread; callers may be on a background thread.
+            owner.Dispatcher.BeginInvoke(() => ModernToast.Show(owner, message, type, title));
         }
 
-        Snackbar snackbar = new(_presenter)
-        {
-            Title = title,
-            Content = message,
-            Appearance = appearance,
-            Icon = icon,
-            IsCloseButtonEnabled = true,
-            Timeout = TimeSpan.FromSeconds(3)
-        };
-
-        await snackbar.ShowAsync().ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 }

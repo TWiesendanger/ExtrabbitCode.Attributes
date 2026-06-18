@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
-using Wpf.Ui.Controls;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace ExtrabbitCode.Attributes.Services;
 
 public interface IUserNotificationService
 {
-    void SetPresenter(SnackbarPresenter presenter);
+    /// <summary>Sets the window that hosts the toasts (typically the dockable attribute panel).</summary>
+    void SetPresenter(Window owner);
 
     Task ShowInfoAsync(string title, string message);
 

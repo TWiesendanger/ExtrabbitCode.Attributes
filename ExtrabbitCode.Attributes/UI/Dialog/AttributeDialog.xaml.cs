@@ -1,6 +1,7 @@
 ﻿using ExtrabbitCode.Attributes.Helper;
 using ExtrabbitCode.Attributes.Models;
 using ExtrabbitCode.Attributes.UI.ViewModels;
+using ExtrabbitCode.Inventor.ModernUi;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,8 +17,9 @@ public partial class AttributeDialog
     public AttributeDialog()
     {
         InitializeComponent();
+        ModernUi.Apply(this, Globals.CurrentTheme, font: Globals.CurrentFont, applyWindowChrome: false);
         _viewModel = new AttributeWindowViewModel(Globals.SettingsService, Globals.AttributeService, Globals.UserNotificationService);
-        Globals.UserNotificationService.SetPresenter(SnackbarPresenter);
+        Globals.UserNotificationService.SetPresenter(this);
         DataContext = _viewModel;
 
         Activated += OnActivated;
@@ -100,7 +102,7 @@ public partial class AttributeDialog
 
     private void RefreshTheme()
     {
-        DialogHelper.SetDialogTheme(this);
+        ModernUi.SetTheme(this, Globals.CurrentTheme);
         InvalidateVisual();
         UpdateLayout();
     }
