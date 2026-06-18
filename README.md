@@ -3,7 +3,7 @@
 ![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D4?logo=windows)
 ![Inventor](https://img.shields.io/badge/Autodesk%20Inventor-2025%2B-0696D7)
-![WPF](https://img.shields.io/badge/UI-WPF%20%2B%20WPF--UI-blue)
+![UI](https://img.shields.io/badge/UI-WPF%20%2B%20ModernUi-0696D7)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 An Autodesk Inventor add-in for reading and managing native Inventor attributes through a dockable WPF panel — no API code required.
@@ -25,7 +25,7 @@ Download and install the add-in from the [Autodesk App Store](https://marketplac
 | Runtime      | .NET 8 / WPF, x64           |
 | Inventor API | `Autodesk.Inventor.Sdk` 2.0 |
 | MVVM         | `CommunityToolkit.Mvvm` 8.4 |
-| UI framework | `WPF-UI` 4.2 (FluentUI)     |
+| UI framework | `ExtrabbitCode.Inventor.ModernUi` 1.0.2 |
 | Logging      | `log4net` 3.3               |
 | Telemetry    | `PostHog` 2.4               |
 
