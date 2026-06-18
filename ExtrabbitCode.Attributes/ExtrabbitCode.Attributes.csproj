@@ -225,7 +225,39 @@
 	  </Page>
 	</ItemGroup>
 
-	<Target Name="CustomBuild" AfterTargets="Build">
+	<Target Name="CustomBuild" AfterTargets="Build" Condition="'$(DeployToInventor)' != 'false'">
 		<Exec Command="&quot;$(ProjectDir)BuildScript.cmd&quot; &quot;$(ProjectDir)&quot; $(TargetName) &quot;$(TargetPath)&quot; &quot;$(TargetDir)&quot;" />
+	</Target>
+
+	<!-- Autodesk App Store bundle (registry-free ApplicationPlugins format). Build it with:
+	       dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj -c Release -p:Platform=x64 -p:CreateBundle=true -p:DeployToInventor=false
+	     Produces bin\Bundle\ExtrabbitCode.Attributes.bundle\ and ExtrabbitCode.Attributes.bundle.zip
+	     (upload the .zip to the App Store). -->
+	<Target Name="CreateBundle" AfterTargets="Build" Condition="'$(CreateBundle)' == 'true'">
+		<PropertyGroup>
+			<BundleStage>$(ProjectDir)bin\Bundle\stage</BundleStage>
+			<BundleRoot>$(BundleStage)\ExtrabbitCode.Attributes.bundle</BundleRoot>
+			<BundleContents>$(BundleRoot)\Contents</BundleContents>
+			<BundleZip>$(ProjectDir)bin\Bundle\ExtrabbitCode.Attributes.bundle.zip</BundleZip>
+		</PropertyGroup>
+
+		<RemoveDir Directories="$(BundleStage)" />
+		<MakeDir Directories="$(BundleContents)" />
+
+		<!-- Payload = the build output, minus pdbs and the Inventor interop (Inventor supplies its own). -->
+		<ItemGroup>
+			<BundlePayload Include="$(TargetDir)**\*"
+			               Exclude="$(TargetDir)**\*.pdb;$(TargetDir)Autodesk.Inventor*.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(BundlePayload)"
+		      DestinationFiles="@(BundlePayload->'$(BundleContents)\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+		<!-- Registry-free .addin (relative assembly path) next to the dll, PackageContents at the root. -->
+		<Copy SourceFiles="$(ProjectDir)Addin\Bundle\ExtrabbitCode.Attributes.addin" DestinationFolder="$(BundleContents)" />
+		<Copy SourceFiles="$(ProjectDir)Addin\Bundle\PackageContents.xml" DestinationFolder="$(BundleRoot)" />
+
+		<ZipDirectory SourceDirectory="$(BundleStage)" DestinationFile="$(BundleZip)" Overwrite="true" />
+		<Message Importance="high" Text="App Store bundle: $(BundleRoot)" />
+		<Message Importance="high" Text="App Store zip:    $(BundleZip)" />
 	</Target>
 </Project>

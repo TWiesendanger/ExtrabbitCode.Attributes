@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Autodesk Application Plug-in (bundle) manifest, read by the Autodesk App Store installer and by
+     Inventor's ApplicationPlugins auto-loader. Registry-free, single location.
+
+     Version is kept in sync with Directory.Build.props <AppVersion> by hand (update both on a bump).
+     Inventor version targeting is enforced authoritatively by Contents/ExtrabbitCode.Attributes.addin
+     (<SupportedSoftwareVersionGreaterThan>28.. = Inventor 2025+). Add SeriesMin/SeriesMax to
+     RuntimeRequirements only if the App Store explicitly asks for a series range. -->
+<ApplicationPackage
+    SchemaVersion="1.0"
+    Version="1.1.0.0"
+    ProductType="Application"
+    ProductCode="{2b75e9c2-a980-4760-8687-67966594c181}"
+    Name="ExtrabbitCode.Attributes"
+    Description="Read, create and manage native Autodesk Inventor attributes through a dockable panel - no API code required."
+    Author="Tobias Wiesendanger">
+  <CompanyDetails
+      Name="ExtrabbitCode"
+      Url="https://marketplace.autodesk.com/publisher-profile?id=200812101855337"
+      Email="tobias.wiesendanger@gmail.com" />
+  <Components Description="Inventor 2025+ add-in">
+    <RuntimeRequirements OS="Win64" Platform="Inventor" />
+    <ComponentEntry
+        AppName="ExtrabbitCode.Attributes"
+        Version="1.1.0.0"
+        ModuleName="./Contents/ExtrabbitCode.Attributes.addin"
+        AppType=".Net" />
+  </Components>
+</ApplicationPackage>
