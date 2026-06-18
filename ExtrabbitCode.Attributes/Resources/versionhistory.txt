@@ -1,3 +1,7 @@
+1.1.0.0
+
+- Refreshed the UI with the ExtrabbitCode ModernUi styling library (Inventor-aligned light/dark theming).
+
 1.0.0.0
 
 - First Release

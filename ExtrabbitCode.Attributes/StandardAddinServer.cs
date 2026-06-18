@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Wpf.Ui.Appearance;
 
 namespace ExtrabbitCode.Attributes;
 
@@ -77,17 +76,9 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             ThemeManager themeManager = Globals.InvApp.ThemeManager;
             Globals.ActiveTheme = themeManager.ActiveTheme;
             string themeName = Globals.ActiveTheme.Name;
-            ThemeResourceHelper.ApplyInventorThemeResources();
             Logger.Debug("Inventor ThemeManager ActiveTheme: " + themeName);
 
-            ApplicationTheme appTheme = themeName == InventorThemeConstants.LightTheme
-                ? ApplicationTheme.Light
-                : ApplicationTheme.Dark;
-
-            // Force initialize Wpf.Ui before any dialog opens
-            ApplicationThemeManager.Apply(appTheme);
-
-            // ModernUi theme + font (window-scoped), derived from Inventor. Used by migrated dialogs.
+            // ModernUi theme + font (window-scoped), derived from Inventor. Used by the dialogs.
             Globals.CurrentTheme = themeName == InventorThemeConstants.LightTheme
                 ? ExtrabbitCode.Inventor.ModernUi.Theme.Light
                 : ExtrabbitCode.Inventor.ModernUi.Theme.Dark;
@@ -430,7 +421,6 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             ThemeManager themeManager = Globals.InvApp.ThemeManager;
             Theme activeTheme = themeManager.ActiveTheme;
             string theme = activeTheme.Name;
-            ThemeResourceHelper.ApplyInventorThemeResources();
 
             if (Globals.ActiveTheme.Name != theme) //check if theme has changed
             {

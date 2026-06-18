@@ -26,7 +26,6 @@ public sealed class AddAttributeWorkflowService(
         object selectedObject = document.SelectSet[1];
 
         AddAttributeDialog dialog = new();
-        DialogHelper.SetDialogTheme(dialog);
 
         bool? dialogResult = dialog.ShowDialog();
         if (dialogResult != true)

@@ -46,7 +46,6 @@ public class UiButton
                 Logger.Debug("Settings Button was pressed.");
                 Globals.TelemetryService.TrackEvent("panel_button_settings_clicked");
                 SettingsDialog settingsDialog = new();
-                DialogHelper.SetDialogTheme(settingsDialog);
                 settingsDialog.ShowDialog();
                 return;
             case "ExtrabbitCode.Attributes.AddAttribute":
@@ -69,7 +68,6 @@ public class UiButton
                 Logger.Info("Info button pressed");
                 Globals.TelemetryService.TrackEvent("panel_button_info_clicked");
                 InfoDialog infoDialog = new();
-                DialogHelper.SetDialogTheme(infoDialog);
                 infoDialog.ShowDialog();
                 return;
             case "ExtrabbitCode.Attributes.Help":
@@ -107,7 +105,6 @@ public class UiButton
                 AttributeDialog attributeDialogContent = new();
 
                 DockableWindowChildAdapter.AddWpfWindow(attributeWindow, attributeDialogContent);
-                DialogHelper.SetDialogTheme(attributeDialogContent);
                 return;
             default:
                 return;

@@ -396,7 +396,6 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
             realNode.AttributeValueType ?? ValueTypeEnum.kStringType,
             realNode.RawAttributeValue);
 
-        DialogHelper.SetDialogTheme(dialog);
 
         bool? result = dialog.ShowDialog();
         if (result != true)
@@ -464,7 +463,6 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
         Globals.TelemetryService.TrackEvent("settings_opened");
 
         SettingsDialog settingsDialog = new();
-        DialogHelper.SetDialogTheme(settingsDialog);
         settingsDialog.ShowDialog();
 
         Globals.TelemetryService.TrackEvent("settings_closed");

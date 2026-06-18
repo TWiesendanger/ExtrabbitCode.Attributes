@@ -15,9 +15,89 @@
     <Window.Resources>
         <converter:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <Style x:Key="ToolbarIconButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource Radius.Control}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.AccentMuted}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToolbarDangerButton" TargetType="Button" BasedOn="{StaticResource ToolbarIconButton}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Error}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Error}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource Radius.Control}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Error}" />
+                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.Error}" />
+                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid TextElement.FontSize="13">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="2" />
@@ -27,7 +107,7 @@
         <Border
             Padding="5"
             Grid.Row="0"
-            Background="{DynamicResource Brush.Panel}"
+            Background="{DynamicResource Brush.Background}"
             BorderBrush="{DynamicResource Brush.Border}"
             BorderThickness="1"
             CornerRadius="{DynamicResource Radius.Control}">
@@ -52,71 +132,74 @@
 
                 <Button
                     Grid.Column="0"
-                    Width="40" Height="30"
-                    Style="{DynamicResource IconButton}"
+                    Width="34" Height="28"
+                    Style="{StaticResource ToolbarIconButton}"
+                    Background="{DynamicResource Brush.Accent}"
+                    BorderBrush="{DynamicResource Brush.Accent}"
+                    Foreground="#FFFFFFFF"
                     Command="{Binding AddAttributeCommand}"
                     ToolTip="Add Attribute">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE710;" />
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE710;" />
                 </Button>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <Button
-                        Width="40" Height="30"
-                        Style="{DynamicResource IconButton}"
+                        Width="34" Height="28"
+                        Style="{StaticResource ToolbarDangerButton}"
                         Command="{Binding DeleteSelectedCommand}"
                         ToolTip="Delete attributes on selected objects">
-                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE74D;" />
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE74D;" />
                     </Button>
                     <Button
-                        Width="40" Height="30"
+                        Width="34" Height="28"
                         Margin="4,0,0,0"
-                        Style="{DynamicResource IconButton}"
+                        Style="{StaticResource ToolbarDangerButton}"
                         Command="{Binding DeleteAllCommand}"
                         ToolTip="Delete all attributes in document">
-                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE894;" />
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE894;" />
                     </Button>
                 </StackPanel>
 
                 <Button
                     Grid.Column="4"
-                    Width="40" Height="30"
-                    Style="{DynamicResource IconButton}"
+                    Width="34" Height="28"
+                    Style="{StaticResource ToolbarIconButton}"
                     Command="{Binding GetAllAttributesCommand}"
                     ToolTip="Refresh">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE72C;" />
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE72C;" />
                 </Button>
 
                 <Button
                     Grid.Column="6"
-                    Width="40" Height="30"
-                    Style="{DynamicResource IconButton}"
+                    Width="34" Height="28"
+                    Style="{StaticResource ToolbarIconButton}"
                     Command="{Binding ExpandAllNodesCommand}"
                     ToolTip="Expand all">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE70D;" />
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE70D;" />
                 </Button>
 
                 <Button
                     Grid.Column="8"
-                    Width="40" Height="30"
-                    Style="{DynamicResource IconButton}"
+                    Width="34" Height="28"
+                    Style="{StaticResource ToolbarIconButton}"
                     Command="{Binding CollapseAllNodesCommand}"
                     ToolTip="Collapse all">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE70E;" />
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE70E;" />
                 </Button>
 
                 <Button
                     Grid.Column="10"
-                    Width="40" Height="30"
-                    Style="{DynamicResource IconButton}"
+                    Width="34" Height="28"
+                    Style="{StaticResource ToolbarIconButton}"
                     Command="{Binding PurgeAllOrphansCommand}"
                     ToolTip="Purge all orphaned attribute sets">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE75C;" />
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE75C;" />
                 </Button>
 
                 <TextBox
                     Grid.Column="12"
                     VerticalAlignment="Center"
-                    Height="30"
+                    FontSize="13"
                     Style="{DynamicResource SearchBox}"
                     Tag="Search ..."
                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
@@ -124,18 +207,18 @@
 
                 <Button
                     Grid.Column="14"
-                    Width="40" Height="30"
-                    Style="{DynamicResource IconButton}"
+                    Width="34" Height="28"
+                    Style="{StaticResource ToolbarIconButton}"
                     Command="{Binding OpenSettingsCommand}"
                     ToolTip="Settings">
-                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Text="&#xE713;" />
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Text="&#xE713;" />
                 </Button>
             </Grid>
         </Border>
 
         <Border
             Grid.Row="2"
-            Background="{DynamicResource Brush.Panel}"
+            Background="{DynamicResource Brush.Background}"
             BorderBrush="{DynamicResource Brush.Border}"
             BorderThickness="1"
             CornerRadius="{DynamicResource Radius.Control}">

@@ -1,13 +1,10 @@
-﻿using ExtrabbitCode.Attributes.Models;
+using ExtrabbitCode.Inventor.ModernUi;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Interop;
-using Wpf.Ui.Appearance;
-using Color = System.Windows.Media.Color;
-using UiMessageBox = Wpf.Ui.Controls.MessageBox;
 
 namespace ExtrabbitCode.Attributes.Helper;
 
@@ -28,85 +25,48 @@ static class DialogHelper
 
         return (true, null);
     }
+
     public static void ShowInfoMessage(string title, string content)
     {
-        UiMessageBox messageBox = new()
-        {
-            Title = title,
-            Content = content,
-            ShowTitle = true,
-            CloseButtonText = "Close",
-            IsCloseButtonEnabled = true,
-            IsPrimaryButtonEnabled = false,
-            IsSecondaryButtonEnabled = false,
-            Width = 420,
-            MinWidth = 420,
-            SizeToContent = SizeToContent.Height,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        _ = new WindowInteropHelper(messageBox)
-        {
-            Owner = new IntPtr(Globals.InvApp.MainFrameHWND)
-        };
-
-        SetDialogTheme(messageBox);
-
-        _ = messageBox.ShowDialogAsync();
+        ModernMessageBox.Show(
+            Globals.OwnerWindow,
+            Globals.CurrentTheme,
+            content,
+            title,
+            [new ModernDialogButton("Close", ModernDialogResult.Ok, IsDefault: true, IsCancel: true, Accent: true)],
+            ModernDialogIcon.Info,
+            font: Globals.CurrentFont);
     }
 
-    public static async Task<bool> ShowConfirmationAsync(
+    public static Task<bool> ShowConfirmationAsync(
         string title,
         string content,
         string primaryButtonText = "Yes",
         string closeButtonText = "Cancel")
     {
-        UiMessageBox messageBox = new()
-        {
-            Title = title,
-            Content = content,
-            ShowTitle = true,
-            PrimaryButtonText = primaryButtonText,
-            CloseButtonText = closeButtonText,
-            IsPrimaryButtonEnabled = true,
-            IsCloseButtonEnabled = true,
-            IsSecondaryButtonEnabled = false,
-            Width = 460,
-            MinWidth = 460,
-            SizeToContent = SizeToContent.Height,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
+        ModernDialogButton[] buttons =
+        [
+            new(primaryButtonText, ModernDialogResult.Yes, IsDefault: true, Accent: true),
+            new(closeButtonText, ModernDialogResult.No, IsCancel: true),
+        ];
 
-        _ = new WindowInteropHelper(messageBox)
-        {
-            Owner = new IntPtr(Globals.InvApp.MainFrameHWND)
-        };
+        ModernDialogResult result = ModernMessageBox.Show(
+            Globals.OwnerWindow,
+            Globals.CurrentTheme,
+            content,
+            title,
+            buttons,
+            ModernDialogIcon.Question,
+            font: Globals.CurrentFont);
 
-        SetDialogTheme(messageBox);
-
-        Wpf.Ui.Controls.MessageBoxResult result = await messageBox.ShowDialogAsync().ConfigureAwait(true);
-
-        return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
+        return Task.FromResult(result == ModernDialogResult.Yes);
     }
 
-    public static void SetDialogTheme(Window dialog)
-    {
-        ApplicationTheme theme = Globals.ActiveTheme.Name == InventorThemeConstants.LightTheme
-            ? ApplicationTheme.Light
-            : ApplicationTheme.Dark;
-
-        ApplicationThemeManager.Apply(theme);
-
-        ApplicationAccentColorManager.Apply(Color.FromArgb(0xFF, 0x06, 0x96, 0xD7), theme);
-        ThemeResourceHelper.ApplyInventorThemeResources();
-        ApplicationThemeManager.Apply(dialog);
-    }
-
-    public static async Task<bool> ShowTelemetryConsentAsync()
+    public static Task<bool> ShowTelemetryConsentAsync()
     {
         const string privacyUrl = "https://twiesendanger.github.io/ExtrabbitCode.Attributes/docs/telemetry";
 
-        System.Windows.Controls.TextBlock textBlock = new()
+        TextBlock textBlock = new()
         {
             TextWrapping = TextWrapping.Wrap,
             MaxWidth = 440
@@ -128,39 +88,28 @@ static class DialogHelper
             });
         textBlock.Inlines.Add(link);
 
-        System.Windows.Controls.ScrollViewer scrollViewer = new()
+        ScrollViewer scrollViewer = new()
         {
             Content = textBlock,
-            VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             MaxHeight = 300
         };
 
-        UiMessageBox messageBox = new()
-        {
-            Title = "Anonymous Usage Data",
-            Content = scrollViewer,
-            ShowTitle = true,
-            PrimaryButtonText = "Enable (recommended)",
-            SecondaryButtonText = "Disable",
-            IsPrimaryButtonEnabled = true,
-            IsSecondaryButtonEnabled = true,
-            IsCloseButtonEnabled = false,
-            Width = 500,
-            MinWidth = 500,
-            SizeToContent = SizeToContent.Height,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
+        ModernDialogButton[] buttons =
+        [
+            new("Enable (recommended)", ModernDialogResult.Yes, IsDefault: true, Accent: true),
+            new("Disable", ModernDialogResult.No, IsCancel: true),
+        ];
 
-        _ = new WindowInteropHelper(messageBox)
-        {
-            Owner = new IntPtr(Globals.InvApp.MainFrameHWND)
-        };
+        ModernDialogResult result = ModernMessageBox.Show(
+            Globals.OwnerWindow,
+            Globals.CurrentTheme,
+            scrollViewer,
+            "Anonymous Usage Data",
+            buttons,
+            ModernDialogIcon.Question,
+            font: Globals.CurrentFont);
 
-        SetDialogTheme(messageBox);
-
-        Wpf.Ui.Controls.MessageBoxResult result =
-            await messageBox.ShowDialogAsync().ConfigureAwait(true);
-
-        return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
+        return Task.FromResult(result == ModernDialogResult.Yes);
     }
 }

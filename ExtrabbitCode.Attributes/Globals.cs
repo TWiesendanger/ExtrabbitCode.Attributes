@@ -22,11 +22,15 @@ public static class Globals
     /// <summary>The active ModernUi theme (light/dark), derived from Inventor's active theme. Dialogs
     /// pass this to <c>ModernUi.Apply</c>.</summary>
     public static ExtrabbitCode.Inventor.ModernUi.Theme CurrentTheme { get; internal set; } =
-        ExtrabbitCode.Inventor.ModernUi.Theme.Dark;
+        Inventor.ModernUi.Theme.Dark;
 
     /// <summary>The UI font derived from Inventor's general options, passed to <c>ModernUi.Apply</c>.</summary>
-    public static ExtrabbitCode.Inventor.ModernUi.FontOptions CurrentFont { get; internal set; } =
-        ExtrabbitCode.Inventor.ModernUi.FontOptions.Default;
+    public static Inventor.ModernUi.FontOptions CurrentFont { get; internal set; } =
+        Inventor.ModernUi.FontOptions.Default;
+
+    /// <summary>The main (dockable attribute) window, used to own message boxes so they stay on top
+    /// of Inventor. Null until the panel is created.</summary>
+    public static System.Windows.Window? OwnerWindow { get; set; }
 
     public const string AddInClientId = "2b75e9c2-a980-4760-8687-67966594c181";
 

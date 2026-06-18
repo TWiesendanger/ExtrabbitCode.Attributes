@@ -24,7 +24,7 @@
             <Setter Property="Background" Value="{DynamicResource Brush.Panel}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
@@ -89,9 +89,23 @@
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+
+        <Style
+            x:Key="SettingsSectionCardStyle"
+            TargetType="Border">
+            <Setter Property="Margin" Value="2,2,2,16" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Opacity="0.22" Color="#000000" />
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <Grid Margin="16">
+    <Grid Margin="16" TextElement.FontSize="13">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="16" />
@@ -102,7 +116,7 @@
             Grid.Row="0"
             VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <Border Style="{DynamicResource Card}" Margin="0,0,0,12">
+                <Border Style="{StaticResource SettingsSectionCardStyle}">
                     <StackPanel>
                         <TextBlock
                             Style="{StaticResource SectionTitleTextStyle}"
@@ -235,7 +249,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{DynamicResource Card}" Margin="0,0,0,12">
+                <Border Style="{StaticResource SettingsSectionCardStyle}">
                     <StackPanel>
                         <TextBlock
                             Style="{StaticResource SectionTitleTextStyle}"
@@ -273,7 +287,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Style="{DynamicResource Card}">
+                <Border Style="{StaticResource SettingsSectionCardStyle}">
                     <StackPanel>
                         <TextBlock
                             Style="{StaticResource SectionTitleTextStyle}"
@@ -284,40 +298,44 @@
                             Opacity="0.8"
                             Text="Manage reusable attribute set names shown in the Add Attribute dialog." />
 
-                        <Grid Margin="0,0,0,12">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBox
-                                Grid.Column="0"
-                                Text="{Binding NewAttributeSetName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+                                Grid.Row="0" Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Text="{Binding NewAttributeSetName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=False}" />
                             <Button
                                 Grid.Row="0" Grid.Column="2"
+                                VerticalAlignment="Center"
                                 Command="{Binding AddAttributeSetNameCommand}"
                                 Content="Add"
                                 IsEnabled="{Binding CanAddAttributeSetName}" />
 
-                            <ScrollViewer
-                                Grid.Row="1" Grid.Column="0" Margin="0,10,0,0">
-                                <ListBox
-                                    MinHeight="50"
-                                    MaxHeight="400"
-                                    Background="Transparent"
-                                    BorderThickness="1"
-                                    ItemContainerStyle="{StaticResource AttributeSetListBoxItemStyle}"
-                                    ItemsSource="{Binding AttributeSetNames}"
-                                    SelectedItem="{Binding SelectedAttributeSetName, Mode=TwoWay}" />
-                            </ScrollViewer>
+                            <ListBox
+                                Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                Margin="0,10,0,0"
+                                MinHeight="120"
+                                Padding="4"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                ItemContainerStyle="{StaticResource AttributeSetListBoxItemStyle}"
+                                ItemsSource="{Binding AttributeSetNames}"
+                                SelectedItem="{Binding SelectedAttributeSetName, Mode=TwoWay}" />
+
                             <StackPanel
-                                Grid.Row="2" Grid.Column="0" Margin="0,12,0,0"
+                                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                                Margin="0,12,0,0"
                                 HorizontalAlignment="Right"
                                 Orientation="Horizontal">
                                 <Button

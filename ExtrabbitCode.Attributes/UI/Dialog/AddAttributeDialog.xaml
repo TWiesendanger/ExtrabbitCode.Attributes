@@ -21,7 +21,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
 
-    <Grid Margin="12">
+    <Grid Margin="12" TextElement.FontSize="13">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="12" />
@@ -48,7 +48,7 @@
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="130" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -63,6 +63,7 @@
                     Grid.Column="1"
                     VerticalContentAlignment="Center"
                     VerticalAlignment="Center"
+                    FontSize="13"
                     IsEnabled="{Binding CanEditAttributeSetName}"
                     IsEditable="True"
                     IsTextSearchEnabled="True"
@@ -80,6 +81,8 @@
                     Grid.Row="2"
                     Grid.Column="1"
                     VerticalAlignment="Center"
+                    FontSize="13"
+                    Padding="4,4"
                     IsEnabled="{Binding CanEditAttributeName}"
                     Text="{Binding AttributeName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
 
@@ -94,6 +97,8 @@
                     Grid.Column="1"
                     IsEnabled="{Binding CanEditValueType}"
                     VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    FontSize="13"
                     ItemsSource="{Binding ValueTypes}"
                     SelectedItem="{Binding SelectedValueType}" />
 
@@ -106,11 +111,15 @@
                 <Grid Grid.Row="6" Grid.Column="1">
                     <TextBox
                         VerticalAlignment="Center"
+                        FontSize="13"
+                        Padding="4,4"
                         Text="{Binding AttributeValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                         Visibility="{Binding IsTextValueType, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                     <ComboBox
                         VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="13"
                         ItemsSource="{Binding BooleanValues}"
                         SelectedItem="{Binding SelectedBooleanValue, UpdateSourceTrigger=PropertyChanged}"
                         Visibility="{Binding IsBooleanType, Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -133,6 +142,7 @@
                     x:Name="OkButton"
                     Width="125"
                     Margin="0,0,8,0"
+                    FontSize="13"
                     Content="OK"
                     IsDefault="True"
                     IsEnabled="{Binding CanSubmit}"
@@ -142,6 +152,7 @@
                 <Button
                     x:Name="CancelButton"
                     Width="125"
+                    FontSize="13"
                     Content="Cancel"
                     IsCancel="True" />
             </StackPanel>

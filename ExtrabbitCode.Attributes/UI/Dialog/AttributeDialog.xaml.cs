@@ -20,6 +20,7 @@ public partial class AttributeDialog
         ModernUi.Apply(this, Globals.CurrentTheme, font: Globals.CurrentFont, applyWindowChrome: false);
         _viewModel = new AttributeWindowViewModel(Globals.SettingsService, Globals.AttributeService, Globals.UserNotificationService);
         Globals.UserNotificationService.SetPresenter(this);
+        Globals.OwnerWindow = this;
         DataContext = _viewModel;
 
         Activated += OnActivated;
