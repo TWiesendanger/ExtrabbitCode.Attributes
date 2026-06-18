@@ -41,6 +41,21 @@ Download and install the add-in from the [Autodesk App Store](https://marketplac
 2. Run the correct Inventor Version according to your installed version
 3. Build — `BuildScript.cmd` copies outputs to the Inventor add-in folder automatically
 
+## App Store bundle
+
+For the Autodesk App Store the add-in ships as a registry-free [ApplicationPlugins bundle](https://www.autodesk.com/developer-network/app-store/inventor) (not the dev `BuildScript.cmd` deploy). Create it with:
+
+```powershell
+dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj -c Release -p:Platform=x64 -p:CreateBundle=true -p:DeployToInventor=false
+```
+
+This produces, under `ExtrabbitCode.Attributes\bin\Bundle\`:
+
+- `ExtrabbitCode.Attributes.bundle\` — `PackageContents.xml` + `Contents\` (the add-in, its dependencies, and a relative-path `.addin`)
+- `ExtrabbitCode.Attributes.bundle.zip` — **upload this to the App Store**
+
+To smoke-test before submitting, copy the `.bundle` folder into `%ProgramData%\Autodesk\ApplicationPlugins\` and start Inventor. The bundle manifests live in `ExtrabbitCode.Attributes\Addin\Bundle\`; keep the version in `PackageContents.xml` in sync with `AppVersion` in `Directory.Build.props`.
+
 ## Documentation site
 
 The docs live in the `documentation/` folder — a [Fumadocs](https://fumadocs.vercel.app/) site built on React Router 7 and Tailwind CSS 4.
