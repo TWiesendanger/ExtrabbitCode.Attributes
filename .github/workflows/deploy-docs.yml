@@ -34,12 +34,8 @@ jobs:
         run: npm run build
         working-directory: documentation
         env:
-          VITE_BASE_PATH: /ExtrabbitCode.Attributes/
-
-      - name: Flatten basename subdirectory
-        run: |
-          cp -r documentation/build/client/ExtrabbitCode.Attributes/. documentation/build/client/
-          rm -rf documentation/build/client/ExtrabbitCode.Attributes
+          # Served at the root of the custom domain (attributes.extrabbitcode.com).
+          VITE_BASE_PATH: /
 
       - name: Add .nojekyll
         run: touch documentation/build/client/.nojekyll

@@ -8,7 +8,7 @@
 
 An Autodesk Inventor add-in for reading and managing native Inventor attributes through a dockable WPF panel — no API code required.
 
-**[Full documentation](https://twiesendanger.github.io/ExtrabbitCode.Attributes)** · **[Autodesk App Store](https://marketplace.autodesk.com/publisher-profile?id=200812101855337)**
+**[Full documentation](https://attributes.extrabbitcode.com)** · **[Autodesk App Store](https://marketplace.autodesk.com/publisher-profile?id=200812101855337)**
 
 ---
 

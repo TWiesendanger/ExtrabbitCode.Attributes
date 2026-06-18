@@ -12,7 +12,7 @@ public partial class InfoDialogViewModel : ObservableObject
 {
     private const string GitHubUrl = "https://github.com/TWiesendanger/ExtrabbitCode.Attributes";
     private const string AutodeskStoreUrl = "https://marketplace.autodesk.com/publisher-profile?id=200812101855337";
-    private const string DocumentationUrl = "https://twiesendanger.github.io/ExtrabbitCode.Attributes/";
+    private const string DocumentationUrl = "https://attributes.extrabbitcode.com/";
 
     [ObservableProperty]
     private string programVersion = string.Empty;
