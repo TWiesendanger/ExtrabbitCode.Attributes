@@ -1,0 +1,52 @@
+---
+title: Privacy Policy
+description: What data the add-in collects, who it is shared with, how long it is kept, and how to opt out or request deletion.
+---
+
+ExtrabbitCode.Attributes ("the add-in") is an Autodesk Inventor add-in published by **Tobias Wiesendanger** ("we", "the publisher"). This policy explains what data the add-in collects, how and why, who it is shared with, how long it is kept, and the choices you have.
+
+The add-in collects **only anonymous usage telemetry, and only if you opt in.** It never collects personal information, file names, or the contents of your Inventor models. Telemetry is **off until you enable it** and can be turned off again at any time in **Settings → Privacy**.
+
+_Last updated: June 2026._
+
+## 1. What we collect, how, and why
+
+When — and only when — telemetry is enabled, the add-in records anonymous product-usage events. The data is collected by the [PostHog](https://posthog.com) analytics SDK embedded in the add-in and sent over HTTPS to PostHog's **EU** region.
+
+| Data collected | Why |
+|----------------|-----|
+| Feature usage — which toolbar buttons and commands are used, and how often | Understand which features matter and prioritize improvements |
+| Workflow outcomes — whether an add / edit / delete succeeded or was cancelled | Find and fix friction |
+| Configuration — which settings are active (e.g. confirmation messages on/off) | Understand how the add-in is configured |
+| Environment — Inventor version, add-in version, active UI theme | Prioritize compatibility and testing |
+| Session lifecycle — add-in activated / deactivated | Measure active usage |
+| Approximate location — country and region, derived from your IP address at the time of the event | Understand the geographic distribution of users |
+
+Every event carries a **randomly generated anonymous ID** that is created on first run and stored locally on your machine (in `settings.json`, see [Files & logs](/docs/files-and-logs)). It contains no personal information and cannot be used to identify you.
+
+### What we never collect
+
+- Your name, email, or any account information
+- File names, paths, or document contents
+- Attribute names, attribute set names, or attribute values, or any data from your Inventor models
+- Your exact IP address (used only transiently to resolve an approximate location; it is not stored)
+
+## 2. Third parties
+
+Telemetry is processed by **[PostHog](https://posthog.com)** (EU region), our analytics provider, acting as a data processor on our behalf. PostHog is contractually required to protect this data to at least the same standard described in this policy and may not use it for its own purposes. We **do not** sell the data or share it with advertising networks or any other third party. PostHog's own privacy policy is available at [posthog.com/privacy](https://posthog.com/privacy).
+
+## 3. Data retention and deletion
+
+Anonymous telemetry events are retained in PostHog for up to **12 months**, after which they are automatically deleted. If telemetry is disabled, no data is sent or stored at all.
+
+## 4. Your choices
+
+**Revoke consent / opt out** — open the add-in and go to **Settings → Privacy → Share anonymous usage statistics** and turn it off. No further data is sent from that point on.
+
+**Reset your anonymous ID** — delete `%APPDATA%\ExtrabbitCode.Attributes\settings.json`. A new random ID is generated on next run (telemetry stays off until you opt in again).
+
+**Request deletion of collected data** — because the data is anonymous and tied only to a random local ID, we cannot identify your events from your name or email. To have previously-collected events deleted, email **extrabbitcode@gmail.com** with the `TelemetryId` value found in `%APPDATA%\ExtrabbitCode.Attributes\settings.json`, and we will delete the events associated with that ID.
+
+## Contact
+
+Questions about this policy or your data: **extrabbitcode@gmail.com**.

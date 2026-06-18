@@ -17,7 +17,7 @@
   <CompanyDetails
       Name="ExtrabbitCode"
       Url="https://marketplace.autodesk.com/publisher-profile?id=200812101855337"
-      Email="tobias.wiesendanger@gmail.com" />
+      Email="extrabbitcode@gmail.com" />
   <Components Description="Inventor 2025+ add-in">
     <RuntimeRequirements OS="Win64" Platform="Inventor" />
     <ComponentEntry

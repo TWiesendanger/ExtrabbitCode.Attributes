@@ -64,7 +64,7 @@ static class DialogHelper
 
     public static Task<bool> ShowTelemetryConsentAsync()
     {
-        const string privacyUrl = "https://attributes.extrabbitcode.com/docs/telemetry";
+        const string privacyUrl = "https://attributes.extrabbitcode.com/docs/privacy";
 
         TextBlock textBlock = new()
         {

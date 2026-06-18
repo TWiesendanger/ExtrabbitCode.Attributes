@@ -273,8 +273,8 @@
                                         Text="Helps improve the add-in. Only command usage and version info are collected. No document names, file paths, or attribute values are sent." />
                                     <TextBlock Margin="0,4,0,0">
                                         <Hyperlink
-                                            NavigateUri="https://twiesendanger.github.io/ExtrabbitCode.Attributes/docs/telemetry"
-                                            RequestNavigate="TelemetryLink_OnRequestNavigate">Learn more about telemetry</Hyperlink>
+                                            NavigateUri="https://attributes.extrabbitcode.com/docs/privacy"
+                                            RequestNavigate="TelemetryLink_OnRequestNavigate">Privacy policy</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
 
