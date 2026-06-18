@@ -1,9 +1,8 @@
-﻿using ExtrabbitCode.Attributes.Helper;
-using ExtrabbitCode.Attributes.UI.ViewModels;
+﻿using ExtrabbitCode.Attributes.UI.ViewModels;
+using ExtrabbitCode.Inventor.ModernUi;
 using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Navigation;
 
@@ -16,7 +15,7 @@ public partial class SettingsDialog
     public SettingsDialog()
     {
         InitializeComponent();
-        DialogHelper.SetDialogTheme(this);
+        ModernUi.Apply(this, Globals.CurrentTheme, font: Globals.CurrentFont);
         _viewModel = new SettingsDialogViewModel(Globals.SettingsService, Globals.AttributeLibraryService);
         DataContext = _viewModel;
 
@@ -24,11 +23,6 @@ public partial class SettingsDialog
 
         IntPtr ownerHandle = new(Globals.InvApp.MainFrameHWND);
         new WindowInteropHelper(this).Owner = ownerHandle;
-
-
-        //ApplicationThemeManager.Apply(this);
-
-        WindowStartupLocation = WindowStartupLocation.CenterOwner;
     }
 
 
@@ -49,12 +43,5 @@ public partial class SettingsDialog
     {
         Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         e.Handled = true;
-    }
-
-    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-    {
-        base.OnMouseLeftButtonDown(e);
-
-        DragMove();
     }
 }

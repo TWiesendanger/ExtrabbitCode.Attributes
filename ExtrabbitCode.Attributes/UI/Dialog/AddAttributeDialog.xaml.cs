@@ -1,10 +1,9 @@
-﻿using ExtrabbitCode.Attributes.Helper;
-using ExtrabbitCode.Attributes.Models;
+﻿using ExtrabbitCode.Attributes.Models;
 using ExtrabbitCode.Attributes.UI.ViewModels;
+using ExtrabbitCode.Inventor.ModernUi;
 using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace ExtrabbitCode.Attributes.UI.Dialog;
@@ -23,7 +22,7 @@ public partial class AddAttributeDialog
     public AddAttributeDialog()
     {
         InitializeComponent();
-        DialogHelper.SetDialogTheme(this);
+        ModernUi.Apply(this, Globals.CurrentTheme, font: Globals.CurrentFont);
 
         ViewModel = new AddAttributeDialogViewModel(Globals.AttributeLibraryService);
         DataContext = ViewModel;
@@ -48,12 +47,6 @@ public partial class AddAttributeDialog
 
         OkButton.Click += OnOkButtonClick;
         CancelButton.Click += (_, _) => DialogResult = false;
-    }
-
-    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-    {
-        base.OnMouseLeftButtonDown(e);
-        DragMove();
     }
 
     private void OnOkButtonClick(object sender, RoutedEventArgs e)

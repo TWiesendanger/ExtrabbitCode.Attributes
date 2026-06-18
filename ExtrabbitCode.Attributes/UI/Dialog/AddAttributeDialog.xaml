@@ -1,11 +1,10 @@
-﻿<ui:FluentWindow
+<Window
     x:Class="ExtrabbitCode.Attributes.UI.Dialog.AddAttributeDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="Add Attribute"
+    Title="{Binding DialogTitle}"
     Width="500"
     Height="360"
     MinWidth="500"
@@ -13,52 +12,29 @@
     MinHeight="360"
     MaxHeight="360"
     ResizeMode="NoResize"
+    ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
-    FontFamily="{DynamicResource InvFontFamily}"
-    FontSize="{DynamicResource InvFontSizeNormal}"
-    Background="{DynamicResource InvWindowBackgroundBrush}"
-    Foreground="{DynamicResource InvForegroundBrush}"
+    Icon="pack://application:,,,/ExtrabbitCode.Attributes;component/Resources/addAttribute_Dialog.png"
     mc:Ignorable="d">
 
-    <ui:FluentWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ExtrabbitCode.Attributes;component/Resources/Styles/Theme.Shared.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
 
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        </ResourceDictionary>
-    </ui:FluentWindow.Resources>
-
-    <Grid Background="{DynamicResource InvWindowBackgroundBrush}">
+    <Grid Margin="12">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
             <RowDefinition Height="*" />
             <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar
-            Grid.Row="0"
-            Title="{Binding DialogTitle}"
-            CanMaximize="False"
-            ShowMaximize="False"
-            ShowMinimize="False">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon
-                    Source="pack://application:,,,/ExtrabbitCode.Attributes;component/Resources/addAttribute_Dialog.png" />
-            </ui:TitleBar.Icon>
-        </ui:TitleBar>
-
         <Border
-            Grid.Row="2"
-            Margin="5"
+            Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource InvPanelBackgroundBrush}"
-            BorderBrush="{DynamicResource InvPanelBorderBrush}"
+            Background="{DynamicResource Brush.Panel}"
+            BorderBrush="{DynamicResource Brush.Border}"
             BorderThickness="1"
-            CornerRadius="{DynamicResource InvCornerRadius}">
+            CornerRadius="{DynamicResource Radius.Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -79,8 +55,6 @@
                 <TextBlock
                     Grid.Row="0"
                     Grid.Column="0"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     VerticalAlignment="Center"
                     Text="Attribute Set Name" />
 
@@ -88,23 +62,18 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     VerticalContentAlignment="Center"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     VerticalAlignment="Center"
                     IsEnabled="{Binding CanEditAttributeSetName}"
                     IsEditable="True"
                     IsTextSearchEnabled="True"
                     ItemsSource="{Binding AttributeSetNameLibrary}"
                     StaysOpenOnEdit="True"
-                    Text="{Binding AttributeSetName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True, Mode=TwoWay}">
-                </ComboBox>
+                    Text="{Binding AttributeSetName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True, Mode=TwoWay}" />
 
                 <TextBlock
                     Grid.Row="2"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     Text="Attribute Name" />
 
                 <TextBox
@@ -112,26 +81,19 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     IsEnabled="{Binding CanEditAttributeName}"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     Text="{Binding AttributeName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
 
                 <TextBlock
                     Grid.Row="4"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     Text="Value Type" />
 
                 <ComboBox
                     Grid.Row="4"
                     Grid.Column="1"
                     IsEnabled="{Binding CanEditValueType}"
-                    Background="{DynamicResource InvToolbarBackgroundBrush}"
                     VerticalAlignment="Center"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     ItemsSource="{Binding ValueTypes}"
                     SelectedItem="{Binding SelectedValueType}" />
 
@@ -139,23 +101,16 @@
                     Grid.Row="6"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    FontFamily="{DynamicResource InvFontFamily}"
                     Text="Value" />
 
                 <Grid Grid.Row="6" Grid.Column="1">
                     <TextBox
                         VerticalAlignment="Center"
-                        FontSize="{DynamicResource InvFontSizeNormal}"
-                        FontFamily="{DynamicResource InvFontFamily}"
                         Text="{Binding AttributeValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                         Visibility="{Binding IsTextValueType, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                     <ComboBox
-                        Background="{DynamicResource InvToolbarBackgroundBrush}"
                         VerticalAlignment="Center"
-                        FontSize="{DynamicResource InvFontSizeNormal}"
-                        FontFamily="{DynamicResource InvFontFamily}"
                         ItemsSource="{Binding BooleanValues}"
                         SelectedItem="{Binding SelectedBooleanValue, UpdateSourceTrigger=PropertyChanged}"
                         Visibility="{Binding IsBooleanType, Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -164,40 +119,32 @@
         </Border>
 
         <Border
-            Grid.Row="4"
-            Margin="5"
+            Grid.Row="2"
             Padding="10"
-            Background="{DynamicResource InvToolbarBackgroundBrush}"
-            BorderBrush="{DynamicResource InvToolbarBorderBrush}"
+            Background="{DynamicResource Brush.Panel}"
+            BorderBrush="{DynamicResource Brush.Border}"
             BorderThickness="1"
-            CornerRadius="{DynamicResource InvCornerRadius}">
+            CornerRadius="{DynamicResource Radius.Card}">
             <StackPanel
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
 
-                <ui:Button
+                <Button
                     x:Name="OkButton"
-                    Width="{DynamicResource InvToolbarButtonWidth}"
-                    Height="{DynamicResource InvToolbarButtonHeight}"
-                    FontFamily="{DynamicResource InvFontFamily}"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    Background="{DynamicResource InvAccentBrush}"
-                    Content="OK"
+                    Width="125"
                     Margin="0,0,8,0"
+                    Content="OK"
                     IsDefault="True"
-                    Appearance="Transparent"
                     IsEnabled="{Binding CanSubmit}"
-                    Command="{Binding AddAttributeCommand}" />
+                    Command="{Binding AddAttributeCommand}"
+                    Style="{DynamicResource AccentButton}" />
 
-                <ui:Button
+                <Button
                     x:Name="CancelButton"
-                    FontFamily="{DynamicResource InvFontFamily}"
-                    FontSize="{DynamicResource InvFontSizeNormal}"
-                    Width="{DynamicResource InvToolbarButtonWidth}"
-                    Height="{DynamicResource InvToolbarButtonHeight}"
+                    Width="125"
                     Content="Cancel"
                     IsCancel="True" />
             </StackPanel>
         </Border>
     </Grid>
-</ui:FluentWindow>
+</Window>
