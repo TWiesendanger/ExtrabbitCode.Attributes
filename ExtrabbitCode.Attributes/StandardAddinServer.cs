@@ -87,6 +87,13 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             // Force initialize Wpf.Ui before any dialog opens
             ApplicationThemeManager.Apply(appTheme);
 
+            // ModernUi theme + font (window-scoped), derived from Inventor. Used by migrated dialogs.
+            Globals.CurrentTheme = themeName == InventorThemeConstants.LightTheme
+                ? ExtrabbitCode.Inventor.ModernUi.Theme.Light
+                : ExtrabbitCode.Inventor.ModernUi.Theme.Dark;
+            Globals.CurrentFont = ExtrabbitCode.Inventor.ModernUi.FontOptions.FromInventor(
+                Globals.InvApp.GeneralOptions.TextAppearance, Globals.InvApp.GeneralOptions.TextSize);
+
             InitializeTelemetry();
 
             _info = UiDefinitionHelper.CreateButton("Info", "ExtrabbitCode.Attributes.Info", @"UI\ButtonResources\Info", themeName);
