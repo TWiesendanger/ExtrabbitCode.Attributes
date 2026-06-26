@@ -252,9 +252,12 @@
 		<Copy SourceFiles="@(BundlePayload)"
 		      DestinationFiles="@(BundlePayload->'$(BundleContents)\%(RecursiveDir)%(Filename)%(Extension)')" />
 
-		<!-- Registry-free .addin (relative assembly path) next to the dll, PackageContents at the root. -->
+		<!-- Registry-free .addin (relative assembly path) next to the dll. -->
 		<Copy SourceFiles="$(ProjectDir)Addin\Bundle\ExtrabbitCode.Attributes.addin" DestinationFolder="$(BundleContents)" />
-		<Copy SourceFiles="$(ProjectDir)Addin\Bundle\PackageContents.xml" DestinationFolder="$(BundleRoot)" />
+		<!-- PackageContents.xml at the root, with __VERSION__ stamped from AppVersion. -->
+		<WriteLinesToFile File="$(BundleRoot)\PackageContents.xml"
+		                  Lines="$([System.IO.File]::ReadAllText('$(ProjectDir)Addin\Bundle\PackageContents.xml').Replace('__VERSION__', '$(AppVersion)'))"
+		                  Overwrite="true" />
 
 		<ZipDirectory SourceDirectory="$(BundleStage)" DestinationFile="$(BundleZip)" Overwrite="true" />
 		<Message Importance="high" Text="App Store bundle: $(BundleRoot)" />

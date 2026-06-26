@@ -2,13 +2,13 @@
 <!-- Autodesk Application Plug-in (bundle) manifest, read by the Autodesk App Store installer and by
      Inventor's ApplicationPlugins auto-loader. Registry-free, single location.
 
-     Version is kept in sync with Directory.Build.props <AppVersion> by hand (update both on a bump).
-     Inventor version targeting is enforced authoritatively by Contents/ExtrabbitCode.Attributes.addin
-     (<SupportedSoftwareVersionGreaterThan>28.. = Inventor 2025+). Add SeriesMin/SeriesMax to
-     RuntimeRequirements only if the App Store explicitly asks for a series range. -->
+     The __VERSION__ placeholders are stamped at bundle build time from <AppVersion>
+     (Directory.Build.props locally, or -p:AppVersion in CI). Inventor version targeting is enforced
+     authoritatively by Contents/ExtrabbitCode.Attributes.addin (<SupportedSoftwareVersionGreaterThan>28..
+     = Inventor 2025+). Add SeriesMin/SeriesMax to RuntimeRequirements only if the App Store asks. -->
 <ApplicationPackage
     SchemaVersion="1.0"
-    Version="1.1.0.0"
+    Version="__VERSION__"
     ProductType="Application"
     ProductCode="{2b75e9c2-a980-4760-8687-67966594c181}"
     Name="ExtrabbitCode.Attributes"
@@ -22,7 +22,7 @@
     <RuntimeRequirements OS="Win64" Platform="Inventor" />
     <ComponentEntry
         AppName="ExtrabbitCode.Attributes"
-        Version="1.1.0.0"
+        Version="__VERSION__"
         ModuleName="./Contents/ExtrabbitCode.Attributes.addin"
         AppType=".Net" />
   </Components>
