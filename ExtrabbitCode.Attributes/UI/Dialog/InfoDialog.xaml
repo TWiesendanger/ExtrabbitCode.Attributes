@@ -110,11 +110,11 @@
             </Button>
 
             <Button
-                Width="150"
+                Width="250"
                 Command="{Binding OpenAutodeskStoreCommand}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Text="&#xE8A7;" Margin="0,0,8,0" VerticalAlignment="Center" />
-                    <TextBlock Text="Autodesk Store" VerticalAlignment="Center" />
+                    <TextBlock Text="Design and Make marketplace" VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
         </StackPanel>

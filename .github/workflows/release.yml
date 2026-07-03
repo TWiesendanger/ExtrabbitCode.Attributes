@@ -39,7 +39,7 @@ jobs:
           -p:AssemblyVersion="${{ env.VERSION }}.0"
         shell: pwsh
 
-      - name: Build Autodesk App Store bundle
+      - name: Build Design and Make marketplace bundle
         run: >-
           dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj
           --configuration Release

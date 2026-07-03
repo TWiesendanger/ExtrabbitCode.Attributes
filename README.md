@@ -8,13 +8,13 @@
 
 An Autodesk Inventor add-in for reading and managing native Inventor attributes through a dockable WPF panel — no API code required.
 
-**[Full documentation](https://attributes.extrabbitcode.com)** · **[Autodesk App Store](https://marketplace.autodesk.com/publisher-profile?id=200812101855337)**
+**[Full documentation](https://attributes.extrabbitcode.com)** · **[Design and Make marketplace](https://marketplace.autodesk.com/publisher-profile?id=200812101855337)**
 
 ---
 
 ## Installation
 
-Download and install the add-in from the [Autodesk App Store](https://marketplace.autodesk.com/publisher-profile?id=200812101855337). Once installed, Inventor shows a new **ExtrabbitCode.Attributes** ribbon tab on next launch.
+Download and install the add-in from the [Design and Make marketplace](https://marketplace.autodesk.com/publisher-profile?id=200812101855337). Once installed, Inventor shows a new **ExtrabbitCode.Attributes** ribbon tab on next launch.
 
 ---
 
@@ -41,9 +41,9 @@ Download and install the add-in from the [Autodesk App Store](https://marketplac
 2. Run the correct Inventor Version according to your installed version
 3. Build — `BuildScript.cmd` copies outputs to the Inventor add-in folder automatically
 
-## App Store bundle
+## Design and Make marketplace bundle
 
-For the Autodesk App Store the add-in ships as a registry-free [ApplicationPlugins bundle](https://www.autodesk.com/developer-network/app-store/inventor) (not the dev `BuildScript.cmd` deploy). Create it with:
+For the Design and Make marketplace the add-in ships as a registry-free [ApplicationPlugins bundle](https://www.autodesk.com/developer-network/app-store/inventor) (not the dev `BuildScript.cmd` deploy). Create it with:
 
 ```powershell
 dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj -c Release -p:Platform=x64 -p:CreateBundle=true -p:DeployToInventor=false
@@ -52,7 +52,7 @@ dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj -c Release
 This produces, under `ExtrabbitCode.Attributes\bin\Bundle\`:
 
 - `ExtrabbitCode.Attributes.bundle\` — `PackageContents.xml` + `Contents\` (the add-in, its dependencies, and a relative-path `.addin`)
-- `ExtrabbitCode.Attributes.bundle.zip` — **upload this to the App Store**
+- `ExtrabbitCode.Attributes.bundle.zip` — **upload this to the Design and Make marketplace**
 
 To smoke-test before submitting, copy the `.bundle` folder into `%ProgramData%\Autodesk\ApplicationPlugins\` and start Inventor. The bundle manifests live in `ExtrabbitCode.Attributes\Addin\Bundle\`; keep the version in `PackageContents.xml` in sync with `AppVersion` in `Directory.Build.props`.
 
