@@ -13,7 +13,8 @@
     ProductCode="{2b75e9c2-a980-4760-8687-67966594c181}"
     Name="ExtrabbitCode.Attributes"
     Description="Read, create and manage native Autodesk Inventor attributes through a dockable panel - no API code required."
-    Author="Tobias Wiesendanger">
+    Author="Tobias Wiesendanger"
+    Helpfile="https://attributes.extrabbitcode.com/">
   <CompanyDetails
       Name="ExtrabbitCode"
       Url="https://marketplace.autodesk.com/publisher-profile?id=200812101855337"

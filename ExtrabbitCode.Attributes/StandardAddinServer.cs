@@ -24,6 +24,8 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
 
     public static ApplicationEvents? InvAppEvents { get; set; }
 
+    private DockableWindowsEvents? _dockableWindowsEvents;
+
     private ButtonDefinition? _settingsButton;
     private ButtonDefinition? _openAttributeWindow;
     private ButtonDefinition? _addAttributeToObject;
@@ -73,6 +75,10 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
             InvAppEvents = Globals.InvApp.ApplicationEvents;
             InvAppEvents.OnApplicationOptionChange += InvAppEvents_OnApplicationOptionChange;
 
+            // Route the dockable window's "Help" menu to our documentation instead of Inventor's help.
+            _dockableWindowsEvents = Globals.InvApp.UserInterfaceManager.DockableWindows.Events;
+            _dockableWindowsEvents.OnHelp += DockableWindowsEvents_OnHelp;
+
             ThemeManager themeManager = Globals.InvApp.ThemeManager;
             Globals.ActiveTheme = themeManager.ActiveTheme;
             string themeName = Globals.ActiveTheme.Name;
@@ -80,9 +86,9 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
 
             // ModernUi theme + font (window-scoped), derived from Inventor. Used by the dialogs.
             Globals.CurrentTheme = themeName == InventorThemeConstants.LightTheme
-                ? ExtrabbitCode.Inventor.ModernUi.Theme.Light
-                : ExtrabbitCode.Inventor.ModernUi.Theme.Dark;
-            Globals.CurrentFont = ExtrabbitCode.Inventor.ModernUi.FontOptions.FromInventor(
+                ? Inventor.ModernUi.Theme.Light
+                : Inventor.ModernUi.Theme.Dark;
+            Globals.CurrentFont = Inventor.ModernUi.FontOptions.FromInventor(
                 Globals.InvApp.GeneralOptions.TextAppearance, Globals.InvApp.GeneralOptions.TextSize);
 
             InitializeTelemetry();
@@ -151,6 +157,7 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
         ReleaseButtons();
         ReleaseRibbonPanels();
         ReleaseRibbonTabs();
+        ReleaseDockableWindowsEvents();
         ReleaseAppEvents();
 
         if (_uiEvents == null)
@@ -173,6 +180,31 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
         catch
         {
             // Window was never opened — nothing to delete
+        }
+    }
+
+    private void ReleaseDockableWindowsEvents()
+    {
+        if (_dockableWindowsEvents is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _dockableWindowsEvents.OnHelp -= DockableWindowsEvents_OnHelp;
+        }
+        catch (COMException ex)
+        {
+            Logger.Debug("COMException while releasing dockable windows events.", ex);
+        }
+        catch (InvalidComObjectException ex)
+        {
+            Logger.Debug("InvalidComObjectException while releasing dockable windows events.", ex);
+        }
+        finally
+        {
+            _dockableWindowsEvents = null;
         }
     }
 
@@ -412,6 +444,31 @@ public class StandardAddInServer : IsolatedApplicationAddInServer
     private void UiEventsOnResetRibbonInterface(NameValueMap context)
     {
         AddToUserInterface();
+    }
+
+    private static void DockableWindowsEvents_OnHelp(DockableWindow dockableWindow, NameValueMap context, out HandlingCodeEnum handlingCode)
+    {
+        // Inventor lower-cases the InternalName, so compare case-insensitively.
+        if (!string.Equals(dockableWindow.InternalName, "ExtrabbitCode.Attributes.Window", StringComparison.OrdinalIgnoreCase))
+        {
+            handlingCode = HandlingCodeEnum.kEventNotHandled;
+            return;
+        }
+
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = UiButton.DocumentationUrl,
+                UseShellExecute = true
+            });
+            handlingCode = HandlingCodeEnum.kEventHandled;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Failed to open documentation from dockable window help: {ex.Message}", ex);
+            handlingCode = HandlingCodeEnum.kEventNotHandled;
+        }
     }
 
     private void InvAppEvents_OnApplicationOptionChange(EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)

@@ -9,7 +9,7 @@ namespace ExtrabbitCode.Attributes.UI;
 
 public class UiButton
 {
-    private const string DocumentationUrl = "https://attributes.extrabbitcode.com/";
+    internal const string DocumentationUrl = "https://attributes.extrabbitcode.com/";
     private ButtonDefinition? _bd;
     private static readonly ILog Logger = LogManagerAddin.GetLogger(typeof(UiButton));
 
