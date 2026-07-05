@@ -1,3 +1,14 @@
+1.1.2.0
+
+- The panel's Help menu now opens the add-in documentation instead of Inventor's default help.
+- Updated store references to Autodesk's new "Design and Make marketplace" branding.
+
+1.1.1.0
+
+- Now available on the Autodesk Design and Make marketplace as a self-contained installer.
+- Added a privacy policy, linked from the add-in's info dialog.
+- Moved the documentation to attributes.extrabbitcode.com.
+
 1.1.0.0
 
 - Refreshed the UI with the ExtrabbitCode ModernUi styling library (Inventor-aligned light/dark theming).
