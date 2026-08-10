@@ -43,11 +43,18 @@ export default function Home() {
           <span className="text-xs text-fd-muted-foreground uppercase tracking-widest">
             Made by
           </span>
-          <img
-            src={`${import.meta.env.BASE_URL}images/branding/extrabbit.png`}
-            alt="Extrabbit logo"
-            className="h-8 opacity-80"
-          />
+          <a
+            href="https://extrabbitcode.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="ExtrabbitCode homepage"
+          >
+            <img
+              src={`${import.meta.env.BASE_URL}images/branding/extrabbit.png`}
+              alt="Extrabbit logo"
+              className="h-8 opacity-80 hover:opacity-100 transition-opacity"
+            />
+          </a>
         </div>
       </main>
     </HomeLayout>
