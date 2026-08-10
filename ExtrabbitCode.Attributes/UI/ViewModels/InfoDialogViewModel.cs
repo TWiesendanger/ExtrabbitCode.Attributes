@@ -13,6 +13,7 @@ public partial class InfoDialogViewModel : ObservableObject
     private const string GitHubUrl = "https://github.com/TWiesendanger/ExtrabbitCode.Attributes";
     private const string AutodeskStoreUrl = "https://marketplace.autodesk.com/publisher-profile?id=200812101855337";
     private const string DocumentationUrl = "https://attributes.extrabbitcode.com/";
+    private const string HomepageUrl = "https://extrabbitcode.com/";
 
     [ObservableProperty]
     private string programVersion = string.Empty;
@@ -45,6 +46,13 @@ public partial class InfoDialogViewModel : ObservableObject
     {
         Globals.TelemetryService.TrackEvent("info_documentation_opened");
         OpenUrl(DocumentationUrl);
+    }
+
+    [RelayCommand]
+    private static void OpenHomepage()
+    {
+        Globals.TelemetryService.TrackEvent("info_homepage_opened");
+        OpenUrl(HomepageUrl);
     }
 
     private void LoadProgramVersion()

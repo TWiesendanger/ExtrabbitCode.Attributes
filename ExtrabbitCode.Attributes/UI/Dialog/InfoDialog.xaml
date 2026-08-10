@@ -73,13 +73,24 @@
                         Text="{Binding ProgramVersion, StringFormat=Version: {0}}" />
                 </StackPanel>
 
-                <Image
+                <Button
                     Grid.Column="3"
-                    Width="250"
-                    Height="72"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Source="pack://application:,,,/ExtrabbitCode.Attributes;component/Resources/extrabbit.png" />
+                    AutomationProperties.Name="Open extrabbitcode.com"
+                    Command="{Binding OpenHomepageCommand}"
+                    Cursor="Hand"
+                    ToolTip="extrabbitcode.com">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Image
+                        Width="250"
+                        Height="72"
+                        Source="pack://application:,,,/ExtrabbitCode.Attributes;component/Resources/extrabbit.png" />
+                </Button>
             </Grid>
         </Border>
 
