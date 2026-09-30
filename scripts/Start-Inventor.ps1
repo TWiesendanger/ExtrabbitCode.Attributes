@@ -47,7 +47,8 @@ $searchPaths = @(
     "$env:APPDATA\Autodesk\ApplicationPlugins",
     'C:\ProgramData\Autodesk\ApplicationPlugins'
 )
-$duplicates = Get-ChildItem $searchPaths -Filter *.addin -Recurse -ErrorAction SilentlyContinue |
+# Inventor also loads renamed manifests such as "*.addin.disabled", so match those too.
+$duplicates = Get-ChildItem $searchPaths -Filter *.addin* -Recurse -ErrorAction SilentlyContinue |
     Where-Object { $_.FullName -ne $devAddin -and (Select-String -Path $_.FullName -Pattern $clientId -SimpleMatch -Quiet) } |
     Where-Object { ([xml](Get-Content $_.FullName)).Addin.Assembly }
 foreach ($duplicate in $duplicates) {
