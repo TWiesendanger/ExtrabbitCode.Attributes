@@ -283,6 +283,7 @@
                                     Height="16"
                                     Margin="0,2,6,0"
                                     VerticalAlignment="Top"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
                                     Source="{Binding IconSource}"
                                     Visibility="{Binding IconSource, Converter={StaticResource NullToVisibilityConverter}}" />
 
