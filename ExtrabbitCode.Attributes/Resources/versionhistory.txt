@@ -1,3 +1,10 @@
+1.2.0.0
+
+- String attributes that contain JSON or XML are recognized: the tree shows a JSON/XML badge, a formatted tooltip and a "Copy Formatted Value" menu entry.
+- The Add/Edit attribute dialog can be resized and has a multi-line editor for string values, with Format and Compact buttons for JSON and XML.
+- Sharper icons in the attribute tree.
+- The Extrabbit logo in the info dialog now links to extrabbitcode.com.
+
 1.1.2.0
 
 - The panel's Help menu now opens the add-in documentation instead of Inventor's default help.
