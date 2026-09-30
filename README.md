@@ -51,10 +51,10 @@ dotnet build ExtrabbitCode.Attributes\ExtrabbitCode.Attributes.csproj -c Release
 
 This produces, under `ExtrabbitCode.Attributes\bin\Bundle\`:
 
-- `ExtrabbitCode.Attributes.bundle\` — `PackageContents.xml` + `Contents\` (the add-in, its dependencies, and a relative-path `.addin`)
+- `stage\ExtrabbitCode.Attributes.bundle\` — `PackageContents.xml` + `Contents\` (the add-in, its dependencies, and a relative-path `.addin`)
 - `ExtrabbitCode.Attributes.bundle.zip` — **upload this to the Design and Make marketplace**
 
-To smoke-test before submitting, copy the `.bundle` folder into `%ProgramData%\Autodesk\ApplicationPlugins\` and start Inventor. The bundle manifests live in `ExtrabbitCode.Attributes\Addin\Bundle\`; keep the version in `PackageContents.xml` in sync with `AppVersion` in `Directory.Build.props`.
+To smoke-test before submitting, copy the `.bundle` folder into `%ProgramData%\Autodesk\ApplicationPlugins\` and start Inventor. The bundle manifests live in `ExtrabbitCode.Attributes\Addin\Bundle\`; the `__VERSION__` placeholders in `PackageContents.xml` are filled from `AppVersion` in `Directory.Build.props` at build time. The release steps are listed in [AGENTS.md](AGENTS.md#releasing-a-new-version).
 
 ## Documentation site
 

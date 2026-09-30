@@ -17,7 +17,7 @@ public partial class AddAttributeDialog
             ViewModel.AttributeSetName,
             ViewModel.AttributeName,
             ViewModel.SelectedValueType,
-            ViewModel.AttributeValue);
+            ViewModel.GetValueToStore());
 
     public AddAttributeDialog()
     {
@@ -68,8 +68,17 @@ public partial class AddAttributeDialog
     {
         Left = Properties.Settings.Default.AddAttributeDialogLeft;
         Top = Properties.Settings.Default.AddAttributeDialogTop;
-        Width = Properties.Settings.Default.AddAttributeDialogWidth;
-        Height = Properties.Settings.Default.AddAttributeDialogHeight;
+
+        // Keep the XAML default size until the user has resized the dialog once.
+        if (Properties.Settings.Default.AddAttributeDialogWidth > 0)
+        {
+            Width = Properties.Settings.Default.AddAttributeDialogWidth;
+        }
+
+        if (Properties.Settings.Default.AddAttributeDialogHeight > 0)
+        {
+            Height = Properties.Settings.Default.AddAttributeDialogHeight;
+        }
     }
 
     private void SaveDialogSettings()

@@ -83,6 +83,26 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
 
     public bool IsTextValueType => SelectedValueType != ValueTypeEnum.kBooleanType;
 
+    public bool IsStringType => SelectedValueType == ValueTypeEnum.kStringType;
+
+    public bool IsSingleLineTextType => IsTextValueType && !IsStringType;
+
+    /// <summary>
+    /// The value as stored in the document before editing. Null in add mode.
+    /// </summary>
+    private string? _originalAttributeValue;
+
+    [ObservableProperty]
+    private StructuredTextKind structuredValueKind;
+
+    [ObservableProperty]
+    private string structuredValueStatus = string.Empty;
+
+    [ObservableProperty]
+    private bool isStructuredValueValid;
+
+    public bool IsStructuredValueCandidate => StructuredValueKind != StructuredTextKind.None;
+
     public AddAttributeDialogViewModel(AttributeLibraryService attributeLibraryService)
     {
         _attributeLibraryService = attributeLibraryService;
@@ -110,7 +130,15 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
         AttributeSetName = attributeSetNameInitial;
         AttributeName = attributeNameInitial;
         SelectedValueType = valueType;
-        AttributeValue = attributeValueInitial;
+        _originalAttributeValue = attributeValueInitial;
+
+        // Show JSON/XML values indented so they are readable. GetValueToStore() restores
+        // the original layout on save, so opening and saving never changes the stored value.
+        AttributeValue =
+            valueType == ValueTypeEnum.kStringType &&
+            StructuredTextFormatter.TryFormat(attributeValueInitial, indented: true, out string formatted, out _, out _)
+                ? formatted
+                : attributeValueInitial;
 
         if (valueType == ValueTypeEnum.kBooleanType &&
             bool.TryParse(attributeValueInitial, out bool boolValue))
@@ -154,6 +182,7 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
     partial void OnAttributeValueChanged(string value)
     {
         ValidateProperty(value, nameof(AttributeValue));
+        UpdateStructuredValueStatus();
         OnPropertyChanged(nameof(CanSubmit));
     }
 
@@ -163,7 +192,78 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
         SelectedBooleanValue = null;
         OnPropertyChanged(nameof(IsBooleanType));
         OnPropertyChanged(nameof(IsTextValueType));
+        OnPropertyChanged(nameof(IsStringType));
+        OnPropertyChanged(nameof(IsSingleLineTextType));
+        UpdateStructuredValueStatus();
         OnPropertyChanged(nameof(CanSubmit));
+    }
+
+    partial void OnStructuredValueKindChanged(StructuredTextKind value) =>
+        OnPropertyChanged(nameof(IsStructuredValueCandidate));
+
+    private void UpdateStructuredValueStatus()
+    {
+        if (!IsStringType)
+        {
+            StructuredValueKind = StructuredTextKind.None;
+            IsStructuredValueValid = false;
+            StructuredValueStatus = string.Empty;
+            return;
+        }
+
+        bool isValid = StructuredTextFormatter.TryFormat(
+            AttributeValue, indented: false, out _, out StructuredTextKind kind, out string? error);
+
+        StructuredValueKind = kind;
+        IsStructuredValueValid = isValid;
+        StructuredValueStatus = kind switch
+        {
+            StructuredTextKind.None => string.Empty,
+            _ when isValid => $"Valid {kind.ToString().ToUpperInvariant()}",
+            _ => $"Not valid {kind.ToString().ToUpperInvariant()} (will be saved as plain text): {error}"
+        };
+    }
+
+    [RelayCommand]
+    private void FormatValue()
+    {
+        if (StructuredTextFormatter.TryFormat(AttributeValue, indented: true, out string formatted, out _, out _))
+        {
+            AttributeValue = formatted;
+        }
+    }
+
+    [RelayCommand]
+    private void CompactValue()
+    {
+        if (StructuredTextFormatter.TryFormat(AttributeValue, indented: false, out string formatted, out _, out _))
+        {
+            AttributeValue = formatted;
+        }
+    }
+
+    /// <summary>
+    /// The value that should be written to the attribute. When editing a JSON/XML value that
+    /// was stored on a single line, the (indented) edited value is compacted again, and if its
+    /// content did not change the original value is returned unchanged.
+    /// </summary>
+    public string GetValueToStore()
+    {
+        if (!IsStringType ||
+            _originalAttributeValue is null ||
+            !StructuredTextFormatter.TryFormat(AttributeValue, indented: false, out string compactValue, out _, out _) ||
+            !StructuredTextFormatter.TryFormat(_originalAttributeValue, indented: false, out string compactOriginal, out _, out _))
+        {
+            return AttributeValue;
+        }
+
+        if (string.Equals(compactValue, compactOriginal, StringComparison.Ordinal))
+        {
+            return _originalAttributeValue;
+        }
+
+        bool originalWasSingleLine = !_originalAttributeValue.Contains('\n', StringComparison.Ordinal);
+        return originalWasSingleLine ? compactValue : AttributeValue;
     }
 
     public bool CanSubmit =>
@@ -263,7 +363,7 @@ public partial class AddAttributeDialogViewModel : ObservableValidator
             AttributeSetName,
             AttributeName,
             SelectedValueType,
-            AttributeValue);
+            GetValueToStore());
 
         Globals.TelemetryService.TrackEvent("add_attribute_dialog_succeeded",
             new System.Collections.Generic.Dictionary<string, object>

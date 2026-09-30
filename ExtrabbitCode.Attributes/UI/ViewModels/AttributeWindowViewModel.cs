@@ -116,6 +116,29 @@ public partial class AttributeWindowViewModel(SettingsService settingsService,
     }
 
     [RelayCommand]
+    private async Task CopyNodeFormattedValue(AttributeTreeNode? node)
+    {
+        if (node is not { IsStructuredValue: true })
+        {
+            return;
+        }
+
+        Clipboard.SetText(node.FormattedValue);
+        Globals.TelemetryService.TrackEvent("attribute_formatted_value_copied",
+            new Dictionary<string, object>
+            {
+                ["format"] = node.StructuredValueLabel
+            });
+
+        if (settingsService.GetCopy().ShowConfirmationMessages)
+        {
+            await userNotificationService.ShowSuccessAsync(
+                "Copied",
+                $"Formatted {node.StructuredValueLabel} value copied to clipboard.").ConfigureAwait(false);
+        }
+    }
+
+    [RelayCommand]
     private async Task SelectNodeObject(AttributeTreeNode? node)
     {
         if (node is null or { NodeType: NodeType.Document })

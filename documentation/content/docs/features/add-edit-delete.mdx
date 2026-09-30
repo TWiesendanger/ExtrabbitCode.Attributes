@@ -21,9 +21,11 @@ Fill in the following fields:
 | **Attribute Set Name** | The name of the attribute set to add the attribute to. Type a name or pick one from your [Attribute Library](/docs/features/attribute-library). Only chars are allowed. |
 | **Attribute Name**     | The key for the new attribute. Only chars are allowed.                                                                                                                  |
 | **Value Type**         | One of: `String`, `Boolean`, `Double`, `Integer`, `Byte Array`.                                                                                                         |
-| **Value**              | The initial value for the attribute.                                                                                                                                    |
+| **Value**              | The initial value for the attribute. For `String` values this is a multi-line editor, so longer text such as [JSON or XML](/docs/features/json-xml-values) can be entered. |
 
 Click **OK** to create the attribute. The tree refreshes immediately and keeps its expanded state.
+
+The dialog can be resized to make room for long values; its size and position are remembered. In the multi-line String editor, **Enter** starts a new line, so click **OK** to confirm.
 
 ### Entering a Byte Array value
 
@@ -44,7 +46,7 @@ All four examples produce the same three-byte value. When you re-open an existin
 
 ## Editing an attribute
 
-Right-click an attribute node in the tree and select **Edit**. The same dialog opens pre-filled with the current values. Change the value and click **OK** to save.
+Right-click an attribute node in the tree and select **Edit**. The same dialog opens pre-filled with the current values. Change the value and click **OK** to save. JSON and XML values open indented and can be formatted or compacted, see [JSON & XML Values](/docs/features/json-xml-values).
 
 <PublicImage src="/images/screenshots/feature-editAttribute-light.png" alt="Feature addAttribute" className="block dark:hidden" />
 <PublicImage src="/images/screenshots/feature-editAttribute-dark.png" alt="Feature addAttribute" className="hidden dark:block" />

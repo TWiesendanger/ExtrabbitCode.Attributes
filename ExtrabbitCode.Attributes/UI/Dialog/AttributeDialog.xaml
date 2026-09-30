@@ -260,6 +260,11 @@
                                             Command="{Binding EditNodeCommand}"
                                             CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <MenuItem
+                                            Header="Copy Formatted Value"
+                                            Visibility="{Binding Tag.IsStructuredValue, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Command="{Binding CopyNodeFormattedValueCommand}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <MenuItem
                                             Header="Delete"
                                             Command="{Binding DeleteNodeCommand}"
                                             CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
@@ -278,15 +283,39 @@
                                     Height="16"
                                     Margin="0,2,6,0"
                                     VerticalAlignment="Top"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
                                     Source="{Binding IconSource}"
                                     Visibility="{Binding IconSource, Converter={StaticResource NullToVisibilityConverter}}" />
 
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <!-- JSON/XML values show their indented form when hovering the row text or badge. -->
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    ToolTipService.IsEnabled="{Binding IsStructuredValue}"
+                                    ToolTipService.ShowDuration="60000">
+                                    <StackPanel.ToolTip>
+                                        <TextBlock
+                                            FontFamily="Consolas"
+                                            Text="{Binding FormattedValuePreview}" />
+                                    </StackPanel.ToolTip>
                                     <TextBlock Text="{Binding Name}" />
+                                    <!-- Badge sits before the value so long values cannot push it out of view. -->
+                                    <Border
+                                        Margin="6,0,0,0"
+                                        Padding="4,0"
+                                        VerticalAlignment="Center"
+                                        BorderBrush="{DynamicResource Brush.Accent}"
+                                        BorderThickness="1"
+                                        CornerRadius="{DynamicResource Radius.Control}"
+                                        Visibility="{Binding IsStructuredValue, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <TextBlock
+                                            FontSize="10"
+                                            Text="{Binding StructuredValueLabel}" />
+                                    </Border>
                                     <TextBlock
                                         Margin="6,0,0,0"
                                         Foreground="{DynamicResource Brush.ForegroundMuted}"
-                                        Text="{Binding Value}" />
+                                        Text="{Binding DisplayValue}" />
                                 </StackPanel>
 
                                 <Button
