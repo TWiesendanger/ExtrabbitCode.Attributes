@@ -11,7 +11,7 @@ public partial class AttributeTreeNode : ObservableObject
 {
     private const int FormattedValuePreviewMaxLines = 40;
 
-    private const int CompactValueDisplayMaxLength = 120;
+    private const int CompactValueDisplayMaxLength = 80;
 
     private (StructuredTextKind Kind, string Formatted, string Compact)? _structuredValue;
 

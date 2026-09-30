@@ -299,10 +299,7 @@
                                             Text="{Binding FormattedValuePreview}" />
                                     </StackPanel.ToolTip>
                                     <TextBlock Text="{Binding Name}" />
-                                    <TextBlock
-                                        Margin="6,0,0,0"
-                                        Foreground="{DynamicResource Brush.ForegroundMuted}"
-                                        Text="{Binding DisplayValue}" />
+                                    <!-- Badge sits before the value so long values cannot push it out of view. -->
                                     <Border
                                         Margin="6,0,0,0"
                                         Padding="4,0"
@@ -315,6 +312,10 @@
                                             FontSize="10"
                                             Text="{Binding StructuredValueLabel}" />
                                     </Border>
+                                    <TextBlock
+                                        Margin="6,0,0,0"
+                                        Foreground="{DynamicResource Brush.ForegroundMuted}"
+                                        Text="{Binding DisplayValue}" />
                                 </StackPanel>
 
                                 <Button
