@@ -6,12 +6,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="{Binding DialogTitle}"
     Width="560"
-    Height="340"
+    Height="560"
     MinWidth="560"
-    MaxWidth="560"
-    MinHeight="340"
-    MaxHeight="340"
-    ResizeMode="NoResize"
+    MinHeight="520"
+    ResizeMode="CanResize"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
     Icon="pack://application:,,,/ExtrabbitCode.Attributes;component/Resources/addAttribute_Dialog.png"
@@ -36,7 +34,6 @@
 
     <Grid Margin="12" TextElement.FontSize="13">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -53,8 +50,8 @@
                     <RowDefinition Height="18" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="18" />
+                    <RowDefinition Height="*" MinHeight="140" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -115,30 +112,85 @@
                 <TextBlock
                     Grid.Row="6"
                     Grid.Column="0"
-                    VerticalAlignment="Center"
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Top"
                     Text="Value" />
 
                 <Grid Grid.Row="6" Grid.Column="1">
+                    <!-- String values may contain multi-line text such as JSON or XML. -->
                     <TextBox
-                        VerticalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Top"
+                        AcceptsReturn="True"
+                        TextWrapping="NoWrap"
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Auto"
+                        FontFamily="Consolas"
                         FontSize="13"
                         Padding="4,4"
                         Text="{Binding AttributeValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                        Visibility="{Binding IsTextValueType, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Visibility="{Binding IsStringType, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                    <TextBox
+                        VerticalAlignment="Top"
+                        FontSize="13"
+                        Padding="4,4"
+                        Text="{Binding AttributeValue, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                        Visibility="{Binding IsSingleLineTextType, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                     <ComboBox
-                        VerticalAlignment="Center"
+                        VerticalAlignment="Top"
                         VerticalContentAlignment="Center"
                         FontSize="13"
                         ItemsSource="{Binding BooleanValues}"
                         SelectedItem="{Binding SelectedBooleanValue, UpdateSourceTrigger=PropertyChanged}"
                         Visibility="{Binding IsBooleanType, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
+
+                <Grid
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Margin="0,8,0,0"
+                    Visibility="{Binding IsStructuredValueCandidate, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource Brush.ForegroundMuted}"
+                        Text="{Binding StructuredValueStatus}"
+                        ToolTip="{Binding StructuredValueStatus}"
+                        TextTrimming="CharacterEllipsis" />
+
+                    <Button
+                        Grid.Column="1"
+                        Width="90"
+                        Margin="8,0,0,0"
+                        FontSize="13"
+                        Content="Format"
+                        ToolTip="Indent the value so it is easier to read"
+                        IsEnabled="{Binding IsStructuredValueValid}"
+                        Command="{Binding FormatValueCommand}" />
+
+                    <Button
+                        Grid.Column="2"
+                        Width="90"
+                        Margin="8,0,0,0"
+                        FontSize="13"
+                        Content="Compact"
+                        ToolTip="Put the value on a single line without extra whitespace"
+                        IsEnabled="{Binding IsStructuredValueValid}"
+                        Command="{Binding CompactValueCommand}" />
+                </Grid>
             </Grid>
         </Border>
 
         <Border
-            Grid.Row="2"
+            Grid.Row="1"
             Margin="2,4,2,2"
             Padding="10"
             Style="{StaticResource ElevatedCardStyle}">
